@@ -9,6 +9,7 @@ import userRoutes from './server/routes/user.routes.js'
 import UserController from './server/controllers/user.controller.js'
 import imgRoutes from './server/routes/img.routes.js'
 import OpenAI_Controller from "./server/controllers/openAI_API.controller.js"
+import AWS from './server/config/aws_cli.config.js';
 
 dotenv.config();
 
@@ -18,7 +19,8 @@ class Server {
         this.IN_PROD = process.env.IN_PROD.toLowerCase() === "true"
         this.app = express();
         this.userCon = new UserController()
-        this.openai_api = new OpenAI_Controller(process.env.OPENAI_API_SECRET_KEY)
+        this.AWS = new AWS(process.env.BUCKET_NAME, process.env.BUCKET_REGION, process.env.ACCESS_KEY_AWS_USER, process.env.SECRET_ACCESS_KEY_AWS_USER)
+        this.openai_api = new OpenAI_Controller(process.env.OPENAI_API_SECRET_KEY, this.AWS)
 
         this.setUpMiddleware()
         this.setUpRoutes()
@@ -55,7 +57,7 @@ class Server {
 
     setUpRoutes() {
         userRoutes(this.app, this.userCon)
-        imgRoutes(this.app, this.openai_api, this.userCon)
+        imgRoutes(this.app, this.openai_api, this.userCon, this.AWS)
 
         this.app.post("/api/v1/test", (req, res) => {
             console.log("body: ==>", req.body)
@@ -76,7 +78,5 @@ class Server {
 }
 
 
-
 const server = new Server();
 server.start()
-

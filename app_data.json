@@ -4,10 +4,9 @@
         "password": "",
         "first_name": "",
         "last_name": "",
-        "age": "",
-        "credit_card": {}
+        "age": ""
     },
     "app_run_time": {
-        "easily_close_everything": "when the client boots up app, checking if backend can be reached before doing anything this way if in the futurs i want to easily close everything"
+        "easy_shutdown": "When the client boots up app, checking if the backend can be reached before doing anything. This way if in the future I can easily shut everything down"
     }
 }

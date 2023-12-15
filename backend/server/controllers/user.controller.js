@@ -1,7 +1,7 @@
 // const jwt = require('jsonwebtoken');
 // const ObjectId = require('mongodb').ObjectId;
 import { ObjectId } from 'mongodb';
-const obj_id = new ObjectId();
+
 
 // const randomstring = require("randomstring");
 
@@ -80,22 +80,23 @@ export default class UserController {
         next()
     }
 
-    async addImgToUser(req, res) {
-        // add img id to user this
-        // TODO add try catch
+    addImgKeyToUser = async (req, res) => {
+        const img_id = req.body.img_id
+        let prompt = req.body.prompt
         try {
-            console.log(this.userModel)
-        } catch (error) {
-            console.log('err userModel not defined', error)
+            let addImg = await this.userModel.updateOne(
+                // TODO change user id from req.body
+                { _id: new ObjectId("657c560f4c3a1de0299b83b4") },
+                { $push: { generated_imgs_ids: img_id, generated_imgs_prompts: prompt } }
+            )
+            res.json({ "prompt": prompt, "img_id": req.body.img_id })
+            // TODO remove above line and add below after not using postman for image generation
+            // res.json({ "prompt": prompt, "img_id": req.body.img_id, "imgData": req.body.imgData })
+            // console.log("result from adding image to user: " + addImg)
+        } catch (err) {
+            console.log('Error add image id to user, ERR:', err)
+            return res.status(500).send("Error add image id to user")
         }
-        // let addImg = await this.userModel.update(
-        //     { _id: obj_id("657bf679a39ba1481923045a") },
-        //     { $push: { generated_imgs_ids: req.body.image_id } }
-        // )
-        // console.log("result from adding image to user: " + addImg)
-
-        // TODO send image data to frontend
-        res.send(req.body.image_id)
     }
 
     // getLoggedUser = (req, res) => {
