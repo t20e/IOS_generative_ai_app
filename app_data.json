@@ -1,0 +1,13 @@
+{
+    "user": {
+        "email": "",
+        "password": "",
+        "first_name": "",
+        "last_name": "",
+        "age": "",
+        "credit_card": {}
+    },
+    "app_run_time": {
+        "easily_close_everything": "when the client boots up app, checking if backend can be reached before doing anything this way if in the futurs i want to easily close everything"
+    }
+}
