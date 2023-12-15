@@ -152,5 +152,7 @@ cython_debug/
 #.idea/
 
 
-/credentials
+/backend/credentials
 .DS_STORE
+
+node_modules
