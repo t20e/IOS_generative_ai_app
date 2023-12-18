@@ -31,8 +31,15 @@ const UserSchema = new Mongoose.Schema({
         // min: [13, 'you need to be older than 12'],
         // max: [120, 'age cant be more than 120']
     },
-    generated_imgs_ids: [],//they are in order of indexs to match imgs ids to prompts
-    generated_imgs_prompts: [], //strings
+    generated_imgs: [
+        /*
+            {
+                img_id: UUID, #key used to get presigned url for user to be able to access the image
+                prompt: either gpt revised use REVISED:%j&# | or its just string
+            }
+        
+        */ 
+    ]
 }, { timestamps: true })
 
 

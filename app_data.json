@@ -4,9 +4,16 @@
         "password": "",
         "first_name": "",
         "last_name": "",
-        "age": ""
+        "age": "",
+        "generated_imgs": [
+            {
+                "img_id": "UUID, #key used to get presigned url for user to be able to access the image",
+                "prompt": " either gpt revised use REVISED:%j&# | or its just string"
+            }
+        ]
     },
     "app_run_time": {
-        "easy_shutdown": "When the client boots up app, checking if the backend can be reached before doing anything. This way if in the future I can easily shut everything down"
+        "easy_shutdown": "When the client boots up app, checking if the backend can be reached before doing anything. This way if in the future I can easily shut everything down",
+        "Sessions": "JWT tokens and presigned s3 buckets lasts 3 hours"
     }
 }

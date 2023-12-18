@@ -3,6 +3,7 @@ const imgRoutes = (app, openai_con, userController, AWS) => {
         userController.authenticateUser, openai_con.generateImg,
         AWS.downloadImgFromUrl, AWS.uploadToS3, userController.addImgKeyToUser
     )
+    // app.get("/api/v1/imgs/getManyPresignedUrls", AWS.getManyObjectsPresignedUrl)
 }
 
 export default imgRoutes

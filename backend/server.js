@@ -18,8 +18,8 @@ class Server {
         this.PORT = process.env.PORT;
         this.IN_PROD = process.env.IN_PROD.toLowerCase() === "true"
         this.app = express();
-        this.userCon = new UserController()
         this.AWS = new AWS(process.env.BUCKET_NAME, process.env.BUCKET_REGION, process.env.ACCESS_KEY_AWS_USER, process.env.SECRET_ACCESS_KEY_AWS_USER)
+        this.userCon = new UserController(this.buildRequestReturnData, this.AWS, process.env.SECRET_KEY)
         this.openai_api = new OpenAI_Controller(process.env.OPENAI_API_SECRET_KEY, this.AWS)
 
         this.setUpMiddleware()
@@ -51,7 +51,6 @@ class Server {
         } else {
             this.http_server = http.createServer(this.app);
         }
-
         connectToMongodb(process.env.MONGODB_USER_NAME, process.env.MONGODB_PASSWORD)
     }
 
@@ -70,6 +69,18 @@ class Server {
         });
     }
 
+    buildRequestReturnData(returnStatusCode, msg, data) {
+        /*
+            builds the return data for user specific requests
+            return: obj
+        */
+        return {
+            "msg": msg,
+            "data": data,
+            "statusCode": returnStatusCode
+        }
+    }
+
     start() {
         this.http_server.listen(this.PORT, () => {
             console.log(`Server listening on port: ${this.PORT}`);
@@ -79,4 +90,6 @@ class Server {
 
 
 const server = new Server();
+
 server.start()
+

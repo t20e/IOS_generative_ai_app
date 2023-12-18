@@ -8,11 +8,11 @@ class OpenAI_Controller {
     }
     test_prompt() {
         return {
-            created: 1702643244,
+            created: 1702716456,
             data: [
                 {
-                    revised_prompt: "Imagine a friendly bear with a bright yellow coat. Its eyes are filled with curiosity as it walks around a lush forest. The color of its fur is radiant, capturing the brightness of a summer's day. The bear's face is round and expressive, communicating a gentle disposition. Its thick fur bristles in the wind, creating a mesmerizing effect of waves in a sea of yellow. The bear is not overly huge, but it still exudes a sense of strength and power, a testament to its survival skills in the wilderness.",
-                    url: 'https://oaidalleapiprodscus.blob.core.windows.net/private/org-F0vUc4ajn5bEbCS4zY043ZBU/user-gUcOcZ8W9WJnG1zimLRTkTqp/img-6d58GPevV6eGxL0z9Rh8jeRV.png?st=2023-12-15T11%3A27%3A24Z&se=2023-12-15T13%3A27%3A24Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-12-14T18%3A50%3A49Z&ske=2023-12-15T18%3A50%3A49Z&sks=b&skv=2021-08-06&sig=H0zuJO59KOoi1q/9hIxi0gZaikaNw4S/zHRFHV0vbww%3D'
+                    revised_prompt: "An image showing a large green whale exhibiting great strength and agility as it breaches the surface of azure water. The whale's powerful tail is still submerged, sending a rush of foamy white water into the air. The sky overhead is clear and blue, suggesting a sunny day. The sight is striking as it conveys a sense of natural grandeur and beauty.",
+                    url: 'https://oaidalleapiprodscus.blob.core.windows.net/private/org-F0vUc4ajn5bEbCS4zY043ZBU/user-gUcOcZ8W9WJnG1zimLRTkTqp/img-wL7OCfatcwEyAgHGbrGmLlHA.png?st=2023-12-16T07%3A47%3A36Z&se=2023-12-16T09%3A47%3A36Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-12-15T20%3A55%3A21Z&ske=2023-12-16T20%3A55%3A21Z&sks=b&skv=2021-08-06&sig=w/BQHMF9Ec873J0hGPp6ue5/6Rsp6JB1vmgW8wcM7f8%3D'
                 }
             ]
         }
@@ -28,6 +28,8 @@ class OpenAI_Controller {
                 'quality': "standard",
                 'n': 1,
             })
+            // console.log("IMAGE RES:", img_res)
+            // const img_res = this.test_prompt()
             // console.log("Result of generated image:", img_res)
             req.body.img_id = uuidv4()
             req.body.img_url = img_res.data[0].url
@@ -40,7 +42,6 @@ class OpenAI_Controller {
             return res.status(500).send("error generating image")
         }
     }
-
 }
 
 export default OpenAI_Controller
