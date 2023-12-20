@@ -8,15 +8,19 @@
 import SwiftUI
 
 struct MainView: View {
+    var mainCon = MainViewController()
+    
     var body: some View {
         if true{
-            //            user is logged in
-            VStack{
-                                HeaderIntro()
-                                IntroView()
-                    }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.theme.backgroundColor)
+            //            user is not logged in
+//            VStack{
+                HeaderIntro()
+                IntroView()
+//                    }
+//                .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                .background(Color.theme.backgroundColor)
+        }else{
+//            user is logged in
         }
     }
 }

@@ -7,50 +7,62 @@
 
 import SwiftUI
 
+
 struct IntroView: View {
-    @StateObject var viewController = LoginViewController()
-    @State var actionBtnClicked = false
-    @State var textField = ""
-    @State var secureTextFeild = ""
-    @State var currFieldPlaceholder = "email"
-    
+    @ObservedObject var viewCon = IntroViewController()
+     
     var body: some View {
         VStack{
-            ChatView(messages: viewController.toUserMsgs)
-            if !actionBtnClicked {
+           
+            ChatView(messages: viewCon.messages)
+            
+            if !viewCon.actionBtnClicked {
                 Button("Sign Up", action: {
-                    viewController.regHandler()
-                    actionBtnClicked = true
+                    viewCon.actionBtnClicked = true
+                    viewCon.loginProcess()
                 })
                 .frame(width: 250, height: 40)
                 .background(Color.theme.primColor)
                 .foregroundColor(Color.white)
                 .cornerRadius(20)
-                
-                
+
                 Button("Login", action: {
-                    viewController.loginHandler()
-                    actionBtnClicked = true
+                    viewCon.actionBtnClicked = true
+                    viewCon.loginProcess()
                 })
                 .frame(width: 250, height: 40)
                 .background(Color.theme.backgroundColor)
                 .foregroundColor(Color.white)
                 .cornerRadius(20)
+
             } else {
+                
+                HStack{
+                    Button(action: {
+                        viewCon.goBackward()
+                    }, label: {
+                        Text("Go back")
+//                        TODO add in forground colors
+//                            .foregroundStyle(Color.theme.primColor)
+                        Image(systemName: "arrow.uturn.up.circle")
+//                            .foregroundStyle(Color.theme.primColor)
+                    })
+                    .padding(.horizontal, 15)
+                    Spacer()
+                }
+                
                 HStack (spacing: 10) {
-                    if viewController.isOnSecureField{
-                        SecureField("Password", text: $secureTextFeild)
+                    if viewCon.isOnSecureField {
+                        SecureField(viewCon.currFieldPlaceholder, text: $viewCon.inputFieldText)
                             .padding(4)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 14)
                                     .stroke(Color.theme.primColor, lineWidth: 2)
                             )
+                            .autocapitalization(.none) 
+                            .autocorrectionDisabled()
                     } else {
-                        TextField(currFieldPlaceholder, text: $textField, onEditingChanged: { isEditing in
-                            if !isEditing{
-                                print("text field here")
-                            }
-                        })
+                        TextField(viewCon.currFieldPlaceholder, text: $viewCon.inputFieldText)
                         .padding(4)
                         .overlay(
                             RoundedRectangle(cornerRadius: 14)
@@ -59,15 +71,21 @@ struct IntroView: View {
                         .autocapitalization(.none) //stops the auto capitilize of words
                         .autocorrectionDisabled()
                     }
-                    Image(systemName: "arrow.up.circle")
-                        .padding()
+
+
+                    Button(action: {
+//                        send whatever data is in the text field to the intro controller
+                        viewCon.inputFieldText.count < 2 ? viewCon.messages.append(Message(text: "Please enter something.", sentByUser: false)) : viewCon.loginProcess()
+                    }, label: {
+                        Image(systemName: "arrow.up.circle")
+//                        MARK - make image a litter bigger
+                    })
                 }
                 .padding()
             }
-        }
-        }
+                }
+    }
 }
-
 
 #Preview {
     IntroView()

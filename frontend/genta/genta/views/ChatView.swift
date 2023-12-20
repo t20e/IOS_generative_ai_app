@@ -7,29 +7,42 @@
 
 import SwiftUI
 
-struct Message: Hashable {
-//    let id : String
+struct Message: Hashable, Identifiable {
+    let id = UUID()
     let text: String
     let sentByUser: Bool
 }
 
 struct ChatView: View {
     var messages : [Message]
-    
-    //    TODO add in the right angel arrow for image generateion
     var body: some View {
-            List(messages, id: \.self){ msg in
-                SingleMessageView(message: msg.text, sentByUser: msg.sentByUser)
-                    .padding(.bottom, 5)
-            }
-            .listStyle(.plain)
+            ScrollView{
+                ScrollViewReader { proxy in
+                    VStack{
+//                        TODO MAKE sure text doesnt streat out the entir page
+                        ForEach(messages, id:\.id){ msg in
+                            
+                            SingleMessageView(message: msg.text, sentByUser: msg.sentByUser)
+                                .padding([.top, .bottom, .horizontal], 10)
+                        }
+                    }
+                    .onChange(of: messages) {
+                    DispatchQueue.main.async{
+                        withAnimation {
+                            proxy.scrollTo(messages[messages.endIndex - 1].id, anchor: .bottom)
+                        }
+                    }
+                }
+                }
+        }
     }
 }
 
 #Preview {
-    ChatView(messages: [Message( text: "start", sentByUser: false),
+    ChatView(messages: 
+                [Message( text: "s2", sentByUser: false),
                         Message(text: "end", sentByUser: false),
-                        Message(text: "their", sentByUser: false)
+                 Message(text: "their", sentByUser: false)
                        
                        ])
 }

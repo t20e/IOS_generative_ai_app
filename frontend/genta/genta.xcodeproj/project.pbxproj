@@ -7,22 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		522B2C392B31387D00B1D62F /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B2C382B31387D00B1D62F /* MainViewController.swift */; };
+		522B2C3F2B31411000B1D62F /* RegLoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B2C3E2B31411000B1D62F /* RegLoginController.swift */; };
 		523B4BC32B3065680063C9FE /* gentaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BC22B3065680063C9FE /* gentaApp.swift */; };
 		523B4BC52B3065680063C9FE /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BC42B3065680063C9FE /* MainView.swift */; };
 		523B4BC72B3065690063C9FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 523B4BC62B3065690063C9FE /* Assets.xcassets */; };
 		523B4BCB2B3065690063C9FE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 523B4BCA2B3065690063C9FE /* Preview Assets.xcassets */; };
 		523B4BD62B3067CA0063C9FE /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BD52B3067CA0063C9FE /* IntroView.swift */; };
 		523B4BDA2B306DE20063C9FE /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BD92B306DE20063C9FE /* Color.swift */; };
-		523B4BE52B30778A0063C9FE /* SingleChatMessageTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BE42B30778A0063C9FE /* SingleChatMessageTestView.swift */; };
 		523B4BE72B307E270063C9FE /* SingleMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BE62B307E270063C9FE /* SingleMessageView.swift */; };
-		523B4BE92B30853C0063C9FE /* ChatTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BE82B30853C0063C9FE /* ChatTestView.swift */; };
 		523B4BED2B3087750063C9FE /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BEC2B3087750063C9FE /* ChatView.swift */; };
 		523B4BF22B30D02D0063C9FE /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BF12B30D02D0063C9FE /* User.swift */; };
-		523B4BF42B30D38F0063C9FE /* LoginRegViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BF32B30D38F0063C9FE /* LoginRegViewController.swift */; };
+		523B4BF42B30D38F0063C9FE /* IntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BF32B30D38F0063C9FE /* IntroViewController.swift */; };
 		523B4BF82B30D6840063C9FE /* HeaderIntro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BF72B30D6840063C9FE /* HeaderIntro.swift */; };
+		52E69F272B32CC34006CE6C6 /* utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E69F262B32CC34006CE6C6 /* utils.swift */; };
+		52E69F2D2B32E735006CE6C6 /* UserServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E69F2C2B32E735006CE6C6 /* UserServices.swift */; };
+		52E69F322B331D11006CE6C6 /* testview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E69F312B331D11006CE6C6 /* testview.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		522B2C382B31387D00B1D62F /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		522B2C3E2B31411000B1D62F /* RegLoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegLoginController.swift; sourceTree = "<group>"; };
 		523B4BBF2B3065680063C9FE /* genta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = genta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		523B4BC22B3065680063C9FE /* gentaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gentaApp.swift; sourceTree = "<group>"; };
 		523B4BC42B3065680063C9FE /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -31,13 +36,14 @@
 		523B4BCA2B3065690063C9FE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		523B4BD52B3067CA0063C9FE /* IntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroView.swift; sourceTree = "<group>"; };
 		523B4BD92B306DE20063C9FE /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
-		523B4BE42B30778A0063C9FE /* SingleChatMessageTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SingleChatMessageTestView.swift; path = ../../../../../../design_projects/SingleChatMessageTestView.swift; sourceTree = "<group>"; };
 		523B4BE62B307E270063C9FE /* SingleMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleMessageView.swift; sourceTree = "<group>"; };
-		523B4BE82B30853C0063C9FE /* ChatTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTestView.swift; sourceTree = "<group>"; };
 		523B4BEC2B3087750063C9FE /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		523B4BF12B30D02D0063C9FE /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		523B4BF32B30D38F0063C9FE /* LoginRegViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginRegViewController.swift; sourceTree = "<group>"; };
+		523B4BF32B30D38F0063C9FE /* IntroViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroViewController.swift; sourceTree = "<group>"; };
 		523B4BF72B30D6840063C9FE /* HeaderIntro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderIntro.swift; sourceTree = "<group>"; };
+		52E69F262B32CC34006CE6C6 /* utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = utils.swift; sourceTree = "<group>"; };
+		52E69F2C2B32E735006CE6C6 /* UserServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserServices.swift; sourceTree = "<group>"; };
+		52E69F312B331D11006CE6C6 /* testview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testview.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +76,7 @@
 		523B4BC12B3065680063C9FE /* genta */ = {
 			isa = PBXGroup;
 			children = (
+				52BEF2FE2B32C21D00514076 /* services */,
 				523B4BEE2B30C43E0063C9FE /* Utils */,
 				523B4BD82B306DD10063C9FE /* Extensions */,
 				523B4BC22B3065680063C9FE /* gentaApp.swift */,
@@ -78,7 +85,7 @@
 				523B4BD12B3066E80063C9FE /* models */,
 				523B4BC62B3065690063C9FE /* Assets.xcassets */,
 				523B4BC82B3065690063C9FE /* genta.entitlements */,
-				523B4BE32B3077730063C9FE /* TestViews */,
+				523B4BE32B3077730063C9FE /* tests */,
 				523B4BC92B3065690063C9FE /* Preview Content */,
 			);
 			path = genta;
@@ -115,7 +122,9 @@
 		523B4BD32B3066F70063C9FE /* viewsController */ = {
 			isa = PBXGroup;
 			children = (
-				523B4BF32B30D38F0063C9FE /* LoginRegViewController.swift */,
+				523B4BF32B30D38F0063C9FE /* IntroViewController.swift */,
+				522B2C382B31387D00B1D62F /* MainViewController.swift */,
+				522B2C3E2B31411000B1D62F /* RegLoginController.swift */,
 			);
 			path = viewsController;
 			sourceTree = "<group>";
@@ -128,20 +137,28 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		523B4BE32B3077730063C9FE /* TestViews */ = {
+		523B4BE32B3077730063C9FE /* tests */ = {
 			isa = PBXGroup;
 			children = (
-				523B4BE42B30778A0063C9FE /* SingleChatMessageTestView.swift */,
-				523B4BE82B30853C0063C9FE /* ChatTestView.swift */,
+				52E69F312B331D11006CE6C6 /* testview.swift */,
 			);
-			path = TestViews;
+			path = tests;
 			sourceTree = "<group>";
 		};
 		523B4BEE2B30C43E0063C9FE /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				52E69F262B32CC34006CE6C6 /* utils.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		52BEF2FE2B32C21D00514076 /* services */ = {
+			isa = PBXGroup;
+			children = (
+				52E69F2C2B32E735006CE6C6 /* UserServices.swift */,
+			);
+			path = services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -214,16 +231,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				523B4BE52B30778A0063C9FE /* SingleChatMessageTestView.swift in Sources */,
+				52E69F2D2B32E735006CE6C6 /* UserServices.swift in Sources */,
+				52E69F272B32CC34006CE6C6 /* utils.swift in Sources */,
 				523B4BC52B3065680063C9FE /* MainView.swift in Sources */,
-				523B4BE92B30853C0063C9FE /* ChatTestView.swift in Sources */,
+				52E69F322B331D11006CE6C6 /* testview.swift in Sources */,
+				522B2C3F2B31411000B1D62F /* RegLoginController.swift in Sources */,
+				522B2C392B31387D00B1D62F /* MainViewController.swift in Sources */,
 				523B4BF82B30D6840063C9FE /* HeaderIntro.swift in Sources */,
 				523B4BED2B3087750063C9FE /* ChatView.swift in Sources */,
 				523B4BDA2B306DE20063C9FE /* Color.swift in Sources */,
 				523B4BE72B307E270063C9FE /* SingleMessageView.swift in Sources */,
 				523B4BC32B3065680063C9FE /* gentaApp.swift in Sources */,
 				523B4BF22B30D02D0063C9FE /* User.swift in Sources */,
-				523B4BF42B30D38F0063C9FE /* LoginRegViewController.swift in Sources */,
+				523B4BF42B30D38F0063C9FE /* IntroViewController.swift in Sources */,
 				523B4BD62B3067CA0063C9FE /* IntroView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

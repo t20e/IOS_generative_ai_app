@@ -68,15 +68,14 @@ class Server {
             res.status(404).send("404 not found");
         });
     }
-
-    buildRequestReturnData(returnStatusCode, msg, data) {
+// TODO FIX ALL THE CALLSE IT SHOULD ONLY BE STATUS code and data not msg
+    buildRequestReturnData(returnStatusCode, data) {
         /*
             builds the return data for user specific requests
             return: obj
         */
         return {
-            "msg": msg,
-            "data": data,
+            data,
             "statusCode": returnStatusCode
         }
     }

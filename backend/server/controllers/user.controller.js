@@ -73,19 +73,36 @@ export default class UserController {
     }
 
     login = async (req, res, next) => {
+        console.log(req.body)
+        console.log(typeof (req.body))
+
+        // res.status(200).json({
+        //     "_id" : "sdds121",
+        //     "email": "asd",
+        //     "first_name": "das",
+        //     "last_name": "asd",
+        //     "age": 34,
+        //     "generated_imgs": [
+        //         {
+        //             "img_id": "UUID, #key used to get presigned url for user to be able to access the image",
+        //             "prompt": " either gpt revised use REVISED:%j&# | or its just string"
+        //         }
+        //     ]
+        // })
         const user = await this.userModel.findOne({ email: req.body.email })
         // console.log('user', user)
         if (user === null) {
-            return res.status(404).json({ msg: "User not found" })
+            console.log("User not found")
+            return res.status(401).json({ msg: "Wrong Credentials" })
         }
         bcrypt.compare(req.body.password, user.password)
             .then(async passwordCheck => {
                 if (passwordCheck) {
                     user.generated_imgs = await this.AWS.getManyObjectsPresignedUrl(user.generated_imgs)
-                    req.body.returnData = this.buildRequestReturnData(200, "successfully logged in", { 'user': user })
+                    req.body.returnData = this.buildRequestReturnData(200,  user)
                     req.hasCookie = this.signJwtToken(user)
                 } else {
-                    req.body.returnData = this.buildRequestReturnData(401, "Unauthorized login attempt", "NOT AUTHORIZED")
+                    req.body.returnData = this.buildRequestReturnData(401, "Unauthorized login attempt")
                 }
                 next()
             })
@@ -112,10 +129,7 @@ export default class UserController {
                 return res
                     .cookie(req.hasCookie.name, req.hasCookie.cookie, { httpOnly: true })
                     .status(req.body.returnData.statusCode)
-                    .json({
-                        "msg": req.body.returnData.msg,
-                        "data": req.body.returnData.data
-                    })
+                    .json(req.body.returnData.data)
             }
             res
                 .status(req.body.returnData.statusCode)
@@ -148,7 +162,7 @@ export default class UserController {
                 { $push: { generated_imgs: obj } }
             )
             obj.presigned_url = await this.AWS.getPreSignedUrl(req.body.img_id)
-            const returnData = this.buildRequestReturnData(201, "Successfully Generated Image", obj)
+            const returnData = this.buildRequestReturnData(201, obj)
             res.status(201).json({ "msg": "Successfully Generated Image", "data": returnData })
         } catch (err) {
             console.log('Error add image id to user, ERR:', err)
