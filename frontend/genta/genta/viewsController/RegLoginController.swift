@@ -57,11 +57,29 @@ class RegLoginController : ObservableObject{
     @Published var loginData = LoginData(email: "", password: "")
     @Published var regData = RegData(email: "", password: "", firstName: "", lastName: "", age: 0)
     
+    init(){}
+    
     func startProcess(){
         currFieldPlaceholder = "email"
         messages.append(Message(text: "What is your email?", sentByUser: false, isError: false))
         isOnSecureField = false
         inputFieldText = ""
+    }
+    
+    func register(){
+        //            ATTEMPT to register
+        Task{ @MainActor in
+            let res = try await userService.regApiCall(regData: regData)
+            
+            if res.err{
+                messages.append(Message(text: res.msg, sentByUser: false, isError: true))
+                currValidatingReg = .startProcess
+                validateRegisteration(wentBack: false)
+                return
+            }
+            //            else successful login
+            messages.append(Message(text: res.msg, sentByUser: false, isError: false))
+        }
     }
     
     func validateRegisteration(wentBack : Bool){
@@ -136,6 +154,7 @@ class RegLoginController : ObservableObject{
                 }
         }
         messages.append(Message(text: "Registering...", sentByUser: false, isError: false))
+        register()
     }
     
     func validateNames(text: String) ->  Bool {
@@ -229,15 +248,4 @@ class RegLoginController : ObservableObject{
                 }
         }
     }
-    
-    
-//    func moveRegEnumBackward(currentCase: RegisterValidateEnum) -> RegisterValidateEnum? {
-//        let allCases = RegisterValidateEnum.allCases
-//        guard let currentIndex = allCases.firstIndex(of: currentCase) else {
-//            return nil
-//        }
-//
-//        let previousIndex = allCases.index(currentIndex, offsetBy: -2, limitedBy: allCases.startIndex)
-//        return previousIndex.map { allCases[$0] }
-//    }
 }

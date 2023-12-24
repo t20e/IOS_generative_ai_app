@@ -11,7 +11,8 @@ import Foundation
 
 class OnBoardingViewController: RegLoginController{
 
-    override init() {}
+    override init() {
+    }
     
     func goBackward(){
         if isCurrentlyReg{
@@ -23,13 +24,13 @@ class OnBoardingViewController: RegLoginController{
     
     func switchTo(){
 //        switches between login and registration
-        if isCurrentlyReg{
+        if isCurrentlyReg {
 //            switch to login
             messages.append(Message(text: "Login", sentByUser: false, isError: false))
             isCurrentlyReg = false
             currValidatingLogin = .startprocess
             validateLogin()
-        }else{
+        } else {
             messages.append(Message(text: "Sign Up", sentByUser: false, isError: false))
             isCurrentlyReg = true
             currValidatingReg = .startProcess

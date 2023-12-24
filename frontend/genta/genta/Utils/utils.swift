@@ -9,7 +9,7 @@ import Foundation
 
 
 enum StatusCode : Int{
-    case success = 200, notFound = 404, serverErr = 500, unAuthorized = 401, timedOut = 408
+    case success = 200, created = 201, notFound = 404, serverErr = 500, unAuthorized = 401, timedOut = 408
 }
 
 func handleStatusCode( statusCode: StatusCode) -> (err : Bool, msg : String)  {

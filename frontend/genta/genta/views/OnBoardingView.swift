@@ -9,11 +9,11 @@ import SwiftUI
 
 
 struct OnBoardingView: View {
+//    @EnvironmentObject var userServices : UserServices
     @ObservedObject var viewCon = OnBoardingViewController()
-     
+    
     var body: some View {
         VStack{
-           
             ChatView(messages: viewCon.messages)
             
             if !viewCon.actionBtnClicked {

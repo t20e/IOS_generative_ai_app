@@ -246,3 +246,6 @@ fastlane/test_output
 iOSInjectionProject/
 frontend/genta/genta.xcodeproj/xcuserdata/tonyavis.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
 frontend/genta/genta.xcodeproj/xcuserdata/tonyavis.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
+*.pbxproj
+*.pbxproj
+frontend/genta/genta.xcodeproj/project.pbxproj

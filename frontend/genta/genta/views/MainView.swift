@@ -9,19 +9,20 @@ import SwiftUI
 
 struct MainView: View {
     var mainCon = MainViewController()
+//    @EnvironmentObject var userServices : UserServices
 
+    
     var body: some View {
-        if true{
-            //            user is not logged in
+//        if user.isSingedIn{
+//            Text("user is signed in")
+//        }else{
 //            VStack{
                 HeaderIntro()
                 OnBoardingView()
 //                    }
 //                .frame(maxWidth: .infinity, maxHeight: .infinity)
 //                .background(Color.theme.backgroundColor)
-        }else{
-//            user is logged in
-        }
+//        }
     }
 }
 
