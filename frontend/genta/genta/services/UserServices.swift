@@ -51,8 +51,8 @@ class UserServices{
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         let user = try decoder.decode(User.self, from: data)
         print(user)
-        var err = false
-        var msg = "Successfully signed in"
+        let err = false
+        let msg = "Successfully signed in"
         return (err, msg)
 //        return ["err" : false, "msg" : "Successfully signed in"]
     }
@@ -69,8 +69,8 @@ class UserServices{
     //            return ["err" : true, "msg" : "Your connection timed out, please try later"]
     //        }
     catch {
-        var err = true
-        var msg = "An unkown error occured, please try again"
+        let err = true
+        let msg = "An unkown error occured, please try again"
         return (err, msg)
 //        return ["err" : true, "msg" : "An unkown error occured, please try again"]
     }

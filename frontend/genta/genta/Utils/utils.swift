@@ -20,7 +20,7 @@ enum StatusCode : Int{
 func handleStatusCode( statusCode: StatusCode) -> (err : Bool, msg : String)  {
     print("Handle login errors...")
     var msg = ""
-    var err = true
+    let err = true
     switch statusCode {
         case .unAuthorized:
             print("Unauthorized. User authentication is required.")
