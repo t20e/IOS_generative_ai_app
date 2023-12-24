@@ -10,6 +10,7 @@ import SwiftUI
 struct SingleMessageView: View {
     let message : String
     let sentByUser : Bool
+    let isError: Bool
     
     var body: some View {
         HStack{
@@ -18,6 +19,7 @@ struct SingleMessageView: View {
             }
             Text(message)
                 .padding(8)
+                .background(isError ? .red : .blue)
                 .background(.blue)
                 .font(.system(size: 14))
                 .foregroundColor(.white)
@@ -31,7 +33,7 @@ struct SingleMessageView: View {
                         .font(.title)
                     //                        .rotationEffect(.degrees(direction == .left ? 45 : -45))
                         .offset(x: sentByUser ? 5 : -5, y: 15)
-                        .foregroundColor(.blue)
+                        .foregroundColor(isError ? .red : .blue)
                 }
             if !sentByUser{
                 Spacer()
@@ -43,7 +45,7 @@ struct SingleMessageView: View {
 
 
 #Preview {
-    SingleMessageView(message: "hello there", sentByUser: true)
+    SingleMessageView(message: "hello there", sentByUser: true, isError: false)
 }
 
 

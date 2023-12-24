@@ -11,29 +11,67 @@ import Foundation
 
 class OnBoardingViewController: RegLoginController{
 
-        
     override init() {}
-
-    func loginProcess(){
-        if isCurrentlyReg {
-            //            sent data to the regCon
-            //            res = regCon.register(text: inputFieldText)
-            print("registering")
-        } else {
-            //send data to the login con
-            validateLogin()
-        }
-
-    }
     
     func goBackward(){
         if isCurrentlyReg{
-//            BUG when i enter password and get error than try to go back to the email it wont scroll the view down automatically
+            regGoBackward()
         }else{
-            let wentBack = loginGoBackward()
-            isOnSecureField = false
-            wentBack ? loginProcess() : nil
-
+            loginGoBackward()
         }
+    }
+    
+    func switchTo(){
+//        switches between login and registration
+        if isCurrentlyReg{
+//            switch to login
+            messages.append(Message(text: "Login", sentByUser: false, isError: false))
+            isCurrentlyReg = false
+            currValidatingLogin = .startprocess
+            validateLogin()
+        }else{
+            messages.append(Message(text: "Sign Up", sentByUser: false, isError: false))
+            isCurrentlyReg = true
+            currValidatingReg = .startProcess
+            validateRegisteration(wentBack: false)
+        }
+    }
+    
+    func loginGoBackward(){
+        if currValidatingLogin == .validatePassword  {
+            currValidatingLogin = .startprocess
+            isOnSecureField = false
+            validateLogin()
+        }else{
+            messages.append(Message(text: "Sorry cant go backward", sentByUser: false, isError: true))
+        }
+    }
+    
+    func regGoBackward(){
+        switch currValidatingReg{
+//            moves backward from whatever it is currently validatation
+            case .startProcess:
+//                messages.append(Message(text: "Sorry cant go backward", sentByUser: false))
+                return
+            case .validateEmail:
+                messages.append(Message(text: "Sorry cant go backward", sentByUser: false, isError: true))
+                return
+            case .validatePassword:
+                inputFieldText = ""
+                currValidatingReg = .startProcess
+            case .validateConfirmPassword:
+                inputFieldText = regData.email
+                currValidatingReg = .validateEmail
+            case .validateFirstName:
+                inputFieldText = regData.password
+                currValidatingReg = .validatePassword
+            case .validateLastName:
+            inputFieldText = regData.password
+                currValidatingReg = .validateConfirmPassword
+            case .validateAge:
+            inputFieldText = regData.firstName
+                currValidatingReg = .validateFirstName
+            }
+            validateRegisteration(wentBack: true)
     }
 }

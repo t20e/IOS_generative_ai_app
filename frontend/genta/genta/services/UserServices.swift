@@ -28,6 +28,12 @@ class UserServices{
     let endPoint = "http://localhost:8080/api/v1/users"
     
     init(){    }
+    
+    
+    func regApiCall() async throws -> (err: Bool, msg: String){
+        print("Attempting to register user")
+        return (false, "")
+    }
 
     func loginApiCall(loginData: LoginData) async throws -> (err : Bool, msg : String) {
         print("Attempting to login in user")
@@ -52,9 +58,7 @@ class UserServices{
             decoder.keyDecodingStrategy = .convertFromSnakeCase
             let user = try decoder.decode(User.self, from: data)
             print(user)
-            let err = false
-            let msg = "Successfully signed in"
-            return (err, msg)
+            return (false, "Successfully signed in")
     //        return ["err" : false, "msg" : "Successfully signed in"]
         }
         //        catch(CustomError.unAuthorized){
@@ -70,9 +74,7 @@ class UserServices{
         //            return ["err" : true, "msg" : "Your connection timed out, please try later"]
         //        }
         catch {
-            let err = true
-            let msg = "An unkown error occured, please try again"
-            return (err, msg)
+            return (true, "An unkown error occured, please try again")
     //        return ["err" : true, "msg" : "An unkown error occured, please try again"]
         }
     }

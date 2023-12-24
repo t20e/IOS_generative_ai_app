@@ -63,7 +63,7 @@ export default class UserController {
         try {
             console.log("Register new User")
             const newUser = await this.userModel.create(req.body)
-            req.body.returnData = this.buildRequestReturnData(201, "Successfully registered user", { "user": newUser })
+            req.body.returnData = this.buildRequestReturnData(201, newUser)
             req.hasCookie = this.signJwtToken(newUser)
             next()
         } catch (error) {
@@ -75,20 +75,6 @@ export default class UserController {
     login = async (req, res, next) => {
         console.log(req.body)
         console.log(typeof (req.body))
-
-        // res.status(200).json({
-        //     "_id" : "sdds121",
-        //     "email": "asd",
-        //     "first_name": "das",
-        //     "last_name": "asd",
-        //     "age": 34,
-        //     "generated_imgs": [
-        //         {
-        //             "img_id": "UUID, #key used to get presigned url for user to be able to access the image",
-        //             "prompt": " either gpt revised use REVISED:%j&# | or its just string"
-        //         }
-        //     ]
-        // })
         const user = await this.userModel.findOne({ email: req.body.email })
         // console.log('user', user)
         if (user === null) {

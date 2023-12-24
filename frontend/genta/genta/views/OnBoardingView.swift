@@ -19,7 +19,7 @@ struct OnBoardingView: View {
             if !viewCon.actionBtnClicked {
                 Button("Sign Up", action: {
                     viewCon.actionBtnClicked = true
-                    viewCon.loginProcess()
+                    viewCon.validateRegisteration(wentBack: false)
                 })
                 .frame(width: 250, height: 40)
                 .background(Color.theme.primColor)
@@ -28,7 +28,7 @@ struct OnBoardingView: View {
 
                 Button("Login", action: {
                     viewCon.actionBtnClicked = true
-                    viewCon.loginProcess()
+                    viewCon.validateLogin()
                 })
                 .frame(width: 250, height: 40)
                 .background(Color.theme.backgroundColor)
@@ -39,7 +39,7 @@ struct OnBoardingView: View {
                 
                 HStack{
                     Button(action: {
-                        viewCon.goBackward()
+                         viewCon.goBackward()
                     }, label: {
                         Text("Go back")
 //                        TODO add in forground colors
@@ -48,7 +48,19 @@ struct OnBoardingView: View {
 //                            .foregroundStyle(Color.theme.primColor)
                     })
                     .padding(.horizontal, 15)
+                    
                     Spacer()
+                    
+                    Button(action: {
+                         viewCon.switchTo()
+                    }, label: {
+                        Text(viewCon.isCurrentlyReg ? "Login" : "Sign Up")
+//                        TODO add in forground colors
+//                            .foregroundStyle(Color.theme.primColor)
+                        Image(systemName: "arrow.up.arrow.down")
+//                            .foregroundStyle(Color.theme.primColor)
+                    })
+                    .padding(.horizontal, 15)
                 }
                 
                 HStack (spacing: 10) {
@@ -75,7 +87,7 @@ struct OnBoardingView: View {
 
                     Button(action: {
 //                        send whatever data is in the text field to the intro controller
-                        viewCon.inputFieldText.count < 2 ? viewCon.messages.append(Message(text: "Please enter something.", sentByUser: false)) : viewCon.loginProcess()
+                        viewCon.inputFieldText.count < 2 ? viewCon.messages.append(Message(text: "Please enter something.", sentByUser: false, isError: true)) : viewCon.isCurrentlyReg ? viewCon.validateRegisteration(wentBack: false) : viewCon.validateLogin()
                     }, label: {
                         Image(systemName: "arrow.up.circle")
 //                        MARK - make image a litter bigger

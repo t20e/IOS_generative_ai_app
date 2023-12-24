@@ -7,11 +7,6 @@
 
 import Foundation
 
-func isValidEmail(_ email: String) -> Bool {
-    let emailRegex = #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"#
-    let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
-    return emailPredicate.evaluate(with: email)
-}
 
 enum StatusCode : Int{
     case success = 200, notFound = 404, serverErr = 500, unAuthorized = 401, timedOut = 408
@@ -20,7 +15,6 @@ enum StatusCode : Int{
 func handleStatusCode( statusCode: StatusCode) -> (err : Bool, msg : String)  {
     print("Handle status code errors, code: \(statusCode)")
     var msg = ""
-    let err = true
     switch statusCode {
         case .unAuthorized:
             print("Unauthorized. User authentication is required.")
@@ -42,5 +36,12 @@ func handleStatusCode( statusCode: StatusCode) -> (err : Bool, msg : String)  {
             msg = "An unkown error occured, please try again!"
 //            return ["err" : true, "msg" : "An unkown error occured, please try again!"]
     }
-    return (err, msg)
+    return (true, msg)
+}
+
+
+func isValidEmail(_ email: String) -> Bool {
+    let emailRegex = #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"#
+    let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+    return emailPredicate.evaluate(with: email)
 }

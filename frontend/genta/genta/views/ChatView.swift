@@ -11,6 +11,7 @@ struct Message: Hashable, Identifiable {
     let id = UUID()
     let text: String
     let sentByUser: Bool
+    let isError : Bool
 }
 
 struct ChatView: View {
@@ -21,8 +22,7 @@ struct ChatView: View {
                     VStack{
 //                        TODO MAKE sure text doesnt streat out the entir page
                         ForEach(messages, id:\.id){ msg in
-                            
-                            SingleMessageView(message: msg.text, sentByUser: msg.sentByUser)
+                            SingleMessageView(message: msg.text, sentByUser: msg.sentByUser, isError: msg.isError)
                                 .padding([.top, .bottom, .horizontal], 10)
                         }
                     }
@@ -40,9 +40,9 @@ struct ChatView: View {
 
 #Preview {
     ChatView(messages: 
-                [Message( text: "s2", sentByUser: false),
-                        Message(text: "end", sentByUser: false),
-                 Message(text: "their", sentByUser: false)
+                [Message( text: "s2", sentByUser: false, isError: false),
+                        Message(text: "end", sentByUser: false, isError: false),
+                 Message(text: "their", sentByUser: false, isError: false)
                        
                        ])
 }
