@@ -58,7 +58,7 @@ class IntroViewController: RegLoginController{
         if isCurrentlyReg{
 //            BUG when i enter password and get error than try to go back to the email it wont scroll the view down automatically
         }else{
-            let wentBack = loginCon.loginGoBackward()
+            let wentBack = loginGoBackward()
             isOnSecureField = false
             wentBack ? loginProcess() : nil
 
