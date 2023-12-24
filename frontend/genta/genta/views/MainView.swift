@@ -15,7 +15,7 @@ struct MainView: View {
             //            user is not logged in
 //            VStack{
                 HeaderIntro()
-                IntroView()
+                OnBoardingView()
 //                    }
 //                .frame(maxWidth: .infinity, maxHeight: .infinity)
 //                .background(Color.theme.backgroundColor)

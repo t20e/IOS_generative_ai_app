@@ -9,7 +9,7 @@ import Foundation
 
 
 
-class IntroViewController: RegLoginController{
+class OnBoardingViewController: RegLoginController{
 
     
     @Published var actionBtnClicked = false

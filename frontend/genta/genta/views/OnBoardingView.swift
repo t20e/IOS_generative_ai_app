@@ -8,8 +8,8 @@
 import SwiftUI
 
 
-struct IntroView: View {
-    @ObservedObject var viewCon = IntroViewController()
+struct OnBoardingView: View {
+    @ObservedObject var viewCon = OnBoardingViewController()
      
     var body: some View {
         VStack{
@@ -88,5 +88,5 @@ struct IntroView: View {
 }
 
 #Preview {
-    IntroView()
+    OnBoardingView()
 }
