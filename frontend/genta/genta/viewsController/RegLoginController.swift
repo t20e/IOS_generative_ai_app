@@ -25,9 +25,22 @@ enum LoginValidateEnum {
 
 
 class RegLoginController : ObservableObject{
+    
     let minPasswordLength = 6
     let userService = UserServices()
     var currentlyValidating = LoginValidateEnum.startprocess
+    
+    @Published var messages : [Message] = [
+        Message(text: "Prompt", sentByUser: false),
+        Message(text: "A lion walking on water", sentByUser: true),
+    ]
+    @Published var actionBtnClicked = false
+    @Published var currIdx = 0
+    @Published var isOnSecureField = false
+    @Published var currFieldPlaceholder = "email"
+//    bool for whether or not the user is current registering or login ing
+    @Published var isCurrentlyReg : Bool = false
+    @Published var inputFieldText : String = ""
 
     @Published var loginData = LoginData(email: "", password: "")
 
@@ -39,37 +52,52 @@ class RegLoginController : ObservableObject{
 //    
 //    }
     
-    func validateLogin(text: String) -> (LoginToIntroControllerMsg, Message){
+
+    func validateLogin(){
+        let text = inputFieldText
         switch currentlyValidating {
             case .startprocess:
                 currentlyValidating = .validateEmail
-                return (LoginToIntroControllerMsg(err: false, msg: "What is your email?", isNextFieldSecure: false), Message(text: "", sentByUser: false))
+                messages.append(Message(text: "What is your email?", sentByUser: false))
+                isOnSecureField = false
+                isCurrentlyReg = false
+                inputFieldText = ""
+                return
             case .validateEmail:
                 let res = isValidEmail(text)
                 if !res{
-                    return (LoginToIntroControllerMsg(err: true, msg: "Please enter a valid email.", isNextFieldSecure: false), Message(text: text, sentByUser: true))
+                    isOnSecureField = false
+                    messages += [Message(text: text, sentByUser: true), Message(text: "Please enter a valid email.", sentByUser: false)]
+                    return
                 }
+                inputFieldText = ""
                 loginData.email = text
                 currentlyValidating = .validatePassword
-                return (LoginToIntroControllerMsg(err: false, msg: "What is your password.", isNextFieldSecure: true), Message(text: text, sentByUser: true))
+                messages += [Message(text: text, sentByUser: true), Message(text: "What is your password.", sentByUser: false)]
+                return
             case .validatePassword:
                 if text.count <= 6 || text.count >= 32{
-                    return (LoginToIntroControllerMsg(err: true, msg: "Password has to be between 6 and 32 charaters long.", isNextFieldSecure: true), Message(text: String(repeating: "*", count: text.count), sentByUser: true))
+                    messages += [Message(text: String(repeating: "*", count: text.count), sentByUser: true), Message(text: "Password has to be between 6 and 32 charaters long.", sentByUser: false)]
+                    return
                 }
+                inputFieldText = ""
                 loginData.password = text
                 }
-        //            ATTEMPT LOGIN everything passed
-        Task{
-//            let res = await login()
-            let res = try await userService.loginApiCall(loginData: loginData)
-            
-            if res.err{
-                return (LoginToIntroControllerMsg(err: res.err, msg: res.msg, isNextFieldSecure: true), Message(text: String(repeating: "*", count: text.count), sentByUser: true))
-            }
-//            else successful login
-            return (LoginToIntroControllerMsg(err: false, msg: res.msg, isNextFieldSecure: false), Message(text: String(repeating: "*", count: text.count), sentByUser: true))
+                //            ATTEMPT LOGIN everything passed
+                messages += [Message(text: String(repeating: "*", count: text.count), sentByUser: true), Message(text: "Logging you in.", sentByUser: false)]
+                Task{ @MainActor in
+        //            let res = await login()
+                    let res = try await userService.loginApiCall(loginData: loginData)
+                    
+                    if res.err{
+                        messages += [ Message(text: res.msg, sentByUser: false)]
+                        currentlyValidating = .startprocess
+                        validateLogin()
+                        return
+                    }
+        //            else successful login
+                    messages += [ Message(text: res.msg, sentByUser: false)]
         }
-        return (LoginToIntroControllerMsg(err: false, msg: "Logging you in.", isNextFieldSecure: false), Message(text: String(repeating: "*", count: text.count), sentByUser: true))
     }
     
     func loginGoBackward() -> Bool{
@@ -79,4 +107,5 @@ class RegLoginController : ObservableObject{
         }
         return false
     }
+    
 }

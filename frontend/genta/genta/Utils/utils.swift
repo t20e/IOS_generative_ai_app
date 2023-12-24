@@ -18,7 +18,7 @@ enum StatusCode : Int{
 }
 
 func handleStatusCode( statusCode: StatusCode) -> (err : Bool, msg : String)  {
-    print("Handle login errors...")
+    print("Handle status code errors, code: \(statusCode)")
     var msg = ""
     let err = true
     switch statusCode {

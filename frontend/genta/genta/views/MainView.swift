@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     var mainCon = MainViewController()
-    
+
     var body: some View {
         if true{
             //            user is not logged in
