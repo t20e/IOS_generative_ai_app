@@ -7,61 +7,90 @@
 
 import SwiftUI
 
+
+struct RightTriangle: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+
+        // Define the vertices of the right triangle
+        let startPoint = CGPoint(x: rect.minX, y: rect.maxY)
+        let endPoint = CGPoint(x: rect.maxX, y: rect.minY)
+        let rightAnglePoint = CGPoint(x: rect.minX, y: rect.minY)
+
+        // Move to the starting point
+        path.move(to: startPoint)
+
+        // Draw the two sides of the right triangle
+        path.addLine(to: rightAnglePoint)
+        path.addLine(to: endPoint)
+
+        return path
+    }
+}
+
 struct SingleMessageView: View {
     let message : String
     let sentByUser : Bool
     let isError: Bool
+    let isImg : Bool
+    let image : Image
+    let isLoadingSign : Bool
+    
+ 
     
     var body: some View {
-        HStack{
-            if sentByUser {
-                Spacer()
-            }
-            Text(message)
-                .padding(8)
-                .background(isError ? .red : .blue)
-                .background(.blue)
-                .font(.system(size: 14))
-                .foregroundColor(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                .listRowSeparator(.hidden)
-            //        add the traingle at the bottom right
-                .overlay(alignment: sentByUser ? .bottomLeading : .bottomTrailing){
-                    Image(systemName: "arrowtriangle.down.fill")
-                    //                        .resizable()
-                    //                        .frame(width: 30, height: 20)
-                        .font(.title)
-                    //                        .rotationEffect(.degrees(direction == .left ? 45 : -45))
-                        .offset(x: sentByUser ? 5 : -5, y: 15)
-                        .foregroundColor(isError ? .red : .blue)
+        HStack(spacing : 75){
+            if isImg {
+                HStack(alignment: .top){
+                    image
+//                        .resizable()
+                        .frame(width:  225, height: 225)
+                        .cornerRadius(20)
+                    RightTriangle()
+                        .stroke(Color.red, lineWidth: 0.5)
+                        .frame(width: 50, height: 100)
+                        .rotationEffect(Angle(degrees: 180.0))
+                        .offset(x: 0, y: -60)
+                        .padding(20)
                 }
-            if !sentByUser{
-                Spacer()
+                .padding(20)
+            }else{
+                if sentByUser {
+                    Spacer()
+                }
+                Text(message)
+                    .padding(6)
+                    .background(
+                        sentByUser ? Color.blue.opacity(0.0) :
+                            isError ? .red : .blue
+                    )
+                    .font(.system(size: 14))
+                    .foregroundColor(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .listRowSeparator(.hidden)
+                    .overlay(alignment: sentByUser ? .bottomLeading : .bottomTrailing){
+                        !sentByUser ?
+                            Image(systemName: "arrowtriangle.down.fill")
+                                .resizable()
+                                .frame(width: 30, height: 20)
+                                .font(.title)
+                                .offset(x: sentByUser ? 5 : -5, y: 15)
+                                .foregroundColor(isError ? .red : .blue)
+                        : nil
+                    }
+
+                
+                if !sentByUser{
+                    Spacer()
+                }
             }
         }
         .listRowSeparator(.hidden)
-            }
+    }
 }
 
 
 #Preview {
-    SingleMessageView(message: "hello there", sentByUser: true, isError: false)
+    SingleMessageView(message: "hello there are u the same user from before or a new user can can we sign you in", sentByUser: false, isError: false, isImg: true, image: Image(systemName: "arrowtriangle.down.fill"), isLoadingSign: false)
 }
 
-
-
-//old
-//Text(message)
-//    .padding()
-//    .background(.blue)
-//    .foregroundColor(.white)
-//    .clipShape(RoundedRectangle(cornerRadius: 16.0, style: .continuous))
-//    .listRowSeparator(.hidden)
-////        add the traingle at the bottom right
-//    .overlay(alignment: direction == .left ? .bottomLeading : .bottomTrailing){
-//        Image(systemName: "arrowtriangle.down.fill")
-//            .font(.title)
-//            .rotationEffect(.degrees(direction == .left ? 45 : -45))
-//            .offset(x: direction == .left ? -10 : 10, y: 10)
-//        //                            .foregroundColor(.blue)
-//    }

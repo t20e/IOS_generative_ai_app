@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     var mainCon = MainViewController()
-//    @EnvironmentObject var userServices : UserServices
+
     @EnvironmentObject var user : User
     
     var body: some View {

@@ -9,9 +9,36 @@ import Foundation
 
 
 enum StatusCode : Int{
-    case success = 200, created = 201, notFound = 404, serverErr = 500, unAuthorized = 401, timedOut = 408
+    case success = 200, created = 201, accepted = 202, notFound = 404,  unAuthorized = 401, timedOut = 408, conflict = 409, semanticError = 422, serverErr = 500
 }
 
+enum NetworkError: Error {
+    case success
+    case created
+    case accepted
+    case notFound
+    case serverErr
+    case unAuthorized
+    case timedOut
+    case conflict
+    case semanticError
+
+    init(_ statusCode: StatusCode) {
+        switch statusCode {
+            case .success: self = .success
+            case .created: self = .created
+            case .accepted: self = .accepted
+            case .notFound: self = .notFound
+            case .serverErr: self = .serverErr
+            case .unAuthorized: self = .unAuthorized
+            case .timedOut: self = .timedOut
+            case .conflict: self = .conflict
+            case .semanticError: self = .semanticError
+        }
+    }
+}
+
+//TODO remove all this and fix it in userServices
 func handleStatusCode( statusCode: StatusCode) -> String  {
     print("Handle status code errors, code: \(statusCode)")
     var msg = ""
@@ -37,11 +64,4 @@ func handleStatusCode( statusCode: StatusCode) -> String  {
 //            return ["err" : true, "msg" : "An unkown error occured, please try again!"]
     }
     return msg
-}
-
-
-func isValidEmail(_ email: String) -> Bool {
-    let emailRegex = #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"#
-    let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
-    return emailPredicate.evaluate(with: email)
 }

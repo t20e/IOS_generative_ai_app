@@ -9,16 +9,15 @@ import Foundation
 
 
 class UserServices : ObservableObject{
-    let endPoint = "http://localhost:8080/api/v1/users"
-
+    let endPoint = baseURL + "/api/v1/users"
     
-    init(){    }
-    
+    init(){
+    }
     
     func regApiCall(regData: RegData) async  -> (err: Bool, msg: String, user: UserStruct?){
         print("Attempting to register user")
         
-        let url = URL(string: "\(endPoint)/reg")!
+        let url = URL(string: "\(self.endPoint)/reg")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -26,6 +25,7 @@ class UserServices : ObservableObject{
         do{
             let encodedData = try JSONEncoder().encode(regData)
             let (data, res) = try await URLSession.shared.upload(for: request, from: encodedData)
+            print( String(data: data, encoding: .utf8) ?? "error parsing response data")
             
             if let httpRes = res as? HTTPURLResponse {
                 let statusCode = StatusCode(rawValue: httpRes.statusCode)
@@ -45,33 +45,34 @@ class UserServices : ObservableObject{
     }
     
     func postCall(){
-//        TODO MAKE CODE DRY
+        //        TODO MAKE CODE DRY
     }
-
+    
     func loginApiCall(loginData: LoginData) async -> (err : Bool, msg : String, user: UserStruct?) {
         print("Attempting to login in user")
         let url = URL(string: "\(endPoint)/login")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        
         do{
             let encodedData = try JSONEncoder().encode(loginData)
             let (data, res) = try await URLSession.shared.upload(for: request, from: encodedData)
-
+            
             if let httpRes = res as? HTTPURLResponse {
                 let statusCode = StatusCode(rawValue: httpRes.statusCode)
                 if statusCode != .success{
                     return (true, handleStatusCode(statusCode: statusCode!), nil)
                 }
             }
-        //            print( String(data: data, encoding: .utf8))
+            print( String(data: data, encoding: .utf8) ?? "error parsing response data")
+
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
             let user = try decoder.decode(UserStruct.self, from: data)
             print(user)
             return (false, "Successfully signed in", user)
-    //        return ["err" : false, "msg" : "Successfully signed in"]
+            //        return ["err" : false, "msg" : "Successfully signed in"]
         }
         //        catch(CustomError.unAuthorized){
         //            return ["err" : true, "msg" : "Incorrect email or password please try again"]
@@ -87,7 +88,54 @@ class UserServices : ObservableObject{
         //        }
         catch {
             return (true, "An unkown error occured, please try again", nil)
-    //        return ["err" : true, "msg" : "An unkown error occured, please try again"]
+            //        return ["err" : true, "msg" : "An unkown error occured, please try again"]
+        }
+    }
+    
+    func checkIfEmailInDbApiCall(email : String) async throws -> (err : Bool, msg : String){
+        print("Checking if email is already in use")
+        let url = URL(string: "\(endPoint)/checkIfEmailExists")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do{
+            let encodedData = try JSONEncoder().encode(["email" : email])
+            let (data, res) = try await URLSession.shared.upload(for: request, from: encodedData)
+            
+            if let httpRes = res as? HTTPURLResponse {
+                let statusCode = StatusCode(rawValue: httpRes.statusCode)
+                if statusCode != .accepted{
+                    throw NetworkError(statusCode!)
+                }
+            }
+            print( String(data: data, encoding: .utf8) ?? "error parsing response data")
+            if let dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]{
+                print("dict", dict)
+                return (false, "")
+            }
+            else{
+                print("Error parsing JSON data at checking if email exists")
+                throw NetworkError.serverErr
+            }
+        }
+        
+        catch let err as NetworkError{
+            switch err{
+                case .serverErr:
+                    return (true, "Suffered an internal server error, please try later")
+                case .timedOut:
+                    return (true, "Your connection timed out, Please check your internet connection!" )
+                case .conflict:
+                    return (true, "Email already in use, please sign in")
+                case .semanticError:
+                    return (true, "Please enter a valid email address")
+                default:
+                    return (true, "An unkown error occured, please try again later")
+            }
+        }
+        catch {
+            return (true, "An unkown error occured, please try again later")
         }
     }
     

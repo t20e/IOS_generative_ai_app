@@ -28,8 +28,7 @@ struct UserStruct: Codable{
     let userService = UserServices()
     
     @Published var user = UserStruct(email: "", firstName: "", lastName: "", age: 2, generatedImgs: [generated_imgs(imgId: "", prompt: "")])
-    
-    init(){}
+
     
     func register(regData: RegData) async -> (err: Bool, msg: String){
             let res = await userService.regApiCall(regData: regData)

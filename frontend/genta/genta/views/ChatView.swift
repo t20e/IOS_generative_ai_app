@@ -12,6 +12,24 @@ struct Message: Hashable, Identifiable {
     let text: String
     let sentByUser: Bool
     let isError : Bool
+    let isLoadingSign : Bool
+    let isImg : Bool
+    let image : Image
+    
+    init(text: String, sentByUser: Bool, isError: Bool = false, isLoadingSign: Bool = false, isImg: Bool = false, image: Image = Image(systemName: "character.textbox")) {
+        self.text = text
+        self.sentByUser = sentByUser
+        self.isError = isError
+        self.isLoadingSign = isLoadingSign
+        self.isImg = isImg
+        self.image = image
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        // You can combine other properties here if needed
+    }
+    
 }
 
 struct ChatView: View {
@@ -22,7 +40,8 @@ struct ChatView: View {
                     VStack{
 //                        TODO MAKE sure text doesnt streat out the entir page
                         ForEach(messages, id:\.id){ msg in
-                            SingleMessageView(message: msg.text, sentByUser: msg.sentByUser, isError: msg.isError)
+//                            SingleMessageView(message: msg.text, sentByUser: msg.sentByUser, isError: msg.isError, isLoadingSign: msg.isLoadingSign)
+                            SingleMessageView(message: msg.text, sentByUser: msg.sentByUser, isError: msg.isError, isImg: msg.isImg, image: msg.image, isLoadingSign: msg.isLoadingSign)
                                 .padding([.top, .bottom, .horizontal], 10)
                         }
                     }
@@ -40,9 +59,9 @@ struct ChatView: View {
 
 #Preview {
     ChatView(messages: 
-                [Message( text: "s2", sentByUser: false, isError: false),
-                        Message(text: "end", sentByUser: false, isError: false),
-                 Message(text: "their", sentByUser: false, isError: false)
+                [Message( text: "s2", sentByUser: false),
+                        Message(text: "end", sentByUser: false),
+                 Message(text: "their", sentByUser: false)
                        
                        ])
 }

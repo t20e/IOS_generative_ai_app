@@ -7,8 +7,15 @@
 
 import SwiftUI
 
+
+let isDeployed = false
+let baseURL: String = {
+    return isDeployed ? "https://PAIENDPOINT" : "http://localhost:8080"
+}()
+
 @main
 struct gentaApp: App {
+ 
     @StateObject var user = User()
     
     var body: some Scene {
@@ -17,4 +24,6 @@ struct gentaApp: App {
                 .environmentObject(user)
         }
     }
+    
+    
 }

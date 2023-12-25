@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import SwiftUI
 
 struct LoginData : Codable{
     var email: String
@@ -43,6 +43,7 @@ class OnBoardingViewController : ObservableObject{
     var currValidatingReg = RegisterValidateEnum.startProcess
     @Published var canLogin = false
     @Published var canReg = false
+    @Published var canCheckIfEmailExists = false
     @Published var actionBtnClicked = false
     @Published var currIdx = 0
     @Published var isOnSecureField = false
@@ -55,13 +56,14 @@ class OnBoardingViewController : ObservableObject{
     @Published var regData = RegData(email: "", password: "", firstName: "", lastName: "", age: 0)
     
     @Published var messages : [Message] = [
-        Message(text: "Prompt", sentByUser: false, isError: false),
-        Message(text: "A lion walking on water", sentByUser: true, isError: false),
+        Message(text: "Prompt?", sentByUser: false),
+        Message(text: "A lion walking on water", sentByUser: true), //TODO ADD IMAGE AND PROMPT
+        Message(text: "", sentByUser: false, isImg: true, image: Image("test_img"))
     ]
     
     func startProcess(){
         currFieldPlaceholder = "email"
-        messages.append(Message(text: "What is your email?", sentByUser: false, isError: false))
+        messages.append(Message(text: "What is your email?", sentByUser: false))
         isOnSecureField = false
         inputFieldText = ""
     }
@@ -71,9 +73,9 @@ class OnBoardingViewController : ObservableObject{
         let text = inputFieldText
         if !wentBack{
             if currValidatingReg == .validatePassword || currValidatingReg == .validateConfirmPassword{
-                messages.append(Message(text: String(repeating: "*", count: text.count), sentByUser: true, isError: false))
+                messages.append(Message(text: String(repeating: "*", count: text.count), sentByUser: true))
             } else if currValidatingReg != .startProcess{
-                messages.append(Message(text: text, sentByUser: true, isError: false))
+                messages.append(Message(text: text, sentByUser: true))
             }
         }
         
@@ -84,20 +86,14 @@ class OnBoardingViewController : ObservableObject{
                 isCurrentlyReg = true
                 return
             case .validateEmail:
-                //            TODO make sure email is not in db
-                let isValidEmail = validateEmail(email: text)
-                if isValidEmail{
-                    regData.email = text
-                    currValidatingReg = .validatePassword
-                    currFieldPlaceholder = "password"
-                }
+                    canCheckIfEmailExists = true
                 return
             case .validatePassword:
                 let isValidPassword = validatePassword(password: text)
                 if isValidPassword {
                     regData.password = text
                     currValidatingReg = .validateConfirmPassword
-                    messages.append(Message(text: "Please confirm your password.", sentByUser: false, isError: false))
+                    messages.append(Message(text: "Please confirm your password.", sentByUser: false))
                     currFieldPlaceholder = "confirm password"
                 }
                 return
@@ -106,7 +102,7 @@ class OnBoardingViewController : ObservableObject{
                     messages.append(Message(text: "Confirm Password doesn't match password.", sentByUser: false, isError: true))
                     return
                 }
-                messages.append(Message(text: "What is your first name?", sentByUser: false, isError: false))
+                messages.append(Message(text: "What is your first name?", sentByUser: false))
                 currValidatingReg = .validateFirstName
                 currFieldPlaceholder = "first name"
                 inputFieldText = ""
@@ -118,7 +114,7 @@ class OnBoardingViewController : ObservableObject{
                     regData.firstName = text.lowercased()
                     currValidatingReg = .validateLastName
                     currFieldPlaceholder = "last name"
-                    messages.append(Message(text: "What is your last name?", sentByUser: false, isError: false))
+                    messages.append(Message(text: "What is your last name?", sentByUser: false))
                 }
                 return
             case .validateLastName:
@@ -127,7 +123,7 @@ class OnBoardingViewController : ObservableObject{
                     regData.lastName = text.lowercased()
                     currValidatingReg = .validateAge
                     currFieldPlaceholder = "age"
-                    messages.append(Message(text: "What is your age?", sentByUser: false, isError: false))
+                    messages.append(Message(text: "What is your age?", sentByUser: false))
                 }
                 return
             case .validateAge:
@@ -138,7 +134,7 @@ class OnBoardingViewController : ObservableObject{
                     return messages.append(Message(text: "Sorry you need to be 13 or older", sentByUser: false, isError: true))
                 }
         }
-        messages.append(Message(text: "Registering...", sentByUser: false, isError: false))
+        messages.append(Message(text: "Registering...", sentByUser: false, isLoadingSign: true))
         canReg = true
     }
     
@@ -160,20 +156,6 @@ class OnBoardingViewController : ObservableObject{
         }
     }
     
-    func validateEmail(email: String) -> Bool{
-        let res = isValidEmail(email)
-        if !res{
-            isOnSecureField = false
-            messages.append(Message(text: "Please enter a valid email.", sentByUser: false, isError: true))
-            return false
-        }else{
-            inputFieldText = ""
-            isOnSecureField = true
-            messages.append(Message(text: "Please enter a password.", sentByUser: false, isError: false))
-            return true
-        }
-    }
-    
     func validatePassword(password: String) -> Bool{
         if password.count <= minPasswordLength || password.count >= maxPasswordLength{
             messages.append(Message(text: "Password has to be between 6 and 32 charaters long.", sentByUser: false, isError: true))
@@ -187,9 +169,9 @@ class OnBoardingViewController : ObservableObject{
         let text = inputFieldText
         
         if currValidatingLogin == .validateEmail {
-            messages.append(Message(text: text, sentByUser: true, isError: false))
+            messages.append(Message(text: text, sentByUser: true))
         } else if currValidatingLogin == .validatePassword{
-            messages.append(Message(text: String(repeating: "*", count: text.count), sentByUser: true, isError: false))
+            messages.append(Message(text: String(repeating: "*", count: text.count), sentByUser: true))
         }
         
         switch currValidatingLogin {
@@ -199,19 +181,18 @@ class OnBoardingViewController : ObservableObject{
                 isCurrentlyReg = false
                 return
             case .validateEmail:
-            //            TODO make sure email is not in db
-                let isValidEmail = validateEmail(email: text)
-                if isValidEmail{
-                    loginData.email = text
-                    currValidatingLogin = .validatePassword
-                    currFieldPlaceholder = "password"
-                }
+                loginData.email = text
+                currValidatingLogin = .validatePassword
+                currFieldPlaceholder = "password"
+                inputFieldText = ""
+                isOnSecureField = true
+                messages.append(Message(text: "Please enter a password.", sentByUser: false))
                 return
             case .validatePassword:
                 let isValidPassword = validatePassword(password: text)
                 if isValidPassword{
                     loginData.password = text
-                    messages.append(Message(text: "Logging in...", sentByUser: false, isError: false))
+                    messages.append(Message(text: "Logging in...", sentByUser: false, isLoadingSign: true))
 //                    login()
                     canLogin = true
                 }
@@ -231,12 +212,12 @@ class OnBoardingViewController : ObservableObject{
 //        switches between login and registration
         if isCurrentlyReg {
 //            switch to login
-            messages.append(Message(text: "logging in", sentByUser: false, isError: false))
+            messages.append(Message(text: "Logging in instead", sentByUser: false))
             isCurrentlyReg = false
             currValidatingLogin = .startprocess
             validateLogin()
         } else {
-            messages.append(Message(text: "Signing Up", sentByUser: false, isError: false))
+            messages.append(Message(text: "Signing up instead", sentByUser: false))
             isCurrentlyReg = true
             currValidatingReg = .startProcess
             validateRegisteration(wentBack: false)

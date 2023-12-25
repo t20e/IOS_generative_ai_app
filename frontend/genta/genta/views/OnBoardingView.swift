@@ -89,6 +89,7 @@ struct OnBoardingView: View {
                         }else if viewCont.isCurrentlyReg{
                             viewCont.validateRegisteration(wentBack: false)
                             viewCont.canReg ? registerUser() : nil
+                            viewCont.canCheckIfEmailExists ? checkIfEmailExists() : nil
                         }
                         else{ 
                             viewCont.validateLogin()
@@ -104,6 +105,25 @@ struct OnBoardingView: View {
         }
     }
     
+    func checkIfEmailExists(){
+        viewCont.messages.append(Message(text: "Checking your email.", sentByUser: false, isLoadingSign: true))
+
+        Task{ @MainActor in
+            let res = try await user.userService.checkIfEmailInDbApiCall(email: viewCont.inputFieldText)
+            if res.err{
+                viewCont.messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
+            }else{
+                viewCont.regData.email = viewCont.inputFieldText
+                viewCont.currValidatingReg = .validatePassword
+                viewCont.currFieldPlaceholder = "password"
+                viewCont.inputFieldText = ""
+                viewCont.isOnSecureField = true
+                viewCont.messages.append(Message(text: "Please enter a password.", sentByUser: false))
+                viewCont.canCheckIfEmailExists = false
+            }
+        }
+    }
+    
     func registerUser(){
         Task{ @MainActor in
             let res = await user.register(regData: viewCont.regData)
@@ -113,7 +133,7 @@ struct OnBoardingView: View {
                 viewCont.validateRegisteration(wentBack: false)
                 viewCont.messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
             }else{
-                viewCont.messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
+                viewCont.messages.append(Message(text: res.msg, sentByUser: false))
             }
         }
     }
@@ -127,7 +147,7 @@ struct OnBoardingView: View {
                 viewCont.validateLogin()
                 viewCont.messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
             }else{
-                viewCont.messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
+                viewCont.messages.append(Message(text: res.msg, sentByUser: false))
             }
         }
     }

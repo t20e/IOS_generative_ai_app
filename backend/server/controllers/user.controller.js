@@ -36,16 +36,23 @@ export default class UserController {
 
     reg_check_if_email_exists = async (req, res, next) => {
         /*
-            when user if attempting to register this will run after user enters their email address
-            which will check if email is already registered
+            when user if attempting to register this will validate and check if the email address is already in user
         */
+
+        const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]+)?$/
+        const isValidEmail = await emailRegex.test(req.body.email)
+        console.log("IS it a valid EMAIL?==>", isValidEmail)
+        if (isValidEmail === false) {
+            res.status(422).json("Please enter a valid email address"); return
+        }
         try {
             const emailCheck = await this.userModel.find({ email: req.body.email }) //returns an array of items
             if (emailCheck.length === 0) {
-                req.body.returnData = this.buildRequestReturnData(202, "Email is not registered", { "doesEmailAlreadyExist": false })
+                console.log("Email not in use yet")
+                req.body.returnData = this.buildRequestReturnData(202, { "doesEmailAlreadyExist": false })
             } else {
                 console.log("Email already exists")
-                req.body.returnData = this.buildRequestReturnData(409, "Email is registered", { "doesEmailAlreadyExist": true })
+                req.body.returnData = this.buildRequestReturnData(409, { "doesEmailAlreadyExist": true })
             }
             next()
         } catch (err) {
@@ -63,19 +70,21 @@ export default class UserController {
         try {
             console.log("Register new User")
             const newUser = await this.userModel.create(req.body)
+            delete newUser.password
             req.body.returnData = this.buildRequestReturnData(201, newUser)
             req.hasCookie = this.signJwtToken(newUser)
             next()
         } catch (error) {
             console.log("err registering user, err:", error)
-            return res.status(500).json({ msg: "err registering user", err: error })
+            return res.status(500).json({ msg: "err registering user" })
         }
     }
 
     login = async (req, res, next) => {
         console.log(req.body)
         console.log(typeof (req.body))
-        const user = await this.userModel.findOne({ email: req.body.email })
+        // the .lean() allows me to be able to use the delete keyword to delete certain fields form the user like password before sending to frontend
+        const user = await this.userModel.findOne({ email: req.body.email }).lean() 
         // console.log('user', user)
         if (user === null) {
             console.log("User not found")
@@ -84,8 +93,13 @@ export default class UserController {
         bcrypt.compare(req.body.password, user.password)
             .then(async passwordCheck => {
                 if (passwordCheck) {
+                                    // Log user before deleting the password field
+                console.log("User before deletion:", user);
+                delete user.password
+                console.log("User after deletion:", user);
                     user.generated_imgs = await this.AWS.getManyObjectsPresignedUrl(user.generated_imgs)
                     req.body.returnData = this.buildRequestReturnData(200,  user)
+                    console.log(typeof(user))
                     req.hasCookie = this.signJwtToken(user)
                 } else {
                     req.body.returnData = this.buildRequestReturnData(401, "Unauthorized login attempt")
@@ -106,7 +120,7 @@ export default class UserController {
             returns: 
                 req.body.returnStatusCode
                 {
-                    "msg" : req.body.msg : 
+                    // issue with parsing user to struct on frontend so i dont send a msg"msg" : req.body.msg : 
                     "data" : req.body.data
                 }
         */
@@ -119,10 +133,12 @@ export default class UserController {
             }
             res
                 .status(req.body.returnData.statusCode)
-                .json({
-                    "msg": req.body.returnData.msg,
-                    "data": req.body.returnData.data
-                })
+                .json(req.body.returnData.data)
+                // .status(req.body.returnData.statusCode)
+                // .json({
+                //     "msg": req.body.returnData.msg = "hhelo",
+                //     "data": req.body.returnData.data
+                // })
         } catch (err) {
             console.log("Error returning users request, err:", err)
             res.status(500).json({ "msg": "Error returning users request" })
@@ -155,6 +171,5 @@ export default class UserController {
             return res.status(500).send("Error add image id to user")
         }
     }
-
 }
 
