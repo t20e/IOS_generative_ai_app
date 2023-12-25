@@ -9,13 +9,12 @@ import SwiftUI
 
 @main
 struct gentaApp: App {
-    //    @EnvironmentObject can be accessed anywhere in the code
-//    @EnvironmentObject var userServices : UserServices
+    @StateObject var user = User()
     
     var body: some Scene {
         WindowGroup {
             MainView()
-//                .environmentObject(userServices)
+                .environmentObject(user)
         }
     }
 }

@@ -15,7 +15,7 @@ class UserServices : ObservableObject{
     init(){    }
     
     
-    func regApiCall(regData: RegData) async throws -> (err: Bool, msg: String){
+    func regApiCall(regData: RegData) async  -> (err: Bool, msg: String, user: UserStruct?){
         print("Attempting to register user")
         
         let url = URL(string: "\(endPoint)/reg")!
@@ -23,25 +23,24 @@ class UserServices : ObservableObject{
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let encodedData = try JSONEncoder().encode(regData)
-        
         do{
+            let encodedData = try JSONEncoder().encode(regData)
             let (data, res) = try await URLSession.shared.upload(for: request, from: encodedData)
             
             if let httpRes = res as? HTTPURLResponse {
                 let statusCode = StatusCode(rawValue: httpRes.statusCode)
                 if statusCode != .created{
-                    return handleStatusCode(statusCode: statusCode!)
+                    return (true, handleStatusCode(statusCode: statusCode!), nil)
                 }
             }
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
             let user = try decoder.decode(UserStruct.self, from: data)
             print(user)
-            return (false, "Successfully registered")
+            return (false, "Successfully registered", user)
         }
         catch {
-            return (true, "An unkown error occured, please try again")
+            return (true, "An unkown error occured, please try again", nil)
         }
     }
     
@@ -49,22 +48,21 @@ class UserServices : ObservableObject{
 //        TODO MAKE CODE DRY
     }
 
-    func loginApiCall(loginData: LoginData) async throws -> (err : Bool, msg : String) {
+    func loginApiCall(loginData: LoginData) async -> (err : Bool, msg : String, user: UserStruct?) {
         print("Attempting to login in user")
         let url = URL(string: "\(endPoint)/login")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let encodedData = try JSONEncoder().encode(loginData)
-
         do{
+            let encodedData = try JSONEncoder().encode(loginData)
             let (data, res) = try await URLSession.shared.upload(for: request, from: encodedData)
 
             if let httpRes = res as? HTTPURLResponse {
                 let statusCode = StatusCode(rawValue: httpRes.statusCode)
                 if statusCode != .success{
-                    return handleStatusCode(statusCode: statusCode!)
+                    return (true, handleStatusCode(statusCode: statusCode!), nil)
                 }
             }
         //            print( String(data: data, encoding: .utf8))
@@ -72,7 +70,7 @@ class UserServices : ObservableObject{
             decoder.keyDecodingStrategy = .convertFromSnakeCase
             let user = try decoder.decode(UserStruct.self, from: data)
             print(user)
-            return (false, "Successfully signed in")
+            return (false, "Successfully signed in", user)
     //        return ["err" : false, "msg" : "Successfully signed in"]
         }
         //        catch(CustomError.unAuthorized){
@@ -88,7 +86,7 @@ class UserServices : ObservableObject{
         //            return ["err" : true, "msg" : "Your connection timed out, please try later"]
         //        }
         catch {
-            return (true, "An unkown error occured, please try again")
+            return (true, "An unkown error occured, please try again", nil)
     //        return ["err" : true, "msg" : "An unkown error occured, please try again"]
         }
     }

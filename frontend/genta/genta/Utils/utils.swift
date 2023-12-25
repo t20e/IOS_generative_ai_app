@@ -12,7 +12,7 @@ enum StatusCode : Int{
     case success = 200, created = 201, notFound = 404, serverErr = 500, unAuthorized = 401, timedOut = 408
 }
 
-func handleStatusCode( statusCode: StatusCode) -> (err : Bool, msg : String)  {
+func handleStatusCode( statusCode: StatusCode) -> String  {
     print("Handle status code errors, code: \(statusCode)")
     var msg = ""
     switch statusCode {
@@ -36,7 +36,7 @@ func handleStatusCode( statusCode: StatusCode) -> (err : Bool, msg : String)  {
             msg = "An unkown error occured, please try again!"
 //            return ["err" : true, "msg" : "An unkown error occured, please try again!"]
     }
-    return (true, msg)
+    return msg
 }
 
 

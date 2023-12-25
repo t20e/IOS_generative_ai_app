@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		522B2C392B31387D00B1D62F /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B2C382B31387D00B1D62F /* MainViewController.swift */; };
-		522B2C3F2B31411000B1D62F /* RegLoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B2C3E2B31411000B1D62F /* RegLoginController.swift */; };
 		523B4BC32B3065680063C9FE /* gentaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BC22B3065680063C9FE /* gentaApp.swift */; };
 		523B4BC52B3065680063C9FE /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BC42B3065680063C9FE /* MainView.swift */; };
 		523B4BC72B3065690063C9FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 523B4BC62B3065690063C9FE /* Assets.xcassets */; };
@@ -18,9 +17,8 @@
 		523B4BE72B307E270063C9FE /* SingleMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BE62B307E270063C9FE /* SingleMessageView.swift */; };
 		523B4BED2B3087750063C9FE /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BEC2B3087750063C9FE /* ChatView.swift */; };
 		523B4BF22B30D02D0063C9FE /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BF12B30D02D0063C9FE /* User.swift */; };
-		523B4BF42B30D38F0063C9FE /* OnBoardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BF32B30D38F0063C9FE /* OnBoardingViewController.swift */; };
 		523B4BF82B30D6840063C9FE /* HeaderIntro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BF72B30D6840063C9FE /* HeaderIntro.swift */; };
-		52A177BC2B38EFA200F888E1 /* UserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A177BB2B38EFA200F888E1 /* UserController.swift */; };
+		52A177C02B39071E00F888E1 /* OnBoardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A177BF2B39071E00F888E1 /* OnBoardingViewController.swift */; };
 		52E69F272B32CC34006CE6C6 /* utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E69F262B32CC34006CE6C6 /* utils.swift */; };
 		52E69F2D2B32E735006CE6C6 /* UserServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E69F2C2B32E735006CE6C6 /* UserServices.swift */; };
 		52E69F322B331D11006CE6C6 /* testview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E69F312B331D11006CE6C6 /* testview.swift */; };
@@ -28,7 +26,6 @@
 
 /* Begin PBXFileReference section */
 		522B2C382B31387D00B1D62F /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
-		522B2C3E2B31411000B1D62F /* RegLoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegLoginController.swift; sourceTree = "<group>"; };
 		523B4BBF2B3065680063C9FE /* genta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = genta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		523B4BC22B3065680063C9FE /* gentaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gentaApp.swift; sourceTree = "<group>"; };
 		523B4BC42B3065680063C9FE /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -40,9 +37,8 @@
 		523B4BE62B307E270063C9FE /* SingleMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleMessageView.swift; sourceTree = "<group>"; };
 		523B4BEC2B3087750063C9FE /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		523B4BF12B30D02D0063C9FE /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		523B4BF32B30D38F0063C9FE /* OnBoardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingViewController.swift; sourceTree = "<group>"; };
 		523B4BF72B30D6840063C9FE /* HeaderIntro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderIntro.swift; sourceTree = "<group>"; };
-		52A177BB2B38EFA200F888E1 /* UserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserController.swift; sourceTree = "<group>"; };
+		52A177BF2B39071E00F888E1 /* OnBoardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingViewController.swift; sourceTree = "<group>"; };
 		52E69F262B32CC34006CE6C6 /* utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = utils.swift; sourceTree = "<group>"; };
 		52E69F2C2B32E735006CE6C6 /* UserServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserServices.swift; sourceTree = "<group>"; };
 		52E69F312B331D11006CE6C6 /* testview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testview.swift; sourceTree = "<group>"; };
@@ -124,10 +120,8 @@
 		523B4BD32B3066F70063C9FE /* viewsController */ = {
 			isa = PBXGroup;
 			children = (
-				523B4BF32B30D38F0063C9FE /* OnBoardingViewController.swift */,
 				522B2C382B31387D00B1D62F /* MainViewController.swift */,
-				522B2C3E2B31411000B1D62F /* RegLoginController.swift */,
-				52A177BB2B38EFA200F888E1 /* UserController.swift */,
+				52A177BF2B39071E00F888E1 /* OnBoardingViewController.swift */,
 			);
 			path = viewsController;
 			sourceTree = "<group>";
@@ -238,16 +232,14 @@
 				52E69F272B32CC34006CE6C6 /* utils.swift in Sources */,
 				523B4BC52B3065680063C9FE /* MainView.swift in Sources */,
 				52E69F322B331D11006CE6C6 /* testview.swift in Sources */,
-				522B2C3F2B31411000B1D62F /* RegLoginController.swift in Sources */,
 				522B2C392B31387D00B1D62F /* MainViewController.swift in Sources */,
 				523B4BF82B30D6840063C9FE /* HeaderIntro.swift in Sources */,
 				523B4BED2B3087750063C9FE /* ChatView.swift in Sources */,
-				52A177BC2B38EFA200F888E1 /* UserController.swift in Sources */,
 				523B4BDA2B306DE20063C9FE /* Color.swift in Sources */,
+				52A177C02B39071E00F888E1 /* OnBoardingViewController.swift in Sources */,
 				523B4BE72B307E270063C9FE /* SingleMessageView.swift in Sources */,
 				523B4BC32B3065680063C9FE /* gentaApp.swift in Sources */,
 				523B4BF22B30D02D0063C9FE /* User.swift in Sources */,
-				523B4BF42B30D38F0063C9FE /* OnBoardingViewController.swift in Sources */,
 				523B4BD62B3067CA0063C9FE /* OnBoardingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

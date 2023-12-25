@@ -10,19 +10,19 @@ import SwiftUI
 struct MainView: View {
     var mainCon = MainViewController()
 //    @EnvironmentObject var userServices : UserServices
-
+    @EnvironmentObject var user : User
     
     var body: some View {
-//        if user.isSingedIn{
-//            Text("user is signed in")
-//        }else{
-//            VStack{
+        if user.isSingedIn{
+            Text("user is signed in, user name: \(user.user.firstName)")
+        }else{
+            VStack{
                 HeaderIntro()
                 OnBoardingView()
-//                    }
-//                .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                .background(Color.theme.backgroundColor)
-//        }
+                    }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.theme.backgroundColor)
+        }
     }
 }
 
