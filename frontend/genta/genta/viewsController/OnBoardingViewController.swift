@@ -35,7 +35,7 @@ struct RegData : Codable{
 }
 
 
-class OnBoardingViewController : ObservableObject{
+class OnBoardingViewController : UIViewController, ObservableObject{
     
     let minPasswordLength = 6
     let maxPasswordLength = 32

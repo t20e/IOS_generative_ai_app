@@ -70,13 +70,14 @@ class Server {
     }
 
     // TODO FIX ALL THE CALLSE IT SHOULD ONLY BE STATUS code and data not msg
-    buildRequestReturnData(returnStatusCode, data) {
+    buildRequestReturnData(returnStatusCode, msg, data) {
         /*
             builds the return data for user specific requests
             return: obj
         */
         return {
-            data,
+            msg : msg,
+            data : data,
             "statusCode": returnStatusCode
         }
     }

@@ -8,13 +8,15 @@
 import SwiftUI
 
 struct MainView: View {
-    var mainCon = MainViewController()
-
     @EnvironmentObject var user : User
+    var mainCon = MainViewController()
+    
     
     var body: some View {
         if user.isSingedIn{
             Text("user is signed in, user name: \(user.user.firstName)")
+            
+            Text("dashboard")
         }else{
             VStack{
                 HeaderIntro()

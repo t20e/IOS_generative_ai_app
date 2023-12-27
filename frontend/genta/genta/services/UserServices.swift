@@ -8,8 +8,14 @@
 import Foundation
 
 
+struct resReturnUserData: Codable {
+    let data: UserStruct
+    let msg: String
+}
+
+
 class UserServices : ObservableObject{
-    let endPoint = baseURL + "/api/v1/users"
+    private let endPoint = baseURL + "/api/v1/users"
     
     init(){
     }
@@ -26,18 +32,33 @@ class UserServices : ObservableObject{
             let encodedData = try JSONEncoder().encode(regData)
             let (data, res) = try await URLSession.shared.upload(for: request, from: encodedData)
             print( String(data: data, encoding: .utf8) ?? "error parsing response data")
-            
             if let httpRes = res as? HTTPURLResponse {
                 let statusCode = StatusCode(rawValue: httpRes.statusCode)
-                if statusCode != .created{
-                    return (true, handleStatusCode(statusCode: statusCode!), nil)
+                guard statusCode == .created else{
+                    throw NetworkError(statusCode!)
                 }
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                let decodedByte = try decoder.decode(resReturnUserData.self, from: data)
+                let user = decodedByte.data
+                print(user)
+                return (false, "Successfully signed in", user)
+            }else{
+                print("Error parsing JSON data at checking if email exists")
+                throw NetworkError.serverErr
             }
-            let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase
-            let user = try decoder.decode(UserStruct.self, from: data)
-            print(user)
-            return (false, "Successfully registered", user)
+        }
+        catch let err as NetworkError{
+            switch err{
+            case .conflict:
+                return(true, "Email already in use, please sign in", nil)
+            case .timedOut:
+                return (true, "Your connection timed out, Please check your internet connection!", nil )
+            case .serverErr:
+                return (true, "Suffered an internal server error, please try later", nil)
+            default:
+                return (true, "Uncaught error, please try again", nil)
+            }
         }
         catch {
             return (true, "An unkown error occured, please try again", nil)
@@ -48,6 +69,31 @@ class UserServices : ObservableObject{
         //        TODO MAKE CODE DRY
     }
     
+    private func parseCookie(httpRes : HTTPURLResponse) -> (err: Bool, token : String){
+//        parse cookie from response data
+        if let setCookieHeader = httpRes.allHeaderFields["Set-Cookie"] as? String {
+               // Parse cookies using HTTPCookie
+               let cookies = HTTPCookie.cookies(withResponseHeaderFields: ["Set-Cookie": setCookieHeader], for: httpRes.url!)
+               // Access individual cookies
+               if let userTokenCookie = cookies.first(where: { $0.name == "userToken" }) {
+                   print("Found UserToken value in response header")
+                   return (false, userTokenCookie.value)
+               } else {
+                   print("User Token Cookie not found")
+                   return (true, "")
+               }
+           } else {
+               print("Set-Cookie Header not found in the response")
+               return (true, "")
+           }
+    }
+    
+    private func saveToken(token : String) -> Bool{
+//        saves token to keychain
+        return KeyChainManager.upsert(token: token)
+    }
+    
+    //    MARK - login
     func loginApiCall(loginData: LoginData) async -> (err : Bool, msg : String, user: UserStruct?) {
         print("Attempting to login in user")
         let url = URL(string: "\(endPoint)/login")!
@@ -61,34 +107,48 @@ class UserServices : ObservableObject{
             
             if let httpRes = res as? HTTPURLResponse {
                 let statusCode = StatusCode(rawValue: httpRes.statusCode)
-                if statusCode != .success{
-                    return (true, handleStatusCode(statusCode: statusCode!), nil)
+//                print(res)
+//                print("Token",httpRes.allHeaderFields)
+                guard statusCode == .success else{
+                    throw NetworkError(statusCode!)
                 }
+                //                parse cookie
+                let foundCookie = parseCookie(httpRes: httpRes)
+                if foundCookie.err{
+                    throw NetworkError.serverErr
+                }
+                //                print("cookie here", foundCookie.token, type(of: foundCookie.token))
+                
+                //                save token
+                guard saveToken(token: foundCookie.token) else{
+                    throw NetworkError.serverErr
+                }
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                let decodedByte = try decoder.decode(resReturnUserData.self, from: data)
+                let user = decodedByte.data
+//                print(user)
+                return (false, "Successfully signed in", user)
+            }else{
+                print("Error parsing JSON data at checking if email exists")
+                throw NetworkError.serverErr
             }
-            print( String(data: data, encoding: .utf8) ?? "error parsing response data")
-
-            let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase
-            let user = try decoder.decode(UserStruct.self, from: data)
-            print(user)
-            return (false, "Successfully signed in", user)
-            //        return ["err" : false, "msg" : "Successfully signed in"]
         }
-        //        catch(CustomError.unAuthorized){
-        //            return ["err" : true, "msg" : "Incorrect email or password please try again"]
-        //        }
-        //        catch(CustomError.notFound){
-        //            return ["err" : true, "msg" : "Please try later resource is not found"]
-        //        }
-        //        catch(CustomError.serverErr){
-        //            return ["err" : true, "msg" : "Please try later, suffered internal error"]
-        //        }
-        //        catch(CustomError.timedOut){
-        //            return ["err" : true, "msg" : "Your connection timed out, please try later"]
-        //        }
+        catch let err as NetworkError{
+            switch err{
+            case .unAuthorized:
+                print("Unauthorized. User entered wrong field login.")
+                return (true, "Wrong email/password please try again!", nil)
+            case .timedOut:
+                return (true, "Your connection timed out, Please check your internet connection!", nil )
+            case .serverErr:
+                return (true, "Suffered an internal server error, please try later", nil)
+            default:
+                return (true, "Uncaught error, please try again", nil)
+            }
+        }
         catch {
             return (true, "An unkown error occured, please try again", nil)
-            //        return ["err" : true, "msg" : "An unkown error occured, please try again"]
         }
     }
     
@@ -105,7 +165,7 @@ class UserServices : ObservableObject{
             
             if let httpRes = res as? HTTPURLResponse {
                 let statusCode = StatusCode(rawValue: httpRes.statusCode)
-                if statusCode != .accepted{
+                guard statusCode == .accepted else{
                     throw NetworkError(statusCode!)
                 }
             }
@@ -131,12 +191,61 @@ class UserServices : ObservableObject{
                 case .semanticError:
                     return (true, "Please enter a valid email address")
                 default:
-                    return (true, "An unkown error occured, please try again later")
+                    return (true, "Uncaught error, please try again")
             }
         }
         catch {
             return (true, "An unkown error occured, please try again later")
         }
+    }
+    
+    
+    func logInUserFromToken(token : String) async -> (err : Bool, msg : String, user: UserStruct?) {
+        print("Attempting to log in user from token")
+        let url = URL(string: "\(endPoint)/getLoggedUser")!
+        print(url)
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue(
+            token,
+            forHTTPHeaderField: "Authorization"
+        )
+        do{
+            
+            let (data, headers) = try await URLSession.shared.data(for: request)
+            if let httpRes = headers as? HTTPURLResponse {
+                let statusCode = StatusCode(rawValue: httpRes.statusCode)
+                guard statusCode == .success else{
+                    print("return status code : \(String(describing: statusCode))")
+                    throw NetworkError(statusCode!)
+                }
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                let decodedByte = try decoder.decode(resReturnUserData.self, from: data)
+                let user = decodedByte.data
+                //                print(user)
+                return (false, "Successfully signed in", user)
+                
+            }else{
+                throw NetworkError.serverErr
+            }
+        }
+        catch let err as NetworkError{
+            switch err{
+                case .unAuthorized:
+                    print("Users token has expired.")
+                    return (true, "Your session has expired please sign in again!", nil)
+                case .timedOut:
+                    return (true, "Your connection timed out, Please check your internet connection!", nil )
+                case .serverErr:
+                    return (true, "Suffered an internal server error, please try later", nil)
+                default:
+                    return (true, "Uncaught error, please try again", nil)
+                }
+            }
+        catch {
+                return (true, "An unkown error occured, please try again", nil)
+            }
     }
     
 }

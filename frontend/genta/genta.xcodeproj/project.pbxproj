@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		521563602B3B757600B701AD /* KeyChainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5215635F2B3B757600B701AD /* KeyChainManager.swift */; };
 		522B2C392B31387D00B1D62F /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B2C382B31387D00B1D62F /* MainViewController.swift */; };
 		523B4BC32B3065680063C9FE /* gentaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BC22B3065680063C9FE /* gentaApp.swift */; };
 		523B4BC52B3065680063C9FE /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BC42B3065680063C9FE /* MainView.swift */; };
@@ -25,6 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5215635F2B3B757600B701AD /* KeyChainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainManager.swift; sourceTree = "<group>"; };
 		522B2C382B31387D00B1D62F /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		523B4BBF2B3065680063C9FE /* genta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = genta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		523B4BC22B3065680063C9FE /* gentaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gentaApp.swift; sourceTree = "<group>"; };
@@ -146,6 +148,7 @@
 			isa = PBXGroup;
 			children = (
 				52E69F262B32CC34006CE6C6 /* utils.swift */,
+				5215635F2B3B757600B701AD /* KeyChainManager.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -233,6 +236,7 @@
 				523B4BC52B3065680063C9FE /* MainView.swift in Sources */,
 				52E69F322B331D11006CE6C6 /* testview.swift in Sources */,
 				522B2C392B31387D00B1D62F /* MainViewController.swift in Sources */,
+				521563602B3B757600B701AD /* KeyChainManager.swift in Sources */,
 				523B4BF82B30D6840063C9FE /* HeaderIntro.swift in Sources */,
 				523B4BED2B3087750063C9FE /* ChatView.swift in Sources */,
 				523B4BDA2B306DE20063C9FE /* Color.swift in Sources */,

@@ -37,31 +37,3 @@ enum NetworkError: Error {
         }
     }
 }
-
-//TODO remove all this and fix it in userServices
-func handleStatusCode( statusCode: StatusCode) -> String  {
-    print("Handle status code errors, code: \(statusCode)")
-    var msg = ""
-    switch statusCode {
-        case .unAuthorized:
-            print("Unauthorized. User authentication is required.")
-            msg = "Wrong email/password please try again!"
-//            return ["err" : true, "msg" : "Wrong email/password please try again!"]
-        case .notFound:
-            print("Please retry again, not found")
-            msg = "Please try later, resource not found!"
-//            return ["err" : true, "msg" : "Please try later, resource not found!"]
-        case .serverErr:
-            print("Suffered an internal server error")
-            msg = "Please try later, suffered internal error!"
-//            return ["err" : true, "msg" : "Please try later, suffered internal error!"]
-        case .timedOut:
-            print("server timed out")
-            msg = "Your connection timed out, Please check your internet connection!"
-//            return ["err" : true, "msg" : "Your connection timed out, Please check your internet connection!"]
-        default:
-            msg = "An unkown error occured, please try again!"
-//            return ["err" : true, "msg" : "An unkown error occured, please try again!"]
-    }
-    return msg
-}

@@ -22,6 +22,7 @@ export default class UserController {
                         lastName: user.lastName,
                     },
                     this.SECRET_KEY,
+                    // TODO make expires longer
                     { expiresIn: '3h' }
                 )
         }
@@ -49,10 +50,10 @@ export default class UserController {
             const emailCheck = await this.userModel.find({ email: req.body.email }) //returns an array of items
             if (emailCheck.length === 0) {
                 console.log("Email not in use yet")
-                req.body.returnData = this.buildRequestReturnData(202, { "doesEmailAlreadyExist": false })
+                req.body.returnData = this.buildRequestReturnData(202, "Email not in use", { "doesEmailAlreadyExist": false })
             } else {
                 console.log("Email already exists")
-                req.body.returnData = this.buildRequestReturnData(409, { "doesEmailAlreadyExist": true })
+                req.body.returnData = this.buildRequestReturnData(409, "Email is already in use", { "doesEmailAlreadyExist": true })
             }
             next()
         } catch (err) {
@@ -70,9 +71,11 @@ export default class UserController {
         try {
             console.log("Register new User")
             const newUser = await this.userModel.create(req.body)
-            delete newUser.password
-            req.body.returnData = this.buildRequestReturnData(201, newUser)
-            req.hasCookie = this.signJwtToken(newUser)
+            // turn the newUser document into a plain js object
+            let user = newUser.toObject()
+            delete user.password
+            req.body.returnData = this.buildRequestReturnData(201, "Successfully registered user", user)
+            req.hasCookie = this.signJwtToken(user)
             next()
         } catch (error) {
             console.log("err registering user, err:", error)
@@ -84,7 +87,7 @@ export default class UserController {
         console.log(req.body)
         console.log(typeof (req.body))
         // the .lean() allows me to be able to use the delete keyword to delete certain fields form the user like password before sending to frontend
-        const user = await this.userModel.findOne({ email: req.body.email }).lean() 
+        const user = await this.userModel.findOne({ email: req.body.email }).lean()
         // console.log('user', user)
         if (user === null) {
             console.log("User not found")
@@ -93,16 +96,12 @@ export default class UserController {
         bcrypt.compare(req.body.password, user.password)
             .then(async passwordCheck => {
                 if (passwordCheck) {
-                                    // Log user before deleting the password field
-                console.log("User before deletion:", user);
-                delete user.password
-                console.log("User after deletion:", user);
+                    delete user.password
                     user.generated_imgs = await this.AWS.getManyObjectsPresignedUrl(user.generated_imgs)
-                    req.body.returnData = this.buildRequestReturnData(200,  user)
-                    console.log(typeof(user))
+                    req.body.returnData = this.buildRequestReturnData(200, "Successfully login user", user)
                     req.hasCookie = this.signJwtToken(user)
                 } else {
-                    req.body.returnData = this.buildRequestReturnData(401, "Unauthorized login attempt")
+                    req.body.returnData = this.buildRequestReturnData(401, "Unauthorized login attempt", "")
                 }
                 next()
             })
@@ -129,16 +128,17 @@ export default class UserController {
                 return res
                     .cookie(req.hasCookie.name, req.hasCookie.cookie, { httpOnly: true })
                     .status(req.body.returnData.statusCode)
-                    .json(req.body.returnData.data)
+                    .json({
+                        "msg": req.body.returnData.msg,
+                        "data": req.body.returnData.data
+                    })
             }
             res
                 .status(req.body.returnData.statusCode)
-                .json(req.body.returnData.data)
-                // .status(req.body.returnData.statusCode)
-                // .json({
-                //     "msg": req.body.returnData.msg = "hhelo",
-                //     "data": req.body.returnData.data
-                // })
+                .json({
+                    "msg": req.body.returnData.msg,
+                    "data": req.body.returnData.data
+                })
         } catch (err) {
             console.log("Error returning users request, err:", err)
             res.status(500).json({ "msg": "Error returning users request" })
@@ -169,6 +169,29 @@ export default class UserController {
         } catch (err) {
             console.log('Error add image id to user, ERR:', err)
             return res.status(500).send("Error add image id to user")
+        }
+    }
+
+
+    getLoggedUser = async (req, res, next) => {
+        console.log("Attempting to log user in from token...")
+        const decodedJWT = jwt.decode(req.headers.authorization, { complete: true })
+        if (decodedJWT !== null) {
+            this.userModel.findOne({ _id: decodedJWT.payload._id }).lean()
+                .then(async user => {
+                    delete user.password
+                    user.generated_imgs = await this.AWS.getManyObjectsPresignedUrl(user.generated_imgs)
+                    req.body.returnData = this.buildRequestReturnData(200, "Successfully got logged in user", user)
+                    next()
+                })
+                .catch(err => {
+                    console.log("error getting logged in user", err)
+                    req.body.returnData = this.buildRequestReturnData(500, "Internal server error please try again later", { 'err' : "serverError" })
+                })
+        } else {
+            res
+                .status(401)
+                .json({ 'notAuthenticated': 'Your token has expired' })
         }
     }
 }
