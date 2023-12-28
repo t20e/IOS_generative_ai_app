@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DashboardView: View {
-    let colors : [Color] = [.red, .blue, .purple]
+    let colors : [Color] = [.red, .pink, .purple]
     
     init() {
         UIPageControl.appearance().currentPageIndicatorTintColor = .blue
@@ -17,24 +17,22 @@ struct DashboardView: View {
     }
     
     var body: some View {
-        ScrollView {
             TabView {
                 GeneratedImagesView()
                     .background(colors[0])
-                GenerateView()
+                ImageGenerateView()
                     .background(colors[1])
                 SettingsView()
                     .background(colors[2])
             }
+            .edgesIgnoringSafeArea(.all)
+            .padding(.bottom, 20)
             .frame(
                 width: UIScreen.main.bounds.width ,
                 height: UIScreen.main.bounds.height
             )
             .tabViewStyle(.page)
             .indexViewStyle(.page(backgroundDisplayMode: .interactive))
-        }
-        .edgesIgnoringSafeArea(.all)
-        
     }
 }
 

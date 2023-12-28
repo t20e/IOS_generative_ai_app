@@ -41,7 +41,8 @@ struct OneImageView: View {
                     saveImage()
                 }, label: {
 //                    Image(systemName: "arrowshape.down.circle")
-                    Image(systemName: "arrow.down.to.line.circle.fill")
+//                    Image(systemName: "arrow.down.to.line.circle.fill")
+                    Image(systemName: "icloud.and.arrow.up.fill")
                     
                         .resizable()
                         .frame(

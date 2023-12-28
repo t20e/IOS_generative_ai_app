@@ -26,9 +26,10 @@ struct GeneratedImagesView: View {
                 Text("Generated images")
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(EdgeInsets(top: 75, leading: 25, bottom: 15, trailing: 0))
+                    .padding(EdgeInsets(top: 30, leading: 25, bottom: 20, trailing: 0))
                 ScrollView{
                     if !user.data.generatedImgs.isEmpty{
+//                    if !true{
                         
                         ForEach(Array(stride(from: 0, to: user.data.generatedImgs.count, by: 3)), id: \.self) { idx in
                             HStack{
@@ -61,14 +62,21 @@ struct GeneratedImagesView: View {
                                                     trailing: CGFloat(randomPaddingHorizontal.randomElement()!)))
                                             })
                                         }
+                                    }else{
+                                        EmptyImagesView()
                                     }
                                 }
                             }
-                            
                         }
                     }else{
-                        Text("No Images")
-                    }
+                        ForEach(0..<3){idx in
+                            HStack{
+                                ForEach(0..<3){innerIdx in
+                                    EmptyImagesView()
+                                }
+                            }
+                        }
+                   }
                 }
             }
             .sheet(isPresented: $showPopUp) {

@@ -38,6 +38,8 @@ struct UserStruct: Codable , Identifiable{
     }
 }
 
+// MARK -   TODO we can decode user data right into call so the UserStruct is redundant 
+
 @MainActor class User : ObservableObject{
     
     @Published var isSingedIn = false
@@ -105,9 +107,6 @@ struct UserStruct: Codable , Identifiable{
         /*
          get the image data from ImageServices and add that data to users generated images
          */
-//        data.generatedImgs.forEach({idx in
-//            idx.prompt = "HELOLO"
-//        })
         for idx in data.generatedImgs.indices {
             let url = data.generatedImgs[idx].presignedUrl
             let res = await ImageServices.downLoadImage(presignedUrl: url)
@@ -119,6 +118,5 @@ struct UserStruct: Codable , Identifiable{
             }
         }
     }
-    
 }
 

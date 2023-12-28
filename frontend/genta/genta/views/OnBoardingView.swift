@@ -68,7 +68,7 @@ struct OnBoardingView: View {
                     HStack (spacing: 10) {
                         if viewCont.isOnSecureField {
                             SecureField(viewCont.currFieldPlaceholder, text: $viewCont.inputFieldText)
-                                .padding(4)
+                                .padding(EdgeInsets(top: 10, leading: 15, bottom: 10, trailing: 15))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 14)
                                         .stroke(Color.theme.primColor, lineWidth: 2)
@@ -77,7 +77,7 @@ struct OnBoardingView: View {
                                 .autocorrectionDisabled()
                         } else {
                             TextField(viewCont.currFieldPlaceholder, text: $viewCont.inputFieldText)
-                                .padding(4)
+                                .padding(EdgeInsets(top: 10, leading: 15, bottom: 10, trailing: 15))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 14)
                                         .stroke(Color.theme.primColor, lineWidth: 2)
@@ -100,7 +100,8 @@ struct OnBoardingView: View {
                             }
                         }, label: {
                             Image(systemName: "arrow.up.circle")
-                            //                        MARK - make image a litter bigger
+                                .resizable()
+                                .frame(width: 25, height: 25)
                         })
                     }
                     .padding()
