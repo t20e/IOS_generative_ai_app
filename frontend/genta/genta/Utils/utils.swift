@@ -9,7 +9,7 @@ import Foundation
 
 
 enum StatusCode : Int{
-    case success = 200, created = 201, accepted = 202, notFound = 404,  unAuthorized = 401, timedOut = 408, conflict = 409, semanticError = 422, serverErr = 500
+    case success = 200, created = 201, accepted = 202, unAuthorized = 401, forbidden = 403, notFound = 404, timedOut = 408, conflict = 409, semanticError = 422, serverErr = 500
 }
 
 enum NetworkError: Error {
@@ -22,6 +22,7 @@ enum NetworkError: Error {
     case timedOut
     case conflict
     case semanticError
+    case forbidden
 
     init(_ statusCode: StatusCode) {
         switch statusCode {
@@ -34,6 +35,7 @@ enum NetworkError: Error {
             case .timedOut: self = .timedOut
             case .conflict: self = .conflict
             case .semanticError: self = .semanticError
+            case .forbidden: self = .forbidden
         }
     }
 }

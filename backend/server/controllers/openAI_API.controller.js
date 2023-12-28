@@ -17,6 +17,7 @@ class OpenAI_Controller {
             ]
         }
     }
+    
     generateImg = async (req, res, next) => {
         // user is already authenticated
         console.log("Generating image...")
@@ -34,7 +35,7 @@ class OpenAI_Controller {
             req.body.img_id = uuidv4()
             req.body.img_url = img_res.data[0].url
             if (img_res.data[0].revised_prompt) {
-                req.body.prompt = `REVISED:%j&#${img_res.data[0].revised_prompt}`
+                req.body.prompt = `REVISED###${img_res.data[0].revised_prompt}`
             }
             next()
         } catch (err) {

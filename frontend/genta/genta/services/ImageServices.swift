@@ -9,24 +9,47 @@ import Foundation
 
 class ImageServices : ObservableObject{
     
-    func downLoadImage(presignedUrl : String) async -> (err: Bool, imgData: String?){
+    static func downLoadImage(presignedUrl : String) async -> Data? {
         /*
-         downloads the image from s3 bucket using the presigned-url the data will
-         be base64 so i can store it in a struct that Codable and then will use the
-         base64 to generate the UIImage when needed for user to save and use the base64 to display the image on views
+         downloads the image from s3 bucket using the presigned-url, the data will be as data object becuase if i were to make it a UIImage object
+         than i woulndt be able to sabe it in a struct which needs to conform to codable, when user is saving it it will need to be a UIImage which we can do by
+         converting the data to UIImage and when displaying we convert from data -> UIImage() -> Image()
         */
-        guard let url = URL(string: presignedUrl) else{
-            print("Presigned url couln't be converted to URL")
-            return (true, nil)
-        }
-        var request = URLRequest(url: url)
         do{
-            let (data, headers) = try await URLSession.shared.data(for: request)
-            return (false, "")
-            print("recieved data",data)
-        }catch{
-            print("An unkown error occured when getting logged user, \(error)")
-                return (true, nil)
+            print("Attempting to downloading image from url s3")
+            guard let url = URL(string: presignedUrl) else{
+                print("Presigned url couln't be converted to URL")
+                return nil
             }
-    }
+            let request = URLRequest(url: url)
+            let (data, headers) = try await URLSession.shared.data(for: request)
+            if let httpRes = headers as? HTTPURLResponse {
+                let statusCode = StatusCode(rawValue: httpRes.statusCode)
+                guard statusCode == .success else{
+                    throw NetworkError(statusCode!)
+                }
+                return data
+            }
+            throw NetworkError.serverErr
+        }
+        catch let err as NetworkError{
+            print("Error occured when downloading image error: \(err)")
+            switch err{
+                case .forbidden:
+                    print("Users presigned url has expired")
+                    return nil
+                case .timedOut:
+                    return nil
+                case .serverErr:
+                    return nil
+                default:
+                    return nil
+            }
+        }
+        catch{
+            print("An unkown error occured when getting logged user, \(error)")
+            return nil
+            }
+    }    
+    
 }

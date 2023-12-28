@@ -9,15 +9,12 @@ import Foundation
 import SwiftUI
 import UIKit
 
-struct GeneratedImgsStruct: Codable{
+struct GeneratedImgsStruct: Codable, Hashable{
     var imgId: String
     var prompt: String
     var presignedUrl: String
-    var imageData: String? // store image as string of base64
-
-    mutating func loadUIImage() {
-        self.imageData = ""
-    }
+    var data : Data? // store image as string of base64 i coulnt just leave it a uiImage becuase uiimage doesnt conform to codable
+    
 }
 
 struct UserStruct: Codable , Identifiable{
@@ -27,7 +24,7 @@ struct UserStruct: Codable , Identifiable{
     let firstName : String
     let lastName : String
     let age : Int
-    let generatedImgs : [GeneratedImgsStruct]
+    var generatedImgs : [GeneratedImgsStruct]
     
     
     private enum CodingKeys: String, CodingKey {
@@ -48,7 +45,9 @@ struct UserStruct: Codable , Identifiable{
     
     let userService = UserServices()
     
-    @Published var data = UserStruct(id:"", email: "", firstName: "", lastName: "", age: 2, generatedImgs: [GeneratedImgsStruct(imgId: "", prompt: "", presignedUrl: "")])
+//    @Published var data:
+    @Published var data = UserStruct(id:"", email: "", firstName: "", lastName: "", age: 2, generatedImgs: [])
+
     
     private var tokenAccess = ""
     
@@ -60,6 +59,8 @@ struct UserStruct: Codable , Identifiable{
             if !res.err{
                 isSingedIn = true
                 data = res.user!
+                await addImgDataToUser()
+                return(false, "Successfully registered")
             }
             return (res.err, res.msg)
     }
@@ -71,12 +72,14 @@ struct UserStruct: Codable , Identifiable{
             if !res.err{
                 isSingedIn = true
                 data = res.user!
+                await addImgDataToUser()
+                return (false, "Successfully logged in")
             }
             return (res.err, res.msg)
     }
     
     
-    func checkToken() async{
+    func checkToken() async {
         //        when the user opens the app this will run
         let foundToken = KeyChainManager.search()
         if foundToken{
@@ -92,11 +95,30 @@ struct UserStruct: Codable , Identifiable{
             tokenAccess = token!
             isSingedIn = true
             data = res.user!
-            print("here", data.generatedImgs)
-//            print("\n\n user here", data)
+            await addImgDataToUser()
             return
         }
         isSingedIn = false
     }
+    
+    func addImgDataToUser() async{
+        /*
+         get the image data from ImageServices and add that data to users generated images
+         */
+//        data.generatedImgs.forEach({idx in
+//            idx.prompt = "HELOLO"
+//        })
+        for idx in data.generatedImgs.indices {
+            let url = data.generatedImgs[idx].presignedUrl
+            let res = await ImageServices.downLoadImage(presignedUrl: url)
+            
+            if res != nil{
+                data.generatedImgs[idx].data = res
+            }else{
+                print("Issue with getting data object from ImageServices.downloadImage")
+            }
+        }
+    }
+    
 }
 

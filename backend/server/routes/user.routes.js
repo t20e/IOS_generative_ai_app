@@ -6,3 +6,5 @@ const userRoutes = (app, userCon) => {
     app.get("/api/v1/users/getLoggedUser", userCon.getLoggedUser, userCon.lastUserRequestMiddleware)
 }
 export default userRoutes
+
+

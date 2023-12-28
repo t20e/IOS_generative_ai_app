@@ -28,9 +28,15 @@ export default class UserController {
     }
 
     authenticateUser = (req, res, next) => {
-        // TODO token comes form Authorization
-        jwt.verify(req.cookies.userToken, this.SECRET_KEY, (err, payload) => {
-            err ? (res.status(401).json({ authenticatedUser: false }), console.log("Unauthorized cookie", err)) : next();
+        jwt.verify(req.headers.authorization, this.SECRET_KEY, (err, payload) => {
+            // err ? (res.status(401).json({ authenticatedUser: false }), console.log("Unauthorized cookie", err)) : next();
+            if (err) {
+                res.status(401).json({ authenticatedUser: false })
+                console.log("Unauthorized cookie", err)    
+            }
+            const decodedJWT = jwt.decode(req.headers.authorization, { complete: true })
+            req.body.userId = decodedJWT.payload._id
+            next()
         });
     }
 
@@ -159,8 +165,7 @@ export default class UserController {
         }
         try {
             let addImg = await this.userModel.updateOne(
-                // TODO change ObjectId("657d745c84a6a15579439adf") to  user id from req.body
-                { _id: new ObjectId("657d7f8da96404ed904babda") },
+                {_id: new ObjectId(req.body.userId)},
                 { $push: { generated_imgs: obj } }
             )
             obj.presigned_url = await this.AWS.getPreSignedUrl(req.body.img_id)
@@ -174,6 +179,7 @@ export default class UserController {
 
 
     getLoggedUser = async (req, res, next) => {
+        // TODO to make code shorter i can called authicated user
         console.log("Attempting to log user in from token...")
         const decodedJWT = jwt.decode(req.headers.authorization, { complete: true })
         if (decodedJWT !== null) {

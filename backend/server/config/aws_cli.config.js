@@ -32,7 +32,7 @@ class AWS {
             Bucket: this.bucket_name,
             Key: `users_imgs/${key}.png`
         });
-        const url = await getSignedUrl(this.s3, command, { expiresIn: 10800 });
+        const url = await getSignedUrl(this.s3, command, { expiresIn: 302400 }); // 3 and a half days
         // console.log("URL: " + url);
         return url
     }

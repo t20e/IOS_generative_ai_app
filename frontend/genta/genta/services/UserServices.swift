@@ -213,14 +213,16 @@ class UserServices : ObservableObject{
             let (data, headers) = try await URLSession.shared.data(for: request)
             if let httpRes = headers as? HTTPURLResponse {
                 let statusCode = StatusCode(rawValue: httpRes.statusCode)
-                guard statusCode == .success else{
+                  guard statusCode == .success else{
                     print("return status code : \(String(describing: statusCode))")
                     throw NetworkError(statusCode!)
                 }
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
+                
+//                print( String(bytes: data, encoding: .utf8) ?? "Error printing byte to string")
+                
                 let decodedByte = try decoder.decode(resReturnUserData.self, from: data)
-//                print("decoded ", decodedByte)
                 let user = decodedByte.data
 //                print(user)
                 return (false, "Successfully signed in", user)
@@ -245,7 +247,7 @@ class UserServices : ObservableObject{
                 }
             }
         catch {
-            print("An unkown error occured when getting logged user")
+            print("An unkown error occured when getting logged user ,\(error)")
                 return (true, "An unkown error occured, please try again", nil)
             }
     }

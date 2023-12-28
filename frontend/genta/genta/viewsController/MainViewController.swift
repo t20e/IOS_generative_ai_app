@@ -10,7 +10,6 @@ import UIKit
 
 //add UIVIEWCONTROLLER
 class MainViewController: ObservableObject{
-    @Published var messages: [Message] = []
     
     init(){}
     
