@@ -6,12 +6,20 @@
 //
 
 import Foundation
-import SwiftData
+import SwiftUI
+import UIKit
 
-struct generated_imgs: Codable{
-    var imgId : String
-    var prompt : String
+struct GeneratedImgsStruct: Codable{
+    var imgId: String
+    var prompt: String
+    var presignedUrl: String
+    var imageData: String? // store image as string of base64
+
+    mutating func loadUIImage() {
+        self.imageData = ""
+    }
 }
+
 struct UserStruct: Codable , Identifiable{
 //    since the convesion for swiftui is camelcase we can convert any snakecases that theapi sends back
     let id : String
@@ -19,7 +27,7 @@ struct UserStruct: Codable , Identifiable{
     let firstName : String
     let lastName : String
     let age : Int
-    let generatedImgs : [generated_imgs]
+    let generatedImgs : [GeneratedImgsStruct]
     
     
     private enum CodingKeys: String, CodingKey {
@@ -36,22 +44,22 @@ struct UserStruct: Codable , Identifiable{
 @MainActor class User : ObservableObject{
     
     @Published var isSingedIn = false
+    @Published var tokenExpired = false
+    
     let userService = UserServices()
     
-    @Published var user = UserStruct(id:"", email: "", firstName: "", lastName: "", age: 2, generatedImgs: [generated_imgs(imgId: "", prompt: "")])
+    @Published var data = UserStruct(id:"", email: "", firstName: "", lastName: "", age: 2, generatedImgs: [GeneratedImgsStruct(imgId: "", prompt: "", presignedUrl: "")])
     
-    private var token = ""
+    private var tokenAccess = ""
     
-    init() {
-//        checkToken()
-    }
+    init() {    }
     
     func register(regData: RegData) async -> (err: Bool, msg: String){
             let res = await userService.regApiCall(regData: regData)
             
             if !res.err{
                 isSingedIn = true
-                user = res.user!
+                data = res.user!
             }
             return (res.err, res.msg)
     }
@@ -62,7 +70,7 @@ struct UserStruct: Codable , Identifiable{
             let res = await userService.loginApiCall(loginData: loginData)
             if !res.err{
                 isSingedIn = true
-                user = res.user!
+                data = res.user!
             }
             return (res.err, res.msg)
     }
@@ -70,21 +78,25 @@ struct UserStruct: Codable , Identifiable{
     
     func checkToken() async{
         //        when the user opens the app this will run
-        
-        let res = KeyChainManager.get()
-        if res.err{
-          isSingedIn = false
-//            TODO delete any tokens
-        }
-        let token = String(data: res.result! , encoding: .utf8)
-        let data = await userService.logInUserFromToken(token: token!)
-        if data.err{
-//            TODO make a overlay popup that displays this
-            print(data.msg)
+        let foundToken = KeyChainManager.search()
+        if foundToken{
+//            attempt to log in the user with the token
+            let getToken = KeyChainManager.get()
+            let token = String(data: getToken.result! , encoding: .utf8)
+            let res = await userService.logInUserFromToken(token: token!)
+            if res.err{
+                // if the token expired alert the user that their session expire and log back in
+                tokenExpired = true
+                return isSingedIn = false
+            }
+            tokenAccess = token!
+            isSingedIn = true
+            data = res.user!
+            print("here", data.generatedImgs)
+//            print("\n\n user here", data)
             return
         }
-        user = data.user!
-        isSingedIn = true
+        isSingedIn = false
     }
 }
 

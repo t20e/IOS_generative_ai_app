@@ -41,7 +41,7 @@ class UserServices : ObservableObject{
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
                 let decodedByte = try decoder.decode(resReturnUserData.self, from: data)
                 let user = decodedByte.data
-                print(user)
+//                print(user)
                 return (false, "Successfully signed in", user)
             }else{
                 print("Error parsing JSON data at checking if email exists")
@@ -203,7 +203,6 @@ class UserServices : ObservableObject{
     func logInUserFromToken(token : String) async -> (err : Bool, msg : String, user: UserStruct?) {
         print("Attempting to log in user from token")
         let url = URL(string: "\(endPoint)/getLoggedUser")!
-        print(url)
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue(
@@ -211,7 +210,6 @@ class UserServices : ObservableObject{
             forHTTPHeaderField: "Authorization"
         )
         do{
-            
             let (data, headers) = try await URLSession.shared.data(for: request)
             if let httpRes = headers as? HTTPURLResponse {
                 let statusCode = StatusCode(rawValue: httpRes.statusCode)
@@ -222,10 +220,10 @@ class UserServices : ObservableObject{
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
                 let decodedByte = try decoder.decode(resReturnUserData.self, from: data)
+//                print("decoded ", decodedByte)
                 let user = decodedByte.data
-                //                print(user)
+//                print(user)
                 return (false, "Successfully signed in", user)
-                
             }else{
                 throw NetworkError.serverErr
             }
@@ -236,14 +234,18 @@ class UserServices : ObservableObject{
                     print("Users token has expired.")
                     return (true, "Your session has expired please sign in again!", nil)
                 case .timedOut:
+                    print("Your connection timed out, Please check your internet connection!")
                     return (true, "Your connection timed out, Please check your internet connection!", nil )
                 case .serverErr:
+                    print("Suffered an internal server error, please try later")
                     return (true, "Suffered an internal server error, please try later", nil)
                 default:
+                    print("Uncaught error, please try again")
                     return (true, "Uncaught error, please try again", nil)
                 }
             }
         catch {
+            print("An unkown error occured when getting logged user")
                 return (true, "An unkown error occured, please try again", nil)
             }
     }

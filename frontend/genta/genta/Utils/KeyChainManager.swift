@@ -109,10 +109,11 @@ class KeyChainManager{
             query as CFDictionary,
             &result //should be data or nil if its successes in finding a match
             )
-        print("Retrieved data from keychain")
         if result == nil{
+            print("Getting token from keychain returned nil")
             return (true, result as? Data)
         }
+        print("Successfully retrieved token from keychain")
         return (false, result as? Data)
     }
     

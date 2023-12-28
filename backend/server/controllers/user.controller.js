@@ -22,13 +22,13 @@ export default class UserController {
                         lastName: user.lastName,
                     },
                     this.SECRET_KEY,
-                    // TODO make expires longer
-                    { expiresIn: '3h' }
+                    { expiresIn: '5d' }
                 )
         }
     }
 
     authenticateUser = (req, res, next) => {
+        // TODO token comes form Authorization
         jwt.verify(req.cookies.userToken, this.SECRET_KEY, (err, payload) => {
             err ? (res.status(401).json({ authenticatedUser: false }), console.log("Unauthorized cookie", err)) : next();
         });
@@ -179,6 +179,7 @@ export default class UserController {
         if (decodedJWT !== null) {
             this.userModel.findOne({ _id: decodedJWT.payload._id }).lean()
                 .then(async user => {
+                    console.log("User's token is good, and found user")
                     delete user.password
                     user.generated_imgs = await this.AWS.getManyObjectsPresignedUrl(user.generated_imgs)
                     req.body.returnData = this.buildRequestReturnData(200, "Successfully got logged in user", user)
@@ -189,6 +190,7 @@ export default class UserController {
                     req.body.returnData = this.buildRequestReturnData(500, "Internal server error please try again later", { 'err' : "serverError" })
                 })
         } else {
+            console.log("User token either expired or error occurred")
             res
                 .status(401)
                 .json({ 'notAuthenticated': 'Your token has expired' })

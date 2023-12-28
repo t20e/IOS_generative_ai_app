@@ -13,97 +13,110 @@ struct OnBoardingView: View {
     @EnvironmentObject var user : User
     @ObservedObject var viewCont = OnBoardingViewController()
     
+    
     var body: some View {
-        VStack{
-            ChatView(messages: viewCont.messages)
-            
-            if !viewCont.actionBtnClicked {
-                Button("Sign Up", action: {
-                    viewCont.actionBtnClicked = true
-                    viewCont.validateRegisteration(wentBack: false)
-                })
-                .frame(width: 250, height: 40)
-                .background(Color.theme.primColor)
-                .foregroundColor(Color.white)
-                .cornerRadius(20)
-
-                Button("Login", action: {
-                    viewCont.actionBtnClicked = true
-                    viewCont.validateLogin()
-                })
-                .frame(width: 250, height: 40)
-                .background(Color.theme.backgroundColor)
-                .foregroundColor(Color.white)
-                .cornerRadius(20)
-
-            } else {
-                HStack{
-                    Button(action: {
-                        viewCont.goBackward()
-                    }, label: {
-                        Text("Go back")
-                        //                        TODO add in forground colors
-                        //                            .foregroundStyle(Color.theme.primColor)
-                        Image(systemName: "arrow.uturn.up.circle")
-                        //                            .foregroundStyle(Color.theme.primColor)
+        
+        ZStack{
+            VStack{
+                ChatView(messages: viewCont.messages)
+                
+                if !viewCont.actionBtnClicked {
+                    Button("Sign Up", action: {
+                        viewCont.actionBtnClicked = true
+                        viewCont.validateRegisteration(wentBack: false)
                     })
-                    .padding(.horizontal, 15)
+                    .frame(width: 250, height: 40)
+                    .background(Color.theme.primColor)
+                    .foregroundColor(Color.white)
+                    .cornerRadius(20)
                     
-                    Spacer()
-                    
-                    Button(action: {
-                        viewCont.switchTo()
-                    }, label: {
-                        Text(viewCont.isCurrentlyReg ? "Login" : "Sign Up")
-                        //                        TODO add in forground colors
-                        //                            .foregroundStyle(Color.theme.primColor)
-                        Image(systemName: "arrow.up.arrow.down")
-                        //                            .foregroundStyle(Color.theme.primColor)
+                    Button("Login", action: {
+                        viewCont.actionBtnClicked = true
+                        viewCont.validateLogin()
                     })
-                    .padding(.horizontal, 15)
-                }
-                HStack (spacing: 10) {
-                    if viewCont.isOnSecureField {
-                        SecureField(viewCont.currFieldPlaceholder, text: $viewCont.inputFieldText)
-                            .padding(4)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .stroke(Color.theme.primColor, lineWidth: 2)
-                            )
-                            .autocapitalization(.none)
-                            .autocorrectionDisabled()
-                    } else {
-                        TextField(viewCont.currFieldPlaceholder, text: $viewCont.inputFieldText)
-                            .padding(4)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .stroke(Color.theme.primColor, lineWidth: 2)
-                            )
-                            .autocapitalization(.none) //stops the auto capitilize of words
-                            .autocorrectionDisabled()
+                    .frame(width: 250, height: 40)
+                    .background(Color.theme.backgroundColor)
+                    .foregroundColor(Color.white)
+                    .cornerRadius(20)
+                    
+                } else {
+                    HStack{
+                        Button(action: {
+                            viewCont.goBackward()
+                        }, label: {
+                            Text("Go back")
+                            //                        TODO add in forground colors
+                            //                            .foregroundStyle(Color.theme.primColor)
+                            Image(systemName: "arrow.uturn.up.circle")
+                            //                            .foregroundStyle(Color.theme.primColor)
+                        })
+                        .padding(.horizontal, 15)
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            viewCont.switchTo()
+                        }, label: {
+                            Text(viewCont.isCurrentlyReg ? "Login" : "Sign Up")
+                            //                        TODO add in forground colors
+                            //                            .foregroundStyle(Color.theme.primColor)
+                            Image(systemName: "arrow.up.arrow.down")
+                            //                            .foregroundStyle(Color.theme.primColor)
+                        })
+                        .padding(.horizontal, 15)
                     }
-                    
-                    Button(action: {
-                        if viewCont.inputFieldText.count < 2 {
-                            viewCont.messages.append(Message(text: "Please enter something.", sentByUser: false, isError: true))
-                        }else if viewCont.isCurrentlyReg{
-                            viewCont.validateRegisteration(wentBack: false)
-                            viewCont.canReg ? registerUser() : nil
-                            viewCont.canCheckIfEmailExists ? checkIfEmailExists() : nil
+                    HStack (spacing: 10) {
+                        if viewCont.isOnSecureField {
+                            SecureField(viewCont.currFieldPlaceholder, text: $viewCont.inputFieldText)
+                                .padding(4)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .stroke(Color.theme.primColor, lineWidth: 2)
+                                )
+                                .autocapitalization(.none)
+                                .autocorrectionDisabled()
+                        } else {
+                            TextField(viewCont.currFieldPlaceholder, text: $viewCont.inputFieldText)
+                                .padding(4)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .stroke(Color.theme.primColor, lineWidth: 2)
+                                )
+                                .autocapitalization(.none) //stops the auto capitilize of words
+                                .autocorrectionDisabled()
                         }
-                        else{ 
-                            viewCont.validateLogin()
-                            viewCont.canLogin ? loginUser() : nil
-                        }
-                    }, label: {
-                        Image(systemName: "arrow.up.circle")
-                        //                        MARK - make image a litter bigger
-                    })
-                }
+                        
+                        Button(action: {
+                            if viewCont.inputFieldText.count < 2 {
+                                viewCont.messages.append(Message(text: "Please enter something.", sentByUser: false, isError: true))
+                            }else if viewCont.isCurrentlyReg{
+                                viewCont.validateRegisteration(wentBack: false)
+                                viewCont.canReg ? registerUser() : nil
+                                viewCont.canCheckIfEmailExists ? checkIfEmailExists() : nil
+                            }
+                            else{
+                                viewCont.validateLogin()
+                                viewCont.canLogin ? loginUser() : nil
+                            }
+                        }, label: {
+                            Image(systemName: "arrow.up.circle")
+                            //                        MARK - make image a litter bigger
+                        })
+                    }
                     .padding()
+                }
+            }
+            .opacity(user.tokenExpired ? 0.2 : 1.0)
+//            TODO fix animation
+//            .animation(
+//                Animation.easeInOut(duration: 2)
+//            )
+            if user.tokenExpired {
+                AlertView(msg: "Your session has expired, please log back in!")               
             }
         }
     }
+    
     
     func checkIfEmailExists(){
         viewCont.messages.append(Message(text: "Checking your email.", sentByUser: false, isLoadingSign: true))
