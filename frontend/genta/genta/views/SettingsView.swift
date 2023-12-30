@@ -7,7 +7,11 @@
 
 import SwiftUI
 
+
 struct SettingsView: View {
+    @EnvironmentObject var user : User
+
+    
     var body: some View {
         VStack(alignment: .leading){
             
@@ -24,42 +28,20 @@ struct SettingsView: View {
                 .padding(.top, -5)
                 .padding(.bottom, 12)
 
-            HStack{
-                Text("Edit Profile")
-//                TODO change to tab arrow pointeing right
-                Spacer()
-                Image(systemName: "arrow.right")
-            }
-            .padding(.bottom, 12)
+            BtnSettingsView(text: "Edit Profile", whichPopUp: .editProfile)
+            
+            BtnSettingsView(text: "preferences", whichPopUp: .preferences)
 
-            HStack{
-                Text("Perferences")
-//                TODO change to tab arrow pointeing right
-                Spacer()
-                Image(systemName: "arrow.right")
-            }
-            .padding(.bottom, 12)
+            BtnSettingsView(text: "Change Password", whichPopUp: .changePassword)
 
-            HStack{
-                Text("Change Password")
-//                TODO change to tab arrow pointeing right
-                Spacer()
-                Image(systemName: "arrow.right")
-            }
-            .padding(.bottom, 12)
-
-            HStack{
-                Text("Delete Account")
-//                TODO change to tab arrow pointeing right
-                Spacer()
-                Image(systemName: "arrow.right")
-            }
-            .padding(.bottom, 12)
+            BtnSettingsView(text: "Delete Account", whichPopUp: .deleteAccount)
+            
             Spacer()
             HStack{
                 Spacer()
                 Button(action: {
                     print("loggin user out")
+                    user.logout()
                 }, label: {
                     Text("Log Out")
                 })
@@ -67,17 +49,14 @@ struct SettingsView: View {
                 .background(Color.theme.primColor)
                 .foregroundColor(Color.white)
                 .cornerRadius(20)
-                
-                
-                
                 Spacer()
             }
-            
             
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
+    
 }
 
 #Preview {

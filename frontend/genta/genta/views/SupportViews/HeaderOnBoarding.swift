@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HeaderIntro: View {
+struct HeaderOnBoarding: View {
     var body: some View {
             VStack{
                 //                MARK - add the apps image here
@@ -25,5 +25,5 @@ struct HeaderIntro: View {
 }
 
 #Preview {
-    HeaderIntro()
+    HeaderOnBoarding()
 }

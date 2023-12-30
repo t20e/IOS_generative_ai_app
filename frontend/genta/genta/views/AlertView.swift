@@ -23,7 +23,7 @@ struct AlertView: View {
                 .padding(.bottom, 15)
             Button(action: {
 //                withAnimation {
-                    user.tokenExpired = false
+//                    user.tokenExpired = false
 //                }
             }, label: {
                 Image(systemName: "x.circle.fill")

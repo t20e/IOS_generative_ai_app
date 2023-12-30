@@ -50,6 +50,7 @@ export default class UserController {
         const isValidEmail = await emailRegex.test(req.body.email)
         console.log("IS it a valid EMAIL?==>", isValidEmail)
         if (isValidEmail === false) {
+            console.log("User entered invalid email!")
             res.status(422).json("Please enter a valid email address"); return
         }
         try {
@@ -103,7 +104,9 @@ export default class UserController {
             .then(async passwordCheck => {
                 if (passwordCheck) {
                     delete user.password
-                    user.generated_imgs = await this.AWS.getManyObjectsPresignedUrl(user.generated_imgs)
+                    if (user.generatedImgs.length > 0){
+                        user.generatedImgs = await this.AWS.getManyObjectsPresignedUrl(user.generatedImgs)
+                    }
                     req.body.returnData = this.buildRequestReturnData(200, "Successfully login user", user)
                     req.hasCookie = this.signJwtToken(user)
                 } else {
@@ -166,7 +169,7 @@ export default class UserController {
         try {
             let addImg = await this.userModel.updateOne(
                 {_id: new ObjectId(req.body.userId)},
-                { $push: { generated_imgs: obj } }
+                { $push: { generatedImgs: obj } }
             )
             obj.presigned_url = await this.AWS.getPreSignedUrl(req.body.img_id)
             const returnData = this.buildRequestReturnData(201, obj)
@@ -179,7 +182,6 @@ export default class UserController {
 
 
     getLoggedUser = async (req, res, next) => {
-        // TODO to make code shorter i can called authicated user
         console.log("Attempting to log user in from token...")
         const decodedJWT = jwt.decode(req.headers.authorization, { complete: true })
         if (decodedJWT !== null) {
@@ -187,7 +189,9 @@ export default class UserController {
                 .then(async user => {
                     console.log("User's token is good, and found user")
                     delete user.password
-                    user.generated_imgs = await this.AWS.getManyObjectsPresignedUrl(user.generated_imgs)
+                    if (user.generatedImgs.length > 0){
+                        user.generatedImgs = await this.AWS.getManyObjectsPresignedUrl(user.generatedImgs)
+                    }
                     req.body.returnData = this.buildRequestReturnData(200, "Successfully got logged in user", user)
                     next()
                 })

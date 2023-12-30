@@ -11,6 +11,7 @@ class KeyChainManager{
         case notFound
         case errorCreatingToken
         case updateError
+        case delete
     }
     
     
@@ -25,23 +26,23 @@ class KeyChainManager{
         //        returns bool true if successful false if not succesfull
         print("Attempting to upsert token in Keychains")
         do{
-        /*
-         if the token doens't exist it will create it if it does exist it will update it
-         */
-        let tokenFound = search()
-        if tokenFound{// update
-            print("Token found updating it...")
-            if update(token: token){
-                return true
+            /*
+             if the token doens't exist it will create it if it does exist it will update it
+             */
+            let tokenFound = search()
+            if tokenFound{// update
+                print("Token found updating it...")
+                if update(token: token){
+                    return true
+                }
+                throw KeyChainError.updateError
+            }else{//create token
+                print("Token not found creating it...")
+                if save(token: token){
+                    return true
+                }
+                throw KeyChainError.errorCreatingToken
             }
-            throw KeyChainError.updateError
-        }else{//create token
-            print("Token not found creating it...")
-            if save(token: token){
-                return true
-            }
-            throw KeyChainError.errorCreatingToken
-        }
         }
         catch let err as KeyChainError{
             print("Err upserting token err:", err)
@@ -58,7 +59,8 @@ class KeyChainManager{
             return false
         }
     }
-  
+    
+    
     static func save(
         token : String
     )-> Bool{
@@ -68,10 +70,11 @@ class KeyChainManager{
             let query : [String : Any] = [
                 kSecClass as String: kSecClassGenericPassword,
                 kSecAttrService as String: service as AnyObject,
-//                kSecAttrServer : CFString server as CFString , error
+                //                kSecAttrServer : CFString server as CFString , error
                 kSecAttrAccount as String: account as AnyObject,
                 kSecValueData as String: token.data(using: .utf8) ?? Data() as AnyObject,
             ]
+            
             let status = SecItemAdd(query as CFDictionary, nil)
             
             guard status != errSecDuplicateItem else {
@@ -108,7 +111,7 @@ class KeyChainManager{
         SecItemCopyMatching(
             query as CFDictionary,
             &result //should be data or nil if its successes in finding a match
-            )
+        )
         if result == nil{
             print("Getting token from keychain returned nil")
             return (true, result as? Data)
@@ -131,38 +134,56 @@ class KeyChainManager{
         SecItemCopyMatching(
             query as CFDictionary,
             &result //should be data or nil if its successes in finding a match
-            )
+        )
         if result == nil{
             print("Token not in keychains")
             return false
         }
         print("Found token")
         return true
-//        return result as? Data
+        //        return result as? Data
     }
     
     
     static func update(token: String) -> Bool{
-//        returns bool true if successful false if not succesfull
+        //        returns bool true if successful false if not succesfull
         print("Attempting to update token")
         let query : [String : Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service as AnyObject,
-//                kSecAttrServer : CFString server as CFString , error
+            //                kSecAttrServer : CFString server as CFString , error
             kSecAttrAccount as String: account as AnyObject,
         ]
-//        let status = SecItemAdd(query as CFDictionary, nil)
-//        let status = SecItemUpdate(query as CFDictionary,)
         let status = SecItemUpdate(
             query as CFDictionary,
-           [ kSecValueData as String: token.data(using: .utf8) ?? Data() ] as CFDictionary
+            [ kSecValueData as String: token.data(using: .utf8) ?? Data() ] as CFDictionary
         )
         print("status: ",status)
         guard status == errSecSuccess else{
-//            any errors
+            //            any errors
             return false
         }
         print("Updated token in keychains")
         return true
+    }
+    
+    static func delete() ->Bool{
+        //        returns bool if successful or not
+        print("Attempting to delete token from keychains")
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account
+        ]
+        
+        let status = SecItemDelete(query as CFDictionary)
+        print("Status from deleting token", status)
+        if status == errSecSuccess {
+            print("Password deleted successfully.")
+            return true
+        } else {
+            print("Error deleting password from Keychain. Status: \(status)")
+            return false
+        }
     }
 }

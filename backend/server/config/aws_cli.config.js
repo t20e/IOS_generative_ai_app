@@ -44,12 +44,17 @@ class AWS {
             returns:
                 obj: with presigned url for each image
         */
-        await Promise.all(generatedImgs.map(async (e) => {
-            e["presigned_url"] = await this.getPreSignedUrl(e["img_id"]);
-        }));
-        // console.log(req.body.generatedImgs)
-        // res.json(req.body.generatedImgs)
-        return generatedImgs
+       try {
+            await Promise.all(generatedImgs.map(async (e) => {
+                e["presigned_url"] = await this.getPreSignedUrl(e["img_id"]);
+            }));
+            // console.log(req.body.generatedImgs)
+            // res.json(req.body.generatedImgs)
+            return generatedImgs
+        } catch (error) {
+            print("Error get many objects for user: " + error.message)
+            return []
+        }
     }
 
     downloadImgFromUrl = async (req, res, next) => {

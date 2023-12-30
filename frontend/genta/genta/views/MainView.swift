@@ -14,10 +14,11 @@ struct MainView: View {
     
     var body: some View {
         if user.isSingedIn{
+//        if !true{
             DashboardView()
         }else{
             VStack{
-                HeaderIntro()
+                HeaderOnBoarding()
                 OnBoardingView()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

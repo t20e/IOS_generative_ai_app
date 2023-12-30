@@ -9,21 +9,30 @@ import SwiftUI
 
 
 struct OnBoardingView: View {
-//    @EnvironmentObject var userServices : UserServices
     @EnvironmentObject var user : User
-    @ObservedObject var viewCont = OnBoardingViewController()
+    @ObservedObject var viewCont = LoginRegController()
+    @State var isOnLogin = false
+    @State var showRegLogin = false
     
+    @State var messages : [Message] = [
+        Message(text: "Prompt?", sentByUser: false),
+        Message(text: "A lion walking on water", sentByUser: true), //TODO ADD IMAGE AND PROMPT
+        Message(text: "", sentByUser: false, isImg: true, image: Image("test_img"))
+    ]
     
+    @State var textInput = ""
+
     var body: some View {
         
         ZStack{
             VStack{
-                ChatView(messages: viewCont.messages)
+                ChatView(messages: messages)
                 
-                if !viewCont.actionBtnClicked {
+                if !showRegLogin{
                     Button("Sign Up", action: {
-                        viewCont.actionBtnClicked = true
-                        viewCont.validateRegisteration(wentBack: false)
+                        //                        viewCont.validateRegisteration(wentBack: false)
+                        showRegLogin = true
+                        messages.append(Message(text: "Enter your email.", sentByUser: false))
                     })
                     .frame(width: 250, height: 40)
                     .background(Color.theme.primColor)
@@ -31,8 +40,10 @@ struct OnBoardingView: View {
                     .cornerRadius(20)
                     
                     Button("Login", action: {
-                        viewCont.actionBtnClicked = true
-                        viewCont.validateLogin()
+                        //                        viewCont.validateLogin()
+                        showRegLogin = true
+                        isOnLogin = true
+                        messages.append(Message(text: "Enter your email.", sentByUser: false))
                     })
                     .frame(width: 250, height: 40)
                     .background(Color.theme.backgroundColor)
@@ -42,7 +53,7 @@ struct OnBoardingView: View {
                 } else {
                     HStack{
                         Button(action: {
-                            viewCont.goBackward()
+                            goBack()
                         }, label: {
                             Text("Go back")
                             //                        TODO add in forground colors
@@ -55,9 +66,10 @@ struct OnBoardingView: View {
                         Spacer()
                         
                         Button(action: {
-                            viewCont.switchTo()
+                            switchProcess()
+                            isOnLogin = !isOnLogin
                         }, label: {
-                            Text(viewCont.isCurrentlyReg ? "Login" : "Sign Up")
+                            Text(isOnLogin ? "Sign Up" : "Login")
                             //                        TODO add in forground colors
                             //                            .foregroundStyle(Color.theme.primColor)
                             Image(systemName: "arrow.up.arrow.down")
@@ -66,105 +78,132 @@ struct OnBoardingView: View {
                         .padding(.horizontal, 15)
                     }
                     HStack (spacing: 10) {
-                        if viewCont.isOnSecureField {
-                            SecureField(viewCont.currFieldPlaceholder, text: $viewCont.inputFieldText)
-                                .padding(EdgeInsets(top: 10, leading: 15, bottom: 10, trailing: 15))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 14)
-                                        .stroke(Color.theme.primColor, lineWidth: 2)
-                                )
-                                .autocapitalization(.none)
-                                .autocorrectionDisabled()
-                        } else {
-                            TextField(viewCont.currFieldPlaceholder, text: $viewCont.inputFieldText)
-                                .padding(EdgeInsets(top: 10, leading: 15, bottom: 10, trailing: 15))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 14)
-                                        .stroke(Color.theme.primColor, lineWidth: 2)
-                                )
-                                .autocapitalization(.none) //stops the auto capitilize of words
-                                .autocorrectionDisabled()
-                        }
-                        
+                        TextField(viewCont.placeholder, text: $textInput)
+                            .padding(EdgeInsets(top: 10, leading: 15, bottom: 10, trailing: 15))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 14)
+                                    .stroke(Color.theme.primColor, lineWidth: 2)
+                            )
+                            .autocapitalization(.none) //stops the auto capitilize of words
+                            .autocorrectionDisabled()
                         Button(action: {
-                            if viewCont.inputFieldText.count < 2 {
-                                viewCont.messages.append(Message(text: "Please enter something.", sentByUser: false, isError: true))
-                            }else if viewCont.isCurrentlyReg{
-                                viewCont.validateRegisteration(wentBack: false)
-                                viewCont.canReg ? registerUser() : nil
-                                viewCont.canCheckIfEmailExists ? checkIfEmailExists() : nil
-                            }
-                            else{
-                                viewCont.validateLogin()
-                                viewCont.canLogin ? loginUser() : nil
+                            if textInput.count < 2 {
+                                messages.append(Message(text: "Please enter something.", sentByUser: false, isError: true))
+                            } else {
+                                forward_propagate()
                             }
                         }, label: {
                             Image(systemName: "arrow.up.circle")
                                 .resizable()
                                 .frame(width: 25, height: 25)
                         })
+                        
                     }
                     .padding()
                 }
             }
-            .opacity(user.tokenExpired ? 0.2 : 1.0)
-//            TODO fix animation
-//            .animation(
-//                Animation.easeInOut(duration: 2)
-//            )
-            if user.tokenExpired {
-                AlertView(msg: "Your session has expired, please log back in!")               
-            }
         }
     }
     
-    
-    func checkIfEmailExists(){
-        viewCont.messages.append(Message(text: "Checking your email.", sentByUser: false, isLoadingSign: true))
-
-        Task{ @MainActor in
-            let res = try await user.userService.checkIfEmailInDbApiCall(email: viewCont.inputFieldText)
-            if res.err{
-                viewCont.messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
-            }else{
-                viewCont.regData.email = viewCont.inputFieldText
-                viewCont.currValidatingReg = .validatePassword
-                viewCont.currFieldPlaceholder = "password"
-                viewCont.inputFieldText = ""
-                viewCont.isOnSecureField = true
-                viewCont.messages.append(Message(text: "Please enter a password.", sentByUser: false))
-                viewCont.canCheckIfEmailExists = false
+    func forward_propagate(){
+        if viewCont.regProcess == .validatePassword || viewCont.regProcess == .validateConfirmPassword || viewCont.loginProcess == .validatePassword{
+            messages.append(Message(text: String(repeating: "*", count: textInput.count), sentByUser: true))
+        }else{
+            messages.append(Message(text: textInput, sentByUser: true))
+        }
+        
+        if isOnLogin{
+            if viewCont.loginProcess == .validatePassword{
+                messages.append(Message(text: "Logging in", sentByUser: false))
+                viewCont.loginData.password = textInput
+                return login()
+            }
+            let res = viewCont.validateLogin(text: textInput)
+            messages.append(res.msg)
+        } else {
+            if viewCont.regProcess == .validateEmail {
+                return checkIfEmailExists()
+            } else if viewCont.regProcess == .validateAge{
+                return registerUser()
+            } else{
+                let res = viewCont.validateReg(text: textInput)
+                messages.append(res.msg)
             }
         }
+        textInput = ""
     }
-    
+        
     func registerUser(){
+        guard let age = Int(textInput) else {
+            return messages.append(Message(text: "Please enter a validate age", sentByUser: false, isError: true))
+        }
+        if age <= 13{
+            return messages.append(Message(text: "Sorry you need to be 13 or older", sentByUser: false, isError: true))
+        }
+        messages.append(Message(text: "Registering...", sentByUser: false, isLoadingSign: true))
+        viewCont.regData.age = age
         Task{ @MainActor in
             let res = await user.register(regData: viewCont.regData)
             if res.err{
-                viewCont.canReg = false
-                viewCont.currValidatingReg = .startProcess
-                viewCont.validateRegisteration(wentBack: false)
-                viewCont.messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
+                messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
             }else{
-                viewCont.messages.append(Message(text: res.msg, sentByUser: false))
+                messages.append(Message(text: res.msg, sentByUser: false))
+                textInput = ""
             }
         }
     }
     
-    func loginUser(){
+
+    func checkIfEmailExists(){
+        messages.append(Message(text: "Checking your email.", sentByUser: false, isLoadingSign: true))
+
         Task{ @MainActor in
-            let res = await user.login(loginData: viewCont.loginData)
+            let res = await user.userService.checkIfEmailInDbApiCall(email: textInput)
             if res.err{
-                viewCont.canLogin = false
-                viewCont.currValidatingLogin = .startprocess
-                viewCont.validateLogin()
-                viewCont.messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
+                messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
+                return
             }else{
-                viewCont.messages.append(Message(text: res.msg, sentByUser: false))
+                viewCont.regData.email = textInput
+                viewCont.regProcess = .validatePassword
+                viewCont.placeholder = "password"
+                textInput = ""
+                messages.append(Message(text: "Please enter a password.", sentByUser: false))
             }
         }
     }
+
+    func login(){
+        Task{ @MainActor in
+            let res = await user.login(loginData: viewCont.loginData)
+            if res.err{
+                messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
+                return
+            }
+            messages.append(Message(text: res.msg, sentByUser: false))
+        }
+    }
+    
+    
+    func goBack(){
+        if isOnLogin{
+            if viewCont.loginProcess == .validatePassword  {
+                viewCont.loginProcess = .validateEmail
+                viewCont.placeholder = "email"
+                messages.append(Message(text: "Enter your email.", sentByUser: false))
+            }else{return} //so it doesnt erase the textInput when still on email
+        }else{
+            let resMsg = viewCont.regGoBackward()
+            messages.append(resMsg)
+        }
+        textInput = ""
+    }
+    
+    func switchProcess(){
+        let resMsg = viewCont.switchTo(isOnLogin: isOnLogin)
+        messages.append(resMsg)
+        textInput = ""
+    }
+    
 }
 
 #Preview {

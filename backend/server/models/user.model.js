@@ -31,7 +31,7 @@ const UserSchema = new Mongoose.Schema({
         // min: [13, 'you need to be older than 12'],
         // max: [120, 'age cant be more than 120']
     },
-    generated_imgs: [
+    generatedImgs: [
         /*
             {
                 img_id: UUID, #key used to get presigned url for user to be able to access the image

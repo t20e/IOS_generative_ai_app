@@ -37,6 +37,17 @@ class UserServices : ObservableObject{
                 guard statusCode == .created else{
                     throw NetworkError(statusCode!)
                 }
+    
+                //                parse cookie
+                let foundCookie = parseCookie(httpRes: httpRes)
+                if foundCookie.err{
+                    throw NetworkError.serverErr
+                }
+                //                print("cookie here", foundCookie.token, type(of: foundCookie.token))
+                //                save token
+                guard saveToken(token: foundCookie.token) else{
+                    throw NetworkError.serverErr
+                }
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
                 let decodedByte = try decoder.decode(resReturnUserData.self, from: data)
@@ -61,6 +72,7 @@ class UserServices : ObservableObject{
             }
         }
         catch {
+            print("An unkown error occured when registering")
             return (true, "An unkown error occured, please try again", nil)
         }
     }
@@ -152,7 +164,7 @@ class UserServices : ObservableObject{
         }
     }
     
-    func checkIfEmailInDbApiCall(email : String) async throws -> (err : Bool, msg : String){
+    func checkIfEmailInDbApiCall(email : String) async -> (err : Bool, msg : String){
         print("Checking if email is already in use")
         let url = URL(string: "\(endPoint)/checkIfEmailExists")!
         var request = URLRequest(url: url)
@@ -187,7 +199,7 @@ class UserServices : ObservableObject{
                 case .timedOut:
                     return (true, "Your connection timed out, Please check your internet connection!" )
                 case .conflict:
-                    return (true, "Email already in use, please sign in")
+                    return (true, "Email already in use, sign in!")
                 case .semanticError:
                     return (true, "Please enter a valid email address")
                 default:

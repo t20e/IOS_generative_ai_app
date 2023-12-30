@@ -14,6 +14,7 @@ struct GeneratedImagesView: View {
     @State var currUiImage : UIImage?
     @State var currPrompt = ""
     
+    
     private var randomPaddingHorizontal : [Int] = [15, 20, 10]
     private var randomPaddingVertical : [Int] = [5, 25, 10]
     private var randomImgWidth : [Int] = [75, 85, 95]
@@ -22,11 +23,24 @@ struct GeneratedImagesView: View {
     var body: some View {
         ZStack{
             VStack {
-                
-                Text("Generated images")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(EdgeInsets(top: 30, leading: 25, bottom: 20, trailing: 0))
+                HStack{
+                    Spacer()
+                    Text("Hey \(user.data.firstName.capitalized)")
+                        .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
+                        .font(.title3)
+                        .background(.white)
+                        .cornerRadius(20)
+//                        .padding(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 25))
+                        .padding(.trailing, 25)
+                }
+                HStack{
+                    Text("Generated images")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 35)
+//                        .padding(EdgeInsets(top: 0, leading: 35, bottom: 5, trailing: 0))
+                }
+
                 ScrollView{
                     if !user.data.generatedImgs.isEmpty{
 //                    if !true{

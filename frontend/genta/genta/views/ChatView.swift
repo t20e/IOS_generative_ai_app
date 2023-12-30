@@ -45,6 +45,7 @@ struct ChatView: View {
                                 .padding([.top, .bottom, .horizontal], 10)
                         }
                     }
+                    .padding(.bottom, 15)
                     .onChange(of: messages) {
                     DispatchQueue.main.async{
                         withAnimation {
@@ -52,8 +53,9 @@ struct ChatView: View {
                         }
                     }
                 }
-                }
+            }
         }
+            .cornerRadius(20)
     }
 }
 

@@ -28,8 +28,7 @@ struct UserStruct: Codable , Identifiable{
     
     
     private enum CodingKeys: String, CodingKey {
-        case id = "_id" //turn the id from mongoDB into a id so struct can be identifiable
-//        everything else gets converted from first_name to firstName becuase of     decoder.keyDecodingStrategy = .convertFromSnakeCase just the _id wasnt working with that
+        case id = "_id" //turn the id from mongoDB into a id so struct can be identifiable everything else gets converted from first_name to firstName becuase of     decoder.keyDecodingStrategy = .convertFromSnakeCase just the _id wasnt working with that
         case email
         case firstName
         case lastName
@@ -38,46 +37,41 @@ struct UserStruct: Codable , Identifiable{
     }
 }
 
-// MARK -   TODO we can decode user data right into call so the UserStruct is redundant 
-
+// I tried to make it more DRY but decoding incoming user data into a class but than the class wouldnt conform to codable
 @MainActor class User : ObservableObject{
     
     @Published var isSingedIn = false
-    @Published var tokenExpired = false
+    //    @Published var tokenExpired = false
     
     let userService = UserServices()
     
-//    @Published var data:
-    @Published var data = UserStruct(id:"", email: "", firstName: "", lastName: "", age: 2, generatedImgs: [])
-
+    @Published var data = UserStruct(id:"", email: "", firstName: "", lastName: "", age: 0, generatedImgs: [])
     
     private var tokenAccess = ""
     
     init() {    }
     
     func register(regData: RegData) async -> (err: Bool, msg: String){
-            let res = await userService.regApiCall(regData: regData)
-            
-            if !res.err{
-                isSingedIn = true
-                data = res.user!
-                await addImgDataToUser()
-                return(false, "Successfully registered")
-            }
-            return (res.err, res.msg)
+        let res = await userService.regApiCall(regData: regData)
+        
+        if !res.err{
+            isSingedIn = true
+            data = res.user!
+            await addImgDataToUser()
+            return(false, "Successfully registered")
+        }
+        return (res.err, res.msg)
     }
     
     func login(loginData: LoginData) async -> (err: Bool, msg: String){
-        //            ATTEMPT LOGIN everything passed
-            //            let res = await login()
-            let res = await userService.loginApiCall(loginData: loginData)
-            if !res.err{
-                isSingedIn = true
-                data = res.user!
-                await addImgDataToUser()
-                return (false, "Successfully logged in")
-            }
-            return (res.err, res.msg)
+        let res = await userService.loginApiCall(loginData: loginData)
+        if !res.err{
+            isSingedIn = true
+            data = res.user!
+            await addImgDataToUser()
+            return (false, "Successfully logged in")
+        }
+        return (res.err, res.msg)
     }
     
     
@@ -85,18 +79,19 @@ struct UserStruct: Codable , Identifiable{
         //        when the user opens the app this will run
         let foundToken = KeyChainManager.search()
         if foundToken{
-//            attempt to log in the user with the token
+            //            attempt to log in the user with the token
             let getToken = KeyChainManager.get()
             let token = String(data: getToken.result! , encoding: .utf8)
             let res = await userService.logInUserFromToken(token: token!)
             if res.err{
                 // if the token expired alert the user that their session expire and log back in
-                tokenExpired = true
+                //                tokenExpired = true
                 return isSingedIn = false
             }
             tokenAccess = token!
             isSingedIn = true
             data = res.user!
+            print(data)
             await addImgDataToUser()
             return
         }
@@ -117,6 +112,15 @@ struct UserStruct: Codable , Identifiable{
                 print("Issue with getting data object from ImageServices.downloadImage")
             }
         }
+    }
+    
+    func logout(){
+        let isSuccess = KeyChainManager.delete()
+        if isSuccess{
+            isSingedIn = false
+//            TODO delete all user info
+        }
+//        alert user something went wrong
     }
 }
 
