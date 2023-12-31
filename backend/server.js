@@ -9,7 +9,7 @@ import userRoutes from './server/routes/user.routes.js'
 import UserController from './server/controllers/user.controller.js'
 import imgRoutes from './server/routes/img.routes.js'
 import OpenAI_Controller from "./server/controllers/openAI_API.controller.js"
-import AWS from './server/config/aws_cli.config.js';
+import AWS from "./server/controllers/aws_cli.controller.js"
 
 dotenv.config();
 
@@ -93,4 +93,6 @@ class Server {
 const server = new Server();
 
 server.start()
+
+
 

@@ -14,7 +14,6 @@ struct GeneratedImgsStruct: Codable, Hashable{
     var prompt: String
     var presignedUrl: String
     var data : Data? // store image as string of base64 i coulnt just leave it a uiImage becuase uiimage doesnt conform to codable
-    
 }
 
 struct UserStruct: Codable , Identifiable{
@@ -44,6 +43,7 @@ struct UserStruct: Codable , Identifiable{
     //    @Published var tokenExpired = false
     
     let userService = UserServices()
+    let imageServices = ImageServices()
     
     @Published var data = UserStruct(id:"", email: "", firstName: "", lastName: "", age: 0, generatedImgs: [])
     
@@ -57,7 +57,11 @@ struct UserStruct: Codable , Identifiable{
         if !res.err{
             isSingedIn = true
             data = res.user!
-            await addImgDataToUser()
+            let getToken = KeyChainManager.get()
+            if getToken.err{
+                return(true, "Something went wrong with the server")
+            }
+            tokenAccess = String(data: getToken.result!, encoding: .utf8)!
             return(false, "Successfully registered")
         }
         return (res.err, res.msg)
@@ -68,7 +72,13 @@ struct UserStruct: Codable , Identifiable{
         if !res.err{
             isSingedIn = true
             data = res.user!
-            await addImgDataToUser()
+            let getToken = KeyChainManager.get()
+            if getToken.err{
+                return(true, "Something went wrong with the server")
+            }
+            tokenAccess = String(data: getToken.result!, encoding: .utf8)!
+            
+            await addManyImages()
             return (false, "Successfully logged in")
         }
         return (res.err, res.msg)
@@ -91,27 +101,45 @@ struct UserStruct: Codable , Identifiable{
             tokenAccess = token!
             isSingedIn = true
             data = res.user!
-            print(data)
-            await addImgDataToUser()
+//            print(data)
+            await addManyImages()
             return
         }
         isSingedIn = false
     }
     
-    func addImgDataToUser() async{
+    func addManyImages() async{
         /*
-         get the image data from ImageServices and add that data to users generated images
+         gets the image data from ImageServices and add that data to users generated images
+         
+         gets all the user's images data from the generatedImages array and foreach image it will call downloadImage and set
+         the data field to the downloaded image as a Data obj
          */
         for idx in data.generatedImgs.indices {
-            let url = data.generatedImgs[idx].presignedUrl
-            let res = await ImageServices.downLoadImage(presignedUrl: url)
-            
-            if res != nil{
-                data.generatedImgs[idx].data = res
-            }else{
-                print("Issue with getting data object from ImageServices.downloadImage")
-            }
+            await addOneImage(idx: idx)
         }
+    }
+    
+    
+    func addOneImage(idx : Int) async{
+        /*
+         this will add the missing data field form generatedImgs and using the presignedUrl it will fill that data
+         */
+        let url = data.generatedImgs[idx].presignedUrl
+        let res = await imageServices.downLoadImage(presignedUrl: url)
+        
+        if res != nil{
+            data.generatedImgs[idx].data = res
+        }else{
+//            TODO do something cuz error
+            print("Issue with getting data object from ImageServices.downloadImage")
+        }
+        
+        
+    }
+    
+    func getAccessToken() -> String{
+        return tokenAccess
     }
     
     func logout(){

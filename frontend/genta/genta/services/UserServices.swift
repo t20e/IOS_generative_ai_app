@@ -216,6 +216,7 @@ class UserServices : ObservableObject{
         print("Attempting to log in user from token")
         let url = URL(string: "\(endPoint)/getLoggedUser")!
         var request = URLRequest(url: url)
+//        TODO MAYBE CHANGE TO POST
         request.httpMethod = "GET"
         request.setValue(
             token,
@@ -226,7 +227,7 @@ class UserServices : ObservableObject{
             if let httpRes = headers as? HTTPURLResponse {
                 let statusCode = StatusCode(rawValue: httpRes.statusCode)
                   guard statusCode == .success else{
-                    print("return status code : \(String(describing: statusCode))")
+                    print("return error status code : \(String(describing: statusCode))")
                     throw NetworkError(statusCode!)
                 }
                 let decoder = JSONDecoder()

@@ -18,9 +18,9 @@ struct DashboardView: View {
     
     var body: some View {
             TabView {
-                GeneratedImagesView()
+                AllGeneratedImgsView()
                     .background(colors[0])
-                ImageGenerateView()
+                GenerateImgView()
                     .background(colors[1])
                 SettingsView()
                     .background(colors[2])

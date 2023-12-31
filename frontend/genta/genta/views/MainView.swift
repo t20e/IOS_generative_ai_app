@@ -18,7 +18,7 @@ struct MainView: View {
             DashboardView()
         }else{
             VStack{
-                HeaderOnBoarding()
+                HeaderOnBoardingView()
                 OnBoardingView()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

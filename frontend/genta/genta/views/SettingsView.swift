@@ -31,10 +31,12 @@ struct SettingsView: View {
             BtnSettingsView(text: "Edit Profile", whichPopUp: .editProfile)
             
             BtnSettingsView(text: "preferences", whichPopUp: .preferences)
-
-            BtnSettingsView(text: "Change Password", whichPopUp: .changePassword)
+            //            TODO how to change password
+//            BtnSettingsView(text: "Change Password", whichPopUp: .changePassword)
 
             BtnSettingsView(text: "Delete Account", whichPopUp: .deleteAccount)
+            
+            BtnSettingsView(text: "Help", whichPopUp: .helpTab)
             
             Spacer()
             HStack{

@@ -87,6 +87,7 @@ struct OnBoardingView: View {
                             .autocapitalization(.none) //stops the auto capitilize of words
                             .autocorrectionDisabled()
                         Button(action: {
+//                            TODO make buttons into a loading sign when it waiting
                             if textInput.count < 2 {
                                 messages.append(Message(text: "Please enter something.", sentByUser: false, isError: true))
                             } else {
@@ -167,7 +168,7 @@ struct OnBoardingView: View {
                 viewCont.regProcess = .validatePassword
                 viewCont.placeholder = "password"
                 textInput = ""
-                messages.append(Message(text: "Please enter a password.", sentByUser: false))
+                messages.append(Message(text: "Enter a password.", sentByUser: false))
             }
         }
     }

@@ -13,16 +13,7 @@ enum StatusCode : Int{
 }
 
 enum NetworkError: Error {
-    case success
-    case created
-    case accepted
-    case notFound
-    case serverErr
-    case unAuthorized
-    case timedOut
-    case conflict
-    case semanticError
-    case forbidden
+    case success, created, accepted, notFound, serverErr, unAuthorized, timedOut, conflict, semanticError, forbidden
 
     init(_ statusCode: StatusCode) {
         switch statusCode {

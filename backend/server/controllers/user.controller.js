@@ -154,7 +154,7 @@ export default class UserController {
         }
     }
 
-    addImgKeyToUser = async (req, res) => {
+    addImgKeyToUser = async (req, res, next) => {
         /*
             parameters:
                 need img_id, prompt in req.body
@@ -172,8 +172,9 @@ export default class UserController {
                 { $push: { generatedImgs: obj } }
             )
             obj.presigned_url = await this.AWS.getPreSignedUrl(req.body.img_id)
-            const returnData = this.buildRequestReturnData(201, obj)
-            res.status(201).json({ "msg": "Successfully Generated Image", "data": returnData })
+            req.body.returnData = this.buildRequestReturnData(201, "Successfully generated image", obj)
+            // res.status(201).json({ "msg": "Successfully Generated Image", "data": returnData })
+            next()
         } catch (err) {
             console.log('Error add image id to user, ERR:', err)
             return res.status(500).send("Error add image id to user")

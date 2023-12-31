@@ -8,14 +8,12 @@
 import SwiftUI
 
 enum WhichPopUp {
-    case editProfile, preferences, changePassword, deleteAccount
+    case editProfile, preferences, changePassword, deleteAccount, helpTab
 }
 
 
 struct BtnSettingsView: View {
     let text : String
-//    let action : () -> Void
-//    @Binding var showPopUp : Bool
     @State var showPopUp = false
     var whichPopUp : WhichPopUp
     
@@ -36,10 +34,15 @@ struct BtnSettingsView: View {
                             EditPasswordView()
                         case .deleteAccount:
                             DeleteAccountView()
+                        case .helpTab:
+                            HelpTabView()
                     }
                 }
             Spacer()
-            Image(systemName: "arrow.right")
+            Image("rightArrow")
+                .resizable()
+//            TODO try a
+                .frame(width: 6, height: 12)
         }
                 .padding(.bottom, 12)
     }

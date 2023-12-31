@@ -114,7 +114,7 @@ class KeyChainManager{
         )
         if result == nil{
             print("Getting token from keychain returned nil")
-            return (true, result as? Data)
+            return (true, nil)
         }
         print("Successfully retrieved token from keychain")
         return (false, result as? Data)
