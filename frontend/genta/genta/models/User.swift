@@ -16,7 +16,7 @@ struct GeneratedImgsStruct: Codable, Hashable{
     var data : Data? // store image as string of base64 i coulnt just leave it a uiImage becuase uiimage doesnt conform to codable
 }
 
-struct UserStruct: Codable , Identifiable{
+struct UserData: Codable , Identifiable{
 //    since the convesion for swiftui is camelcase we can convert any snakecases that theapi sends back
     let id : String
     let email : String
@@ -45,7 +45,7 @@ struct UserStruct: Codable , Identifiable{
     let userService = UserServices()
     let imageServices = ImageServices()
     
-    @Published var data = UserStruct(id:"", email: "", firstName: "", lastName: "", age: 0, generatedImgs: [])
+    @Published var data = UserData(id:"", email: "", firstName: "", lastName: "", age: 0, generatedImgs: [])
     
     private var tokenAccess = ""
     
@@ -59,7 +59,7 @@ struct UserStruct: Codable , Identifiable{
             data = res.user!
             let getToken = KeyChainManager.get()
             if getToken.err{
-                return(true, "Something went wrong with the server")
+                return(true, "Something went wrong! Please log back in")
             }
             tokenAccess = String(data: getToken.result!, encoding: .utf8)!
             return(false, "Successfully registered")
@@ -74,7 +74,7 @@ struct UserStruct: Codable , Identifiable{
             data = res.user!
             let getToken = KeyChainManager.get()
             if getToken.err{
-                return(true, "Something went wrong with the server")
+                return(true, "Something went wrong! Please log back in")
             }
             tokenAccess = String(data: getToken.result!, encoding: .utf8)!
             

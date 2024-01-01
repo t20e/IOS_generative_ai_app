@@ -43,8 +43,6 @@ class LoginRegController : ObservableObject{
     @Published var loginData = LoginData(email: "", password: "")
     @Published var regData = RegData(email: "", password: "", firstName: "", lastName: "", age: 0)
     
-
-
     
     func switchTo(isOnLogin : Bool) -> Message{
 //        switches between login and registration
@@ -111,25 +109,26 @@ class LoginRegController : ObservableObject{
         }
     }
 
-        func regGoBackward() ->  Message{
-            switch regProcess{
-                case .validateEmail:
-                    return(Message(text: "Cant go backward", sentByUser: false, isError: true))
-                case .validatePassword:
-                    regProcess = .validateEmail
-                    return Message(text: "Enter your email.", sentByUser: false)
-                case .validateConfirmPassword:
-                    regProcess = .validatePassword
-                    return Message(text: "Enter a password.", sentByUser: false)
-                case .validateFirstName:
-                    regProcess = .validatePassword
-                    return Message(text: "Enter a password.", sentByUser: false)
-                case .validateLastName:
-                    regProcess = .validateFirstName
-                    return Message(text: "What is your first name?", sentByUser: false)
-                case .validateAge:
-                    regProcess = .validateLastName
-                    return Message(text: "What is your last name?", sentByUser: false)
-                }
-        }
+    func regGoBackward() ->  Message{
+        switch regProcess{
+            case .validateEmail:
+                return(Message(text: "Cant go backward", sentByUser: false, isError: true))
+            case .validatePassword:
+                regProcess = .validateEmail
+                return Message(text: "Enter your email.", sentByUser: false)
+            case .validateConfirmPassword:
+                regProcess = .validatePassword
+                return Message(text: "Enter a password.", sentByUser: false)
+            case .validateFirstName:
+                regProcess = .validatePassword
+                return Message(text: "Enter a password.", sentByUser: false)
+            case .validateLastName:
+                regProcess = .validateFirstName
+                return Message(text: "What is your first name?", sentByUser: false)
+            case .validateAge:
+                regProcess = .validateLastName
+                return Message(text: "What is your last name?", sentByUser: false)
+            }
+    }  
+    
 }

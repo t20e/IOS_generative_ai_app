@@ -19,13 +19,11 @@ struct BtnSettingsView: View {
     
     
     var body: some View {
-        HStack{
-            Text(text)
-                .onTapGesture {
-                    showPopUp.toggle()
-                }
-                .popover(isPresented: $showPopUp) {
-                    switch whichPopUp {
+        ContentShape{
+            HStack{
+                Text(text)
+                    .popover(isPresented: $showPopUp) {
+                        switch whichPopUp {
                         case .editProfile:
                             EditProfileView()
                         case .preferences:
@@ -36,15 +34,19 @@ struct BtnSettingsView: View {
                             DeleteAccountView()
                         case .helpTab:
                             HelpTabView()
+                        }
                     }
-                }
-            Spacer()
-            Image("rightArrow")
-                .resizable()
-//            TODO try a
-                .frame(width: 6, height: 12)
+                Spacer()
+                Image("rightArrow")
+                    .resizable()
+                //            TODO try a
+                    .frame(width: 6, height: 12)
+            }
+            .padding(.bottom, 12)
         }
-                .padding(.bottom, 12)
+        .onTapGesture {
+            showPopUp.toggle()
+        }
     }
 }
 

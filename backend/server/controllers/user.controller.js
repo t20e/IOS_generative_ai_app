@@ -32,7 +32,7 @@ export default class UserController {
             // err ? (res.status(401).json({ authenticatedUser: false }), console.log("Unauthorized cookie", err)) : next();
             if (err) {
                 res.status(401).json({ authenticatedUser: false })
-                console.log("Unauthorized cookie", err)    
+                console.log("Unauthorized cookie", err)
             }
             const decodedJWT = jwt.decode(req.headers.authorization, { complete: true })
             req.body.userId = decodedJWT.payload._id
@@ -103,8 +103,9 @@ export default class UserController {
         bcrypt.compare(req.body.password, user.password)
             .then(async passwordCheck => {
                 if (passwordCheck) {
+                    console.log("User found when logging in")
                     delete user.password
-                    if (user.generatedImgs.length > 0){
+                    if (user.generatedImgs.length > 0) {
                         user.generatedImgs = await this.AWS.getManyObjectsPresignedUrl(user.generatedImgs)
                     }
                     req.body.returnData = this.buildRequestReturnData(200, "Successfully login user", user)
@@ -168,7 +169,7 @@ export default class UserController {
         }
         try {
             let addImg = await this.userModel.updateOne(
-                {_id: new ObjectId(req.body.userId)},
+                { _id: new ObjectId(req.body.userId) },
                 { $push: { generatedImgs: obj } }
             )
             obj.presigned_url = await this.AWS.getPreSignedUrl(req.body.img_id)
@@ -190,7 +191,7 @@ export default class UserController {
                 .then(async user => {
                     console.log("User's token is good, and found user")
                     delete user.password
-                    if (user.generatedImgs.length > 0){
+                    if (user.generatedImgs.length > 0) {
                         user.generatedImgs = await this.AWS.getManyObjectsPresignedUrl(user.generatedImgs)
                     }
                     req.body.returnData = this.buildRequestReturnData(200, "Successfully got logged in user", user)
@@ -198,7 +199,7 @@ export default class UserController {
                 })
                 .catch(err => {
                     console.log("error getting logged in user", err)
-                    req.body.returnData = this.buildRequestReturnData(500, "Internal server error please try again later", { 'err' : "serverError" })
+                    req.body.returnData = this.buildRequestReturnData(500, "Internal server error please try again later", { 'err': "serverError" })
                 })
         } else {
             console.log("User token either expired or error occurred")
@@ -206,6 +207,14 @@ export default class UserController {
                 .status(401)
                 .json({ 'notAuthenticated': 'Your token has expired' })
         }
+    }
+
+    contactUs = (req, res, next) =>{
+        console.log(req.body)
+        // users id is already in the req.body
+        // TODO figure out what to do with the users issue
+        req.body.returnData = this.buildRequestReturnData(200, "Issue Received", { "success": true })
+        // next()
     }
 }
 

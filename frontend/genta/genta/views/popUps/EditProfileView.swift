@@ -17,19 +17,21 @@ struct EditProfileView: View {
     var body: some View {
         VStack{
             HStack{
+                Spacer()
                 Text("Edit Profile")
                     .font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
                     .bold()
                 Spacer()
             }
+            .padding()
                 VStack(alignment: .leading){
                     Text("First Name")
                         .foregroundStyle(.gray)
                         .font(.footnote)
                     TextField(user.data.firstName.capitalized, text: $firstname)
-                    Divider()
-                        .padding(.top, -5)
-                        .padding(.bottom, 12)
+//                    TextField("Firstname", text: $firstname)
+                        .padding(10)
+                        .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 1))
                 }
                 .padding(10)
                 VStack(alignment: .leading){
@@ -37,9 +39,9 @@ struct EditProfileView: View {
                         .foregroundStyle(.gray)
                         .font(.footnote)
                     TextField(user.data.lastName.capitalized, text: $lastname)
-                    Divider()
-                        .padding(.top, -5)
-                        .padding(.bottom, 12)
+//                    TextField("Firstname", text: $firstname)
+                        .padding(10)
+                        .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 1))
                 }
                 .padding(10)
             HStack{
@@ -48,9 +50,9 @@ struct EditProfileView: View {
                         .foregroundStyle(.gray)
                         .font(.footnote)
                     TextField(String(user.data.age), text: $age)
-                    Divider()
-                        .padding(.top, -5)
-                        .padding(.bottom, 12)
+//                    TextField("Firstname", text: $firstname)
+                        .padding(10)
+                        .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 1))
                 }
                 .padding(10)
                 Spacer()

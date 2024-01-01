@@ -76,8 +76,8 @@ class Server {
             return: obj
         */
         return {
-            msg : msg,
-            data : data,
+            "msg" : msg,
+            "data" : data,
             "statusCode": returnStatusCode
         }
     }

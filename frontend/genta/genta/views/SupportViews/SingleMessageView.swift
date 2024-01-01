@@ -61,7 +61,7 @@ struct SingleMessageView: View {
                 if sentByUser {
                     Spacer()
                 }
-                Text(filterMsg())
+                Text(filterMsg(prompt: message))
                     .padding(6)
                     .background(
                         sentByUser ? Color.blue.opacity(0.0) :
@@ -91,13 +91,6 @@ struct SingleMessageView: View {
         .listRowSeparator(.hidden)
     }
     
-    func filterMsg() -> String{
-        if message.hasPrefix("REVISED###") {
-            return "Revised Prompt: \(String(message.dropFirst(10)))"
-
-        }
-            return "\(message)"
-    }
     
 }
 

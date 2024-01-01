@@ -30,9 +30,9 @@ struct SettingsView: View {
 
             BtnSettingsView(text: "Edit Profile", whichPopUp: .editProfile)
             
-            BtnSettingsView(text: "preferences", whichPopUp: .preferences)
-            //            TODO how to change password
-//            BtnSettingsView(text: "Change Password", whichPopUp: .changePassword)
+            BtnSettingsView(text: "Preferences", whichPopUp: .preferences)
+
+            BtnSettingsView(text: "Change Password", whichPopUp: .changePassword)
 
             BtnSettingsView(text: "Delete Account", whichPopUp: .deleteAccount)
             

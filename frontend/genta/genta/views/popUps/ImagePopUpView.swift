@@ -15,46 +15,43 @@ struct ImagePopUpView: View {
     var body: some View {
         
         if showPopUp{
-            VStack{
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(
-                        width: UIScreen.main.bounds.width
-    //                    height: UIScreen.main.bounds.height / 2
-                    )
-                    .cornerRadius(10)
-                    .padding(10)
-                if prompt.hasPrefix("REVISED###"){
-                    Text("Revised Prompt: \(String(prompt.dropFirst(10)))")
-                        .padding(.horizontal)
-                        .multilineTextAlignment(.center)
-                        .font(.subheadline)
-                }else{
-                    Text("Prompt: \(prompt)")
-                        .padding(.horizontal)
-                        .multilineTextAlignment(.center)
-                        .font(.subheadline)
-                }
-    
-                Button(action: {
-                    saveImage()
-                }, label: {
-//                    Image(systemName: "arrowshape.down.circle")
-//                    Image(systemName: "arrow.down.to.line.circle.fill")
-                    Image(systemName: "icloud.and.arrow.up.fill")
-                    
-                        .resizable()
-                        .frame(
-                            width: 35,
-                            height: 35
-                        )
-                        .padding(.top, 15)
-                })
-                .foregroundColor(.red)
-            }
+            ZStack {
+                        GeometryReader { geometry in
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: geometry.size.width, height: geometry.size.height)
+                                .clipped()
+                                .cornerRadius(10)
+                        }
+
+                        VStack {
+                            Spacer()
+                            VStack {
+                                Text(filterMsg(prompt: prompt))
+                                    .font(.subheadline)
+                                    .padding(8)
+                                    .background(Color.white)
+                                    .cornerRadius(10)
+                                Button(action: {
+                                    saveImage()
+                                }) {
+                                    Image("downloadArrow")
+                                        .resizable()
+                                        .frame(width: 30, height: 30)
+                                        .padding(8)
+                                        .background(Color.purple)
+                                        .cornerRadius(10)
+                                }
+                            }
+                        }
+                        .padding()
+                        .padding(.bottom, 40)
+                    }
+            .ignoresSafeArea()
         }
     }
+    
     
     func saveImage(){
         let imageSaver = ImageSaver()
