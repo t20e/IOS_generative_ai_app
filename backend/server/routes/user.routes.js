@@ -5,6 +5,11 @@ const userRoutes = (app, userCon) => {
     app.post("/api/v1/users/login", userCon.login, userCon.lastUserRequestMiddleware)
     app.post("/api/v1/users/getLoggedUser", userCon.getLoggedUser, userCon.lastUserRequestMiddleware)
     app.post("/api/v1/users/contactUs", userCon.authenticateUser, userCon.contactUs, userCon.lastUserRequestMiddleware)
+    // app.post("/api/v1/users/editProfile", userCon.authenticateUser, userCon.editProfile, userCon.lastUserRequestMiddleware)
+    app.post("/api/v1/users/verifyCode", userCon.verifyCode, userCon.lastUserRequestMiddleware)
+
+    app.post("/api/v1/users/getCodeToEmail", userCon.authenticateUser, userCon.sendCodeToEmail, userCon.lastUserRequestMiddleware) 
+    app.post("/api/v1/users/changePassword", userCon.authenticateUser, userCon.changePassword, userCon.lastUserRequestMiddleware) 
 }
 export default userRoutes
 

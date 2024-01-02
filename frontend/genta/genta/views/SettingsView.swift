@@ -28,7 +28,7 @@ struct SettingsView: View {
                 .padding(.top, -5)
                 .padding(.bottom, 12)
 
-            BtnSettingsView(text: "Edit Profile", whichPopUp: .editProfile)
+//            BtnSettingsView(texwt: "Edit Profile", whichPopUp: .editProfile)
             
             BtnSettingsView(text: "Preferences", whichPopUp: .preferences)
 

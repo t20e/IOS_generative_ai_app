@@ -105,6 +105,11 @@ class AWS {
         }
     }
 
+    sendEmail = async () => {
+        // TODO
+    }
+
+
 }
 
 export default AWS

@@ -26,7 +26,7 @@ enum LoginValidateEnum {
 }
 
 enum RegisterValidateEnum{
-    case validateEmail, validatePassword, validateConfirmPassword,  validateFirstName, validateLastName, validateAge
+    case validateEmail, validateCode, validatePassword, validateConfirmPassword,  validateFirstName, validateLastName, validateAge
 }
 
 
@@ -113,6 +113,9 @@ class LoginRegController : ObservableObject{
         switch regProcess{
             case .validateEmail:
                 return(Message(text: "Cant go backward", sentByUser: false, isError: true))
+            case .validateCode:
+                regProcess = .validateEmail
+                return Message(text: "Enter email.", sentByUser: false)
             case .validatePassword:
                 regProcess = .validateEmail
                 return Message(text: "Enter your email.", sentByUser: false)

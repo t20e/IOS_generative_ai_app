@@ -15,47 +15,54 @@ struct HelpTabPopUpsView: View {
     @State var textbody = ""
 //    the users input for support
     @State var supportTextInput = ""
-        
+    @State var showAlert = false
+    @State var alertMsg = ""
+    
     var body: some View {
-        VStack(){
-            HStack{
-                Text(header)
-                    .underline(true, color: .gray)
-
+        ZStack{
+            VStack(){
+                HStack{
+                    Text(header)
+                        .underline(true, color: .gray)
+                    
+                    Spacer()
+                }
+                HStack{
+                    if whichPopup == .contactUs{
+                        VStack{
+                            Text("What do you need support with?")
+                            TextField("Enter text, 250 characters limit", text: $supportTextInput, axis: .vertical)
+                                .padding()
+                                .border(.gray, width: 1)
+                                .lineLimit(5...8)
+                                .onChange(of: supportTextInput) { newValue, transaction in
+                                    if newValue.count > 250 {
+                                        supportTextInput = String(newValue.prefix(250))
+                                    }
+                                }
+                            Button(action: {
+                                getSupport()
+                            }, label: {
+                                Text("Send")
+                                    .foregroundStyle(.green)
+                                    .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
+                                    .background(RoundedRectangle(cornerRadius: 10))
+                            })
+                        }
+                    }else{
+                        Text(textbody)
+                    }
+                }
+                .padding()
                 Spacer()
             }
-            HStack{
-                if whichPopup == .contactUs{
-                    VStack{
-                        Text("What do you need support with?")
-                        TextField("Enter text, 250 characters limit", text: $supportTextInput, axis: .vertical)
-                            .padding()
-                            .border(.gray, width: 1)
-                            .lineLimit(5...8)
-                            .onChange(of: supportTextInput) { newValue, transaction in
-                                if newValue.count > 250 {
-                                    supportTextInput = String(newValue.prefix(250))
-                                }
-                            }
-                        Button(action: {
-                            getSupport()
-                        }, label: {
-                            Text("Send")
-                                .foregroundStyle(.green)
-                                .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
-                                .background(RoundedRectangle(cornerRadius: 10))
-                        })
-                    }
-                }else{
-                    Text(textbody)
-                }
-            }
             .padding()
-            Spacer()
-        }
-        .padding()
-        .onAppear{
-            setData()
+            .onAppear{
+                setData()
+            }
+            if showAlert{
+                AlertView(msg: alertMsg, showAlert: $showAlert)
+            }
         }
     }
     
@@ -74,9 +81,16 @@ struct HelpTabPopUpsView: View {
     func getSupport(){
         Task{ @MainActor in
             let res = await user.userService.getSupport(token: user.getAccessToken(), issue: supportTextInput)
+            print("support msg",res)
+            showAlert = true
+            if res.err{
+                alertMsg = "Sorry ran into a problem sending your issure, please try again later."
+                return
+            }
+            alertMsg = "Issue recieved, we will get back to you shortly."
         }
-    
     }
+    
 }
 
 #Preview {

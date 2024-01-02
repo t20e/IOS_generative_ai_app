@@ -2,13 +2,24 @@ import { ObjectId } from 'mongodb';
 import UserModel from "../models/user.model.js"
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken';
+import { generateUnique6DigitNumber } from "../utils/utils.js"
+
 
 export default class UserController {
     constructor(buildRequestReturnData, AWS, SECRET_KEY) {
+        /*
+            Parameters:
+                buildRequestReturnData : build request return data
+                SECRET_KEY used for signing JWT tokens
+                verificationCodes: stores the email and verification code when user is verifying their email
+        */
+
+
         this.userModel = UserModel
         this.AWS = AWS
         this.SECRET_KEY = SECRET_KEY
         this.buildRequestReturnData = buildRequestReturnData
+        this.verificationCodes = new Map()
     }
 
     signJwtToken = (user) => {
@@ -57,7 +68,12 @@ export default class UserController {
             const emailCheck = await this.userModel.find({ email: req.body.email }) //returns an array of items
             if (emailCheck.length === 0) {
                 console.log("Email not in use yet")
-                req.body.returnData = this.buildRequestReturnData(202, "Email not in use", { "doesEmailAlreadyExist": false })
+                const code = generateUnique6DigitNumber()
+                this.verificationCodes.set(req.body.email, code)
+                console.log("CODE: " + code)
+                // TODO send code to email from form aws
+
+                req.body.returnData = this.buildRequestReturnData(202, "A code has been sent to your email please enter it.", { "doesEmailAlreadyExist": false })
             } else {
                 console.log("Email already exists")
                 req.body.returnData = this.buildRequestReturnData(409, "Email is already in use", { "doesEmailAlreadyExist": true })
@@ -70,6 +86,14 @@ export default class UserController {
     }
 
     register = async (req, res, next) => {
+        // make sure that the email is in vertitficationCode so we know that the user went through that process and isn't trying to jump to register
+        const storedCode = this.verificationCodes.get(req.body.email)
+        if (storedCode === undefined) {
+            console.log("Email not know please try again later.")
+            req.body.returnData = this.buildRequestReturnData(400, "Email not know please try again later.", { "success": false })
+            next()
+        }
+
         const checkEmail = await this.userModel.findOne({ email: req.body.email })
         // console.log('user', checkEmail)
         if (checkEmail !== null) {
@@ -209,12 +233,74 @@ export default class UserController {
         }
     }
 
-    contactUs = (req, res, next) =>{
+    contactUs = async (req, res, next) => {
         console.log(req.body)
         // users id is already in the req.body
-        // TODO figure out what to do with the users issue
+        // TODO figure out what to do with the users issue use aws to send issue to myself
         req.body.returnData = this.buildRequestReturnData(200, "Issue Received", { "success": true })
-        // next()
+        next()
     }
-}
 
+    verifyCode = async (req, res, next) => {
+        console.log(req.body)
+        const inputCode = Number(req.body.code.trimRight())
+
+        const storedCode = this.verificationCodes.get(req.body.email)
+        console.log(this.verificationCodes)
+
+        if (storedCode === undefined || storedCode !== inputCode) {
+            console.log("Email not know please try again later.")
+            req.body.returnData = this.buildRequestReturnData(400, "Email not know please try again later.", { "success": false })
+        } else if (storedCode === inputCode) {
+            console.log("Entered correct code.")
+            this.verificationCodes.delete(req.body.email)
+            req.body.returnData = this.buildRequestReturnData(200, "Email verified", { "success": true })
+        } else {
+            req.body.returnData = this.buildRequestReturnData(500, "Server error try again later.", { "success": false })
+        }
+        next()
+    }
+
+    sendCodeToEmail = (req, res, next) => {
+        // used to send code to users email address 
+        const code = generateUnique6DigitNumber()
+        this.verificationCodes.set(req.body.email, code)
+        console.log("CODE:", code)
+        // TODO send code to email from aws
+        req.body.returnData = this.buildRequestReturnData(200, "Code sent to your email", { "success": true })
+        next()
+    }
+
+    changePassword = async (req, res, next) => {
+        // grab the new password the email and the code from req.body
+        const inputCode = Number(req.body.code.trimRight())
+        const storedCode = this.verificationCodes.get(req.body.email)
+        console.log(this.verificationCodes)
+        if (storedCode === undefined) {
+            console.log("Email not know please try again later.")
+            req.body.returnData = this.buildRequestReturnData(400, "Email not know please try again later.", { "success": false })
+        } else if (storedCode === inputCode) {
+            console.log("Entered correct code.")
+            // the code they entered is correct update the users password
+            const hashedPass = await  bcrypt.hash(newPassword, 10)
+            const result = await this.userModel.updateOne(
+                { email: req.body.email },
+                { $set: { password: hashedPass } }
+            );
+            if (result.matchedCount === 1) {
+                console.log(`Password changed successfully`);
+                this.verificationCodes.delete(req.body.email)
+                req.body.returnData = this.buildRequestReturnData(200, "Password changed", { "success": true })
+            } else {
+                req.body.returnData = this.buildRequestReturnData(401, "Please check your credentials", { "success": false })
+            }
+        } else {
+            req.body.returnData = this.buildRequestReturnData(400, "Wrong code.", { "success": false })
+        }
+        next()
+
+
+    }
+
+
+}

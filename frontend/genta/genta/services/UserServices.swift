@@ -23,51 +23,6 @@ class UserServices : ObservableObject{
     private let endPoint = baseURL + "/api/v1/users"
     
     
-    private func performAPICall<T: Codable>(
-        url: URL?,
-        data : Codable,
-        token : String?,
-        expectedStatusCode : StatusCode,
-        method : String,
-        expecting: T.Type
-    ) async throws -> T? {
-        
-        guard let url = url else{
-            print("Unwrapping Url error")
-            throw NetworkError.invalidUrl
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = method
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        request.httpBody = try? JSONEncoder().encode(data)
-        if token != nil {
-            request.setValue(token, forHTTPHeaderField: "Authorization")
-        }
-        
-        let (responseData, headers) = try await URLSession.shared.data(for: request)
-        if let httpRes = headers as? HTTPURLResponse {
-            let statusCode = StatusCode(rawValue: httpRes.statusCode)
-            guard statusCode == expectedStatusCode else{
-                throw NetworkError(statusCode!)
-            }
-            //             If theres any tokens recieved parse it and override any existing tokens in keychains
-            let foundCookie = self.parseCookie(httpRes: httpRes)
-            if !foundCookie.err{
-                print("Found cookie from request")
-                // print("cookie here", foundCookie.token, type(of: foundCookie.token))
-                guard self.saveToken(token: foundCookie.token) else{
-                    throw NetworkError.errorParsingCookie
-                }
-            }
-            let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase
-            let result = try decoder.decode(expecting, from: responseData)
-            return result
-        }
-        throw NetworkError.unknown
-    }
     
     
     
@@ -148,7 +103,7 @@ class UserServices : ObservableObject{
                 method: "POST",
                 expecting: resSimpleData.self)
             print("response data", res?.msg ?? "Error parsing return data")
-            return(false, "")
+            return(false, "A code has been sent to your email, please enter it. It might be in the spam folder.")
             
         } catch let err as NetworkError{
             switch err{
@@ -168,7 +123,6 @@ class UserServices : ObservableObject{
             return (true, "An unkown error occured, please try again later")
         }
     }
-    
     
     
     func logInUserFromToken(token : String) async -> (err : Bool, msg : String, user: UserData?) {
@@ -220,9 +174,6 @@ class UserServices : ObservableObject{
         return request
     }
     
-    func postCall() throws{
-        //        TODO MAKE CODE DRY
-    }
     
     func getSupport(token : String, issue : String) async -> (err:Bool, msg : String){
         print("Attempting to get support")
@@ -248,29 +199,91 @@ class UserServices : ObservableObject{
         }
     }
     
-    private func parseCookie(httpRes : HTTPURLResponse) -> (err: Bool, token : String){
-        //        parse cookie from response data
-        if let setCookieHeader = httpRes.allHeaderFields["Set-Cookie"] as? String {
-            // Parse cookies using HTTPCookie
-            let cookies = HTTPCookie.cookies(withResponseHeaderFields: ["Set-Cookie": setCookieHeader], for: httpRes.url!)
-            // Access individual cookies
-            if let userTokenCookie = cookies.first(where: { $0.name == "userToken" }) {
-                print("Found UserToken value in response header")
-                return (false, userTokenCookie.value)
-            } else {
-                print("User Token Cookie not found")
-                return (true, "")
+    func vertifyEmail(email:String, code:String) async -> (err: Bool, msg:String){
+        let url = URL(string: "\(endPoint)/verifyCode")
+        do{
+            let res = try await performAPICall(
+                url: url,
+                data: ["email": email, "code": code],
+                token: nil,
+                expectedStatusCode:.success,
+                method: "POST",
+                expecting: resSimpleData.self)
+            return (false, "")
+        }catch let err as NetworkError{
+            switch err {
+            case .badRequest:
+                return (true, "The code you entered was incorrect please try again.")
+            case .serverErr:
+                return (true, "Suffered an internal server error, please try later")
+            case .timedOut:
+                return (true, "Your connection timed out, Please check your internet connection!" )
+            default:
+                return (true, "Uncaught error, please try again")
             }
-        } else {
-            print("Set-Cookie Header not found in the response")
-            return (true, "")
+        } catch {
+            return (true, "An unkown error occured, please try again later")
         }
     }
     
+    func getCode(email : String, token:String)async -> (err:Bool, msg:String){
+        let url = URL(string: "\(endPoint)/getCodeToEmail")
+        do{
+            let res = try await performAPICall(
+                url: url,
+                data: ["email" : email],
+                token: token,
+                expectedStatusCode: .success,
+                method: "POST",
+                expecting: resSimpleData.self)
+            return (false, "We sent a code to your email, please enter it. Be sure to check spam.")
+        } catch let err as NetworkError{
+            switch err {
+            case .serverErr:
+                return (true, "Suffered an internal server error, please try later")
+            case .timedOut:
+                return (true, "Your connection timed out, Please check your internet connection!" )
+            default:
+                return (true, "Uncaught error, please try again")
+            }
+        } catch {
+            return (true, "An unkown error occured, please try again later")
+        }
+    }
     
-    private func saveToken(token : String) -> Bool{
-        //        saves token to keychain
-        return KeyChainManager.upsert(token: token)
+    func changePassword(email: String, code: String, newPassword : String, token: String) async -> (err: Bool, msg:String){
+        let url = URL(string: "\(endPoint)/changePassword")
+        do{
+            let res = try await performAPICall(
+                url: url,
+                data: [
+                    "email" : email,
+                    "code" : code,
+                    "newPassword" : newPassword
+                ],
+                token: token,
+                expectedStatusCode: .success,
+                method: "POST",
+                expecting: resSimpleData.self)
+            return (false, "Your password was updated.")
+        } catch let err as NetworkError{
+            switch err {
+            case .badRequest:
+                return (true, "The code you entered was incorrect please try again.")
+            case .unAuthorized:
+                return(true, "Your credentials are wrong please log back in.")
+            case .serverErr:
+                return (true, "Suffered an internal server error, please try later")
+            case .timedOut:
+                return (true, "Your connection timed out, Please check your internet connection!" )
+            default:
+                return (true, "Uncaught error, please try again")
+            }
+        } catch {
+            return (true, "An unkown error occured, please try again later")
+        }
+        
+        
     }
     
 }

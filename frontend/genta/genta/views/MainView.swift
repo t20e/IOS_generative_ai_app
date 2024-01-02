@@ -7,14 +7,14 @@
 
 import SwiftUI
 
+
 struct MainView: View {
     @EnvironmentObject var user : User
-    var mainCon = MainViewController()    
-    
+    var mainCon = MainViewController()
     
     var body: some View {
         if user.isSingedIn{
-//        if !true{
+            //        if !true{
             DashboardView()
         }else{
             VStack{

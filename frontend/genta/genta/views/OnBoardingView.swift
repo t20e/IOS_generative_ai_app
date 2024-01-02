@@ -13,7 +13,6 @@ struct OnBoardingView: View {
     @ObservedObject var viewCont = LoginRegController()
     @State var isOnLogin = false
     @State var showRegLogin = false
-    
     @State var messages : [Message] = [
         Message(text: "Prompt?", sentByUser: false),
         Message(text: "A lion walking on water", sentByUser: true), //TODO ADD IMAGE AND PROMPT
@@ -30,7 +29,6 @@ struct OnBoardingView: View {
                 
                 if !showRegLogin{
                     Button("Sign Up", action: {
-                        //                        viewCont.validateRegisteration(wentBack: false)
                         showRegLogin = true
                         messages.append(Message(text: "Enter your email.", sentByUser: false))
                     })
@@ -40,7 +38,6 @@ struct OnBoardingView: View {
                     .cornerRadius(20)
                     
                     Button("Login", action: {
-                        //                        viewCont.validateLogin()
                         showRegLogin = true
                         isOnLogin = true
                         messages.append(Message(text: "Enter your email.", sentByUser: false))
@@ -107,7 +104,7 @@ struct OnBoardingView: View {
     }
     
     func forward_propagate(){
-        if viewCont.regProcess == .validatePassword || viewCont.regProcess == .validateConfirmPassword || viewCont.loginProcess == .validatePassword{
+        if viewCont.regProcess == .validatePassword || viewCont.regProcess == .validateConfirmPassword || viewCont.loginProcess == .validatePassword || viewCont.regProcess == .validateCode {
             messages.append(Message(text: String(repeating: "*", count: textInput.count), sentByUser: true))
         }else{
             messages.append(Message(text: textInput, sentByUser: true))
@@ -124,7 +121,10 @@ struct OnBoardingView: View {
         } else {
             if viewCont.regProcess == .validateEmail {
                 return checkIfEmailExists()
-            } else if viewCont.regProcess == .validateAge{
+            } else if viewCont.regProcess == .validateCode{
+                return validateCode()
+            }
+            else if viewCont.regProcess == .validateAge{
                 return registerUser()
             } else{
                 let res = viewCont.validateReg(text: textInput)
@@ -154,6 +154,24 @@ struct OnBoardingView: View {
         }
     }
     
+    func validateCode(){
+        //        enter the code that was sent to the users email for validation
+//        send email and code
+        
+        messages.append(Message(text: "Checking code.", sentByUser: false, isLoadingSign: true))
+        
+        Task{ @MainActor in
+            let res = await user.userService.vertifyEmail(email: viewCont.regData.email, code: textInput)
+            if res.err{
+                messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
+                return
+            }
+            messages.append(Message(text: "Email vertified. Please enter a password.", sentByUser: false))
+            viewCont.regProcess = .validatePassword
+            viewCont.placeholder = "password"
+            textInput = ""
+        }
+    }
 
     func checkIfEmailExists(){
         messages.append(Message(text: "Checking your email.", sentByUser: false, isLoadingSign: true))
@@ -165,10 +183,10 @@ struct OnBoardingView: View {
                 return
             }else{
                 viewCont.regData.email = textInput
-                viewCont.regProcess = .validatePassword
-                viewCont.placeholder = "password"
+                viewCont.regProcess = .validateCode
+                viewCont.placeholder = "enter code"
                 textInput = ""
-                messages.append(Message(text: "Enter a password.", sentByUser: false))
+                messages.append(Message(text: res.msg, sentByUser: false))
             }
         }
     }
