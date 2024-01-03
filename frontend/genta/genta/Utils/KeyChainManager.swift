@@ -179,10 +179,10 @@ class KeyChainManager{
         let status = SecItemDelete(query as CFDictionary)
         print("Status from deleting token", status)
         if status == errSecSuccess {
-            print("Password deleted successfully.")
+            print("Token deleted successfully.")
             return true
         } else {
-            print("Error deleting password from Keychain. Status: \(status)")
+            print("Error deleting Token from Keychain. Status: \(status)")
             return false
         }
     }

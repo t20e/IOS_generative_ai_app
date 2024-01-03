@@ -282,9 +282,52 @@ class UserServices : ObservableObject{
         } catch {
             return (true, "An unkown error occured, please try again later")
         }
-        
-        
+    }
+    
+    
+    func deleteAccount(email:String, password : String, token:String) async -> (err:Bool, msg:String){
+        let url = URL(string: "\(endPoint)/deleteAccount")
+        do{
+            let res = try await performAPICall(
+                url: url,
+                data: ["email":email, "password" : password],
+                token: token,
+                expectedStatusCode: .success,
+                method: "POST",
+                expecting: resSimpleData.self)
+            return (false, "Account has been deleted")
+        }catch let err as NetworkError{
+            switch err {
+            case .unAuthorized:
+                return(true, "Your credentials are wrong.")
+            case .serverErr:
+                return (true, "Suffered an internal server error, please try later")
+            case .timedOut:
+                return (true, "Your connection timed out, Please check your internet connection!" )
+            default:
+                return (true, "Uncaught error, please try again")
+            }
+        } catch {
+            return (true, "An unkown error occured, please try again later")
+        }
+               
     }
     
 }
+
+//func basicHandleCatchError(_ error: NetworkError) -> (Bool, String) {
+//    switch error {
+//    case .badRequest:
+//        return (true, "The code you entered was incorrect, please try again.")
+//    case .unAuthorized:
+//        return (true, "Your credentials are wrong, please log back in.")
+//    case .serverErr:
+//        return (true, "Suffered an internal server error, please try later")
+//    case .timedOut:
+//        return (true, "Your connection timed out, please check your internet connection!")
+//    default:
+//        return (true, "Uncaught error, please try again")
+//    }
+//}
+
 

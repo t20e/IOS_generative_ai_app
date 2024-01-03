@@ -182,7 +182,7 @@ struct OnBoardingView: View {
                 messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
                 return
             }else{
-                viewCont.regData.email = textInput
+                viewCont.regData.email = textInput.trimmingCharacters(in: .whitespacesAndNewlines)
                 viewCont.regProcess = .validateCode
                 viewCont.placeholder = "enter code"
                 textInput = ""

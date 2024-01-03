@@ -10,6 +10,7 @@ const userRoutes = (app, userCon) => {
 
     app.post("/api/v1/users/getCodeToEmail", userCon.authenticateUser, userCon.sendCodeToEmail, userCon.lastUserRequestMiddleware) 
     app.post("/api/v1/users/changePassword", userCon.authenticateUser, userCon.changePassword, userCon.lastUserRequestMiddleware) 
+    app.post("/api/v1/users/deleteAccount", userCon.authenticateUser, userCon.deleteAccount, userCon.lastUserRequestMiddleware)
 }
 export default userRoutes
 

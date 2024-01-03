@@ -74,7 +74,7 @@ class LoginRegController : ObservableObject{
                 if text.count < minPasswordLength || text.count >= maxPasswordLength{
                     return (true, Message(text: "Password has to be between 6 and 32 charaters long.", sentByUser: false, isError: true))
                 }
-            regData.password = text
+                regData.password = text.trimmingCharacters(in: .whitespacesAndNewlines)
                 regProcess = .validateConfirmPassword
                 placeholder = "confirm password"
                 return (false, Message(text: "Please confirm your password.", sentByUser: false))
@@ -90,7 +90,7 @@ class LoginRegController : ObservableObject{
                 if isValid.err {
                     return (true, Message(text: isValid.msg, sentByUser: false, isError: true))
                 }
-                regData.firstName = text.lowercased()
+                regData.firstName = text.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
                 regProcess = .validateLastName
                 placeholder = "last name"
                 return (false, Message(text: "What is your last name?", sentByUser: false))
@@ -100,7 +100,7 @@ class LoginRegController : ObservableObject{
                 if isValid.err{
                     return (true, Message(text: isValid.msg, sentByUser: false, isError: true))
                 }
-                regData.lastName = text.lowercased()
+                regData.lastName = text.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
                 regProcess = .validateAge
                 placeholder = "age"
                 return (false, Message(text: "What is your age?", sentByUser: false))

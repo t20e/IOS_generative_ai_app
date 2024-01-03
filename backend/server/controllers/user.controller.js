@@ -87,12 +87,6 @@ export default class UserController {
 
     register = async (req, res, next) => {
         // make sure that the email is in vertitficationCode so we know that the user went through that process and isn't trying to jump to register
-        const storedCode = this.verificationCodes.get(req.body.email)
-        if (storedCode === undefined) {
-            console.log("Email not know please try again later.")
-            req.body.returnData = this.buildRequestReturnData(400, "Email not know please try again later.", { "success": false })
-            next()
-        }
 
         const checkEmail = await this.userModel.findOne({ email: req.body.email })
         // console.log('user', checkEmail)
@@ -282,7 +276,7 @@ export default class UserController {
         } else if (storedCode === inputCode) {
             console.log("Entered correct code.")
             // the code they entered is correct update the users password
-            const hashedPass = await  bcrypt.hash(newPassword, 10)
+            const hashedPass = await bcrypt.hash(req.body.newPassword, 10)
             const result = await this.userModel.updateOne(
                 { email: req.body.email },
                 { $set: { password: hashedPass } }
@@ -298,9 +292,29 @@ export default class UserController {
             req.body.returnData = this.buildRequestReturnData(400, "Wrong code.", { "success": false })
         }
         next()
-
-
     }
 
-
+    deleteAccount = async (req, res, next) => {
+        const user = await this.userModel.findOne({ email: req.body.email }).lean()
+        // console.log('user', user)
+        if (user === null) {
+            console.log("User not found")
+            return res.status(401).json({ msg: "Wrong Credentials" })
+        }
+        let passwordCheck = await bcrypt.compare(req.body.password, user.password)
+        if (passwordCheck) {
+            let resultDeleteAllImgs = await this.AWS.deleteManyImgs(user.generatedImgs)
+            if (resultDeleteAllImgs) {
+                console.log("Successfully deleted account")
+                req.body.returnData = this.buildRequestReturnData(200, "Successfully deleted account", { "success": true })
+                const deleteAccount = await this.userModel.deleteOne({ _id: user._id })
+                console.log(deleteAccount)
+            } else {
+                req.body.returnData = this.buildRequestReturnData(500, "Issue deleting images, please try later", { "success": false })
+            }
+        } else {
+            req.body.returnData = this.buildRequestReturnData(401, "Failed deleting account", { "success": false })
+        }
+        next()
+    }
 }

@@ -30,7 +30,6 @@ struct AllGeneratedImgsView: View {
                         .font(.title3)
                         .background(.white)
                         .cornerRadius(20)
-//                        .padding(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 25))
                         .padding(.trailing, 25)
                 }
                 HStack{
@@ -38,13 +37,11 @@ struct AllGeneratedImgsView: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 35)
-//                        .padding(EdgeInsets(top: 0, leading: 35, bottom: 5, trailing: 0))
                 }
-
+                
                 ScrollView{
                     if !user.data.generatedImgs.isEmpty{
-//                    if !true{
-                        
+                        //                    if !true{
                         ForEach(Array(stride(from: 0, to: user.data.generatedImgs.count, by: 3)), id: \.self) { idx in
                             HStack{
                                 ForEach(0 ..< 3) { innerIdx in
@@ -53,28 +50,26 @@ struct AllGeneratedImgsView: View {
                                         let data = user.data.generatedImgs[idx + innerIdx].data
                                         
                                         if data != nil{
-                                            Button(action: {
-                                                // when user clicks an image show pop up for the iamge
+                                            Image(uiImage:
+                                                    (UIImage(data: data!)!)
+                                            )
+                                            .resizable()
+                                            .frame(
+                                                width: CGFloat(randomImgWidth.randomElement()!),
+                                                height: CGFloat(randomImgHeight.randomElement()!)
+                                            )
+                                            .foregroundColor(.blue)
+                                            .cornerRadius(5)
+                                            .padding(EdgeInsets(
+                                                top: CGFloat(randomPaddingVertical.randomElement()!),
+                                                leading: CGFloat(randomPaddingHorizontal.randomElement()!),
+                                                bottom: CGFloat(randomPaddingVertical.randomElement()!),
+                                                trailing: CGFloat(randomPaddingHorizontal.randomElement()!)))
+                                            .onTapGesture {
                                                 currPrompt = prompt
-                                                currUiImage = UIImage(data: data!)!
                                                 showPopUp = true
-                                            }, label: {
-                                                Image(uiImage:
-                                                        (UIImage(data: data!)!)
-                                                )
-                                                .resizable()
-                                                .frame(
-                                                    width: CGFloat(randomImgWidth.randomElement()!),
-                                                    height: CGFloat(randomImgHeight.randomElement()!)
-                                                )
-                                                .foregroundColor(.blue)
-                                                .cornerRadius(5)
-                                                .padding(EdgeInsets(
-                                                    top: CGFloat(randomPaddingVertical.randomElement()!),
-                                                    leading: CGFloat(randomPaddingHorizontal.randomElement()!),
-                                                    bottom: CGFloat(randomPaddingVertical.randomElement()!),
-                                                    trailing: CGFloat(randomPaddingHorizontal.randomElement()!)))
-                                            })
+                                                currUiImage = UIImage(data: data!)!
+                                            }
                                         }
                                     }else{
                                         EmptyImagesView()
@@ -90,15 +85,18 @@ struct AllGeneratedImgsView: View {
                                 }
                             }
                         }
-                   }
+                    }
                 }
             }
-            .sheet(isPresented: $showPopUp) {
+            .sheet(isPresented: Binding(
+                get: {showPopUp},
+                set: {showPopUp = $0}
+            )){
                 ImagePopUpView(prompt: currPrompt, uiImage: (currUiImage ?? UIImage(systemName: "shippingbox"))!, showPopUp: $showPopUp)
                     .presentationDetents([.fraction(0.5), .large])
             }
-            
         }
+        
     }
 }
 

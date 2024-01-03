@@ -1,6 +1,6 @@
 
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
-import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand, DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import axios from "axios";
 
 class AWS {
@@ -44,7 +44,7 @@ class AWS {
             returns:
                 obj: with presigned url for each image
         */
-       try {
+        try {
             await Promise.all(generatedImgs.map(async (e) => {
                 e["presigned_url"] = await this.getPreSignedUrl(e["img_id"]);
             }));
@@ -56,6 +56,41 @@ class AWS {
             return []
         }
     }
+
+    deleteManyImgs = async (generatedImgs) => {
+        /*
+        Bulk delets all users images when user is deleting account
+        parameters:
+            array of objs: of users generated images that has img_id, and prompt
+        returns:
+            Bool : if successful or not
+        */
+        let imgsToBeDeleted = [] // stored as [{"key" : `${obj.img_id}.png`]
+
+        generatedImgs.forEach(obj => {
+            imgsToBeDeleted.push({ "Key": `users_imgs/${obj.img_id}.png` })
+        });
+        console.log(imgsToBeDeleted)
+        const command = new DeleteObjectsCommand({
+            Bucket: this.bucket_name,
+            Delete: {
+                Objects: imgsToBeDeleted
+            }
+        })
+        try {
+            const { Deleted } = await this.s3.send(command);
+            console.log(
+                `Successfully deleted ${Deleted.length} objects from S3 bucket. Deleted objects:`,
+            );
+            console.log(Deleted.map((d) => ` • ${d.Key}`).join("\n"));
+            return true
+        } catch (err) {
+            console.error(err);
+            return false
+        }
+
+    }
+
 
     downloadImgFromUrl = async (req, res, next) => {
         /*

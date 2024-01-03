@@ -11,6 +11,7 @@ struct EditPasswordView: View {
     @EnvironmentObject var user : User
     @State var newPassword = ""
     @State var showPasswordField = false
+    @State var btnText = "Get code"
     @State var code = ""
     @State var showAlert = false
     @State var alertMsg = ""
@@ -54,7 +55,7 @@ struct EditPasswordView: View {
                 Button(action: {
                     if !showPasswordField{
                         showPasswordField = true
-                        //                    TODO send code to email and make alert that email was sent
+                        btnText = "Update Password"
                         getCode()
                     } else if showPasswordField {
                         showAlert = false
@@ -63,7 +64,7 @@ struct EditPasswordView: View {
                     }
                 }, label: {
                     HStack{
-                        Text("Update password")
+                        Text(btnText)
                             .foregroundStyle(.white)
                     }
                     .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
@@ -72,6 +73,7 @@ struct EditPasswordView: View {
                 })
                 Spacer()
             }
+            .padding()
             if showAlert{
                 AlertView(msg: alertMsg, showAlert: $showAlert)
             }

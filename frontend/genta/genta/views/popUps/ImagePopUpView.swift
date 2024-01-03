@@ -16,38 +16,38 @@ struct ImagePopUpView: View {
         
         if showPopUp{
             ZStack {
-                        GeometryReader { geometry in
-                            Image(uiImage: uiImage)
+                GeometryReader { geometry in
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
+                        .cornerRadius(10)
+                }
+                
+                VStack {
+                    Spacer()
+                    VStack {
+                        Text(filterMsg(prompt: prompt))
+                            .font(.subheadline)
+                            .padding(8)
+                            .background(Color.white)
+                            .cornerRadius(10)
+                        Button(action: {
+                            saveImage()
+                        }) {
+                            Image("downloadArrow")
                                 .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: geometry.size.width, height: geometry.size.height)
-                                .clipped()
+                                .frame(width: 30, height: 30)
+                                .padding(8)
+                                .background(Color.purple)
                                 .cornerRadius(10)
                         }
-
-                        VStack {
-                            Spacer()
-                            VStack {
-                                Text(filterMsg(prompt: prompt))
-                                    .font(.subheadline)
-                                    .padding(8)
-                                    .background(Color.white)
-                                    .cornerRadius(10)
-                                Button(action: {
-                                    saveImage()
-                                }) {
-                                    Image("downloadArrow")
-                                        .resizable()
-                                        .frame(width: 30, height: 30)
-                                        .padding(8)
-                                        .background(Color.purple)
-                                        .cornerRadius(10)
-                                }
-                            }
-                        }
-                        .padding()
-                        .padding(.bottom, 40)
                     }
+                }
+                .padding()
+                .padding(.bottom, 40)
+            }
             .ignoresSafeArea()
         }
     }

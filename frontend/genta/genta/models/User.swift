@@ -145,8 +145,8 @@ struct UserData: Codable , Identifiable{
     func logout(){
         let isSuccess = KeyChainManager.delete()
         if isSuccess{
+            data = UserData(id: "", email: "", firstName: "", lastName: "", age: 0, generatedImgs: [])
             isSingedIn = false
-//            TODO delete all user info
         }
 //        alert user something went wrong
     }

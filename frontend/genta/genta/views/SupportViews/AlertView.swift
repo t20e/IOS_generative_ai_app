@@ -16,30 +16,41 @@ struct AlertView: View {
     var body: some View {
         if showAlert{
             VStack{
+                Spacer()
                 Text(msg)
-                    .padding(6)
-                    .background( .blue)
-                    .font(.system(size: 14))
+                    .font(.subheadline)
+                    .padding(EdgeInsets(top: 10, leading: 10, bottom: 40, trailing: 5))
                     .foregroundColor(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                    .listRowSeparator(.hidden)
-                    .padding(.bottom, 15)
-                Button(action: {
-                    //                withAnimation {
-                    //                    user.tokenExpired = false
-                    //                }
-                    showAlert = false
-                }, label: {
-                    Image(systemName: "x.circle.fill")
-                        .resizable()
-                        .foregroundColor(.blue)
-                        .frame(width: 35, height: 35)
-                })
-            }        
+                    .frame(maxWidth: UIScreen.main.bounds.width / 1.5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.cyan)
+                    )
+                    .shadow(color: Color.gray.opacity(0.9), radius: 30, x: 0, y: 0)
+                Image(systemName: "x.circle.fill")
+                    .resizable()
+                    .foregroundColor(.red)
+                    .frame(width: 40, height: 40)
+                    .offset(y: -30)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(Color.white, lineWidth: 5)
+                            .background(.clear)
+                            .offset(y: -30)
+                    )
+                    .background(
+                        Circle()
+                            .fill(Color.white)
+                            .offset(y: -30)
+                    )
+                    .onTapGesture {
+                        showAlert = false
+                    }
+                Spacer()
+                Spacer()
+            }
             .onAppear {
-                // Set a timer with a 3-second delay
                 Timer.scheduledTimer(withTimeInterval: 15, repeats: false) { timer in
-                    // Update the state variable to show the text after the timeout
                     if showAlert{
                         showAlert = false
                     }
