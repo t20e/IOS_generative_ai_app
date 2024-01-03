@@ -10,57 +10,51 @@ import SwiftUI
 struct AlertView: View {
     
     @State var msg : String
-//    @EnvironmentObject var user : User
     @Binding var showAlert  : Bool
-
+    @Binding var isMajorAlert : Bool
+    @State var animate = false
+    
     var body: some View {
         if showAlert{
-            VStack{
-                Spacer()
-                Text(msg)
-                    .font(.subheadline)
-                    .padding(EdgeInsets(top: 10, leading: 10, bottom: 40, trailing: 5))
-                    .foregroundColor(.white)
-                    .frame(maxWidth: UIScreen.main.bounds.width / 1.5)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.cyan)
-                    )
-                    .shadow(color: Color.gray.opacity(0.9), radius: 30, x: 0, y: 0)
-                Image(systemName: "x.circle.fill")
-                    .resizable()
-                    .foregroundColor(.red)
-                    .frame(width: 40, height: 40)
-                    .offset(y: -30)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(Color.white, lineWidth: 5)
-                            .background(.clear)
-                            .offset(y: -30)
-                    )
-                    .background(
-                        Circle()
-                            .fill(Color.white)
-                            .offset(y: -30)
-                    )
-                    .onTapGesture {
-                        showAlert = false
-                    }
-                Spacer()
-                Spacer()
-            }
-            .onAppear {
-                Timer.scheduledTimer(withTimeInterval: 15, repeats: false) { timer in
-                    if showAlert{
-                        showAlert = false
+            ContentShape{
+                GeometryReader { geometry in
+                    VStack{
+                        HStack{
+                            Image(systemName: isMajorAlert ? "exclamationmark.triangle" : "exclamationmark.warninglight")
+                                .foregroundColor(Color.theme.textColor)
+                                .padding(.horizontal, 8)
+                            Text(msg)
+                                .font(.subheadline)
+                                .padding(10)
+                                .foregroundColor(Color.theme.textColor)
+                                .frame(maxWidth: UIScreen.main.bounds.width / 1.5)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(Color.theme.primColor)
+                                )
+                        }
+                        .scaleEffect(animate ? 1 : 0)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill( isMajorAlert ? Color.theme.errColor : Color.theme.actionColor )
+                        )
+                        .frame(width: geometry.size.width, height:
+                                animate ? geometry.size.height / 2 : 0)
                     }
                 }
             }
+            .onAppear{
+                withAnimation(.spring()){
+                    animate = true
+                }
+            }
+                .onTapGesture {
+                    showAlert = false
+                }
         }
-        
     }
 }
 
 #Preview {
-    AlertView(msg: "Your session has expired, please log back in", showAlert: .constant(true))
+    AlertView(msg: "Your session has expired", showAlert: .constant(true), isMajorAlert: .constant(true))
 }

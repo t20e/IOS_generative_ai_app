@@ -18,11 +18,13 @@ struct SettingsView: View {
             Text("Settings")
                 .font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
                 .bold()
+                .foregroundStyle(Color.theme.textColor)
                 .padding(.bottom, 25)
             HStack{
                 Image(systemName: "person.crop.circle")
                 Text("Account")
                     .bold()
+                    .foregroundStyle(Color.theme.textColor)
             }
             Divider()
                 .padding(.top, -5)
@@ -30,7 +32,7 @@ struct SettingsView: View {
 
 //            BtnSettingsView(texwt: "Edit Profile", whichPopUp: .editProfile)
             
-            BtnSettingsView(text: "Preferences", whichPopUp: .preferences)
+//            BtnSettingsView(text: "Preferences", whichPopUp: .preferences)
 
             BtnSettingsView(text: "Change Password", whichPopUp: .changePassword)
 

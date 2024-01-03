@@ -6,7 +6,7 @@ import { generateUnique6DigitNumber } from "../utils/utils.js"
 
 
 export default class UserController {
-    constructor(buildRequestReturnData, AWS, SECRET_KEY) {
+    constructor(buildRequestReturnData, AWS, SECRET_KEY, ALLOWED_FREE_NUM_OF_GENERATED_IMGS) {
         /*
             Parameters:
                 buildRequestReturnData : build request return data
@@ -20,6 +20,7 @@ export default class UserController {
         this.SECRET_KEY = SECRET_KEY
         this.buildRequestReturnData = buildRequestReturnData
         this.verificationCodes = new Map()
+        this.ALLOWED_FREE_NUM_OF_GENERATED_IMGS = ALLOWED_FREE_NUM_OF_GENERATED_IMGS
     }
 
     signJwtToken = (user) => {
@@ -188,7 +189,10 @@ export default class UserController {
         try {
             let addImg = await this.userModel.updateOne(
                 { _id: new ObjectId(req.body.userId) },
-                { $push: { generatedImgs: obj } }
+                {
+                    $push: { generatedImgs: obj },
+                    $inc: { numOfImgsGenerated: 1 } //increment the field by 1
+                }, 
             )
             obj.presigned_url = await this.AWS.getPreSignedUrl(req.body.img_id)
             req.body.returnData = this.buildRequestReturnData(201, "Successfully generated image", obj)
@@ -316,5 +320,18 @@ export default class UserController {
             req.body.returnData = this.buildRequestReturnData(401, "Failed deleting account", { "success": false })
         }
         next()
+    }
+
+    canUserGenerateImg = async (req, res, next) => {
+        console.log("Checking if user can generate a free image...")
+        const decodedJWT = jwt.decode(req.headers.authorization, { complete: true })
+        if (decodedJWT !== null) {
+            const user = await this.userModel.findOne({ _id: decodedJWT.payload._id })
+            if (user.numOfImgsGenerated <= this.ALLOWED_FREE_NUM_OF_GENERATED_IMGS) {
+                next()
+                return
+            }
+        }
+        res.status(402).send(`Sorry you can't generate more than ${this.ALLOWED_FREE_NUM_OF_GENERATED_IMGS} free images`)
     }
 }

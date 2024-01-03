@@ -23,45 +23,27 @@ class ImageServices : ObservableObject{
 
     
     
-    func generateImgApiCAll(prompt: String, token : String) async -> (err: Bool, msg: String, data: GenerateImgReturnData?){
+    func generateImgApiCAll(prompt: String, token : String) async -> (err: Bool, msg: String?, data: GenerateImgReturnData?){
         print("Attempting to generate image")
         let url = URL(string: "\(endPoint)/generate")!
 //        print(url)
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue(
-            token,
-            forHTTPHeaderField: "Authorization"
-        )
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         do{
-            let encodedData = try JSONEncoder().encode(["prompt" : prompt])
-            let (data, headers) = try await URLSession.shared.upload(for: request, from: encodedData)
-
-            if let httpRes = headers as? HTTPURLResponse {
-                let statusCode = StatusCode(rawValue: httpRes.statusCode)
-                guard statusCode == .created else{
-                    print("return error status code : \(String(describing: statusCode))")
-                    throw NetworkError(statusCode!)
-                }
-//                For testing turn the byte data into a hex then turn it back into a data in a playground
-//                print( String(bytes: data, encoding: .utf8) ?? "Error printing byte to string")
-//                let hexString = data.map { String(format: "%02hhx", $0) }.joined()
-//                print("here",hexString)
-                
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                let decodedByte = try decoder.decode(GenerateImgReturn.self, from: data)
-                print(decodedByte.data)
-                print("Message from server",decodedByte.msg)
-                
-                return (false, decodedByte.msg, decodedByte.data)
-            }else{
-                throw NetworkError.serverErr
-            }
-        }catch let err as NetworkError{
+            let res = try await performAPICall(
+                url: url,
+                data: ["prompt" : prompt],
+                token: token,
+                expectedStatusCode: .created,
+                method: "POST",
+                expecting: GenerateImgReturn.self)
+            print("Message from server", res?.msg ?? "Could not get message from server parsing error.")
+            return (false, res?.msg, res?.data)
+        }
+                catch let err as NetworkError{
             switch err{
+                case .paymentRequired:
+                    print("user has generate more than the free amount")
+                    return (true, "Sorry you cant generate more free images", nil)
                 case .unAuthorized:
                     print("Users token has expired.")
                     return (true, "Your session has expired please sign in again!", nil)

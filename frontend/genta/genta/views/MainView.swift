@@ -13,17 +13,19 @@ struct MainView: View {
     var mainCon = MainViewController()
     
     var body: some View {
-        if user.isSingedIn{
-            //        if !true{
-            DashboardView()
-        }else{
-            VStack{
+        
+        VStack{
+            
+            if user.isSingedIn{
+                //        if !true{
+                DashboardView()
+            }else{
                 HeaderOnBoardingView()
                 OnBoardingView()
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.theme.backgroundColor)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.theme.baseColor)
     }
 }
 

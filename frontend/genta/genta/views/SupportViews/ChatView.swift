@@ -12,22 +12,24 @@ struct Message: Hashable, Identifiable {
     let text: String
     let sentByUser: Bool
     let isError : Bool
-    let isLoadingSign : Bool
+    var isLoadingSign : Bool
     let isImg : Bool
     let image : Image
+    let isRevisedPrompt: Bool
     
-    init(text: String, sentByUser: Bool, isError: Bool = false, isLoadingSign: Bool = false, isImg: Bool = false, image: Image = Image(systemName: "character.textbox")) {
+    init(text: String, sentByUser: Bool, isError: Bool = false, isLoadingSign: Bool = false, isImg: Bool = false, image: Image = Image(systemName: "character.textbox"),  isRevisedPrompt : Bool = false) {
         self.text = text
         self.sentByUser = sentByUser
         self.isError = isError
         self.isLoadingSign = isLoadingSign
         self.isImg = isImg
         self.image = image
+        self.isRevisedPrompt = isRevisedPrompt
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
-        // You can combine other properties here if needed
+//        this makes the ids conform to Hashable
     }
     
 }
@@ -41,7 +43,7 @@ struct ChatView: View {
 //                        TODO MAKE sure text doesnt streat out the entir page
                         ForEach(messages, id:\.id){ msg in
 //                            SingleMessageView(message: msg.text, sentByUser: msg.sentByUser, isError: msg.isError, isLoadingSign: msg.isLoadingSign)
-                            SingleMessageView(message: msg.text, sentByUser: msg.sentByUser, isError: msg.isError, isImg: msg.isImg, image: msg.image, isLoadingSign: msg.isLoadingSign)
+                            SingleMessageView(message: msg.text, sentByUser: msg.sentByUser, isError: msg.isError, isImg: msg.isImg, image: msg.image, isLoadingSign: msg.isLoadingSign, isRevisedPrompt: msg.isRevisedPrompt)
                                 .padding([.top, .bottom, .horizontal], 10)
                         }
                     }

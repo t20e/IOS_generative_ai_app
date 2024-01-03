@@ -1,6 +1,6 @@
-const imgRoutes = (app, openai_con, userController, AWS) => {
+const imgRoutes = (app, openAI_con, userController, AWS) => {
     app.post("/api/v1/imgs/generate",
-        userController.authenticateUser, openai_con.generateImg,
+        userController.authenticateUser, userController.canUserGenerateImg, openAI_con.generateImg,
         AWS.downloadImgFromUrl, AWS.uploadToS3, userController.addImgKeyToUser,
         userController.lastUserRequestMiddleware
     )

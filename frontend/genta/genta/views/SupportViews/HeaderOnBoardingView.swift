@@ -8,17 +8,22 @@
 import SwiftUI
 
 struct HeaderOnBoardingView: View {
+    @Environment(\.colorScheme) var colorScheme
+
+    
     var body: some View {
             VStack{
                 //                MARK - add the apps image here
-                Image(systemName: "globe")
-                    .imageScale(.large)
-                    .foregroundStyle(.tint)
-                Text("App Name")
+                Image(uiImage: UIImage(named: "AppIcon") ?? UIImage())
+                    .resizable()
+                    .frame(width: 64,height: 64)
+                    .cornerRadius(15)
+                Text("genTa")
                     .font(.title)
                     .bold()
                 Text("powered by dall-e")
                     .opacity(0.5)
+                    .foregroundColor(.gray)
                     .padding(.leading, 150)
             }
     }

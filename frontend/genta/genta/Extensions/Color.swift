@@ -14,9 +14,14 @@ extension Color {
 }
 
 struct ColorTheme {
-    let accentColor = Color("accentColor")
-    let backgroundColor = Color("backgroundColor")
-    let primColor = Color("primColor") //i coulnt call it primaryColor because of some conflict. The "PrimaryColor" color asset name resolves to a conflicting Color symbol "primary". Try renaming the asset.
-    let secColor = Color("secColor") //same here
-    let tertiaryColor = Color("tertiaryColor")
+    let primColor = Color("primColor")
+    let baseColor = Color("baseColor")
+    let actionColor = Color("actionColor")
+    let textColor = Color("textColor")
+    let errColor = Color("errColor")
+    
+//    colors for the swipe backgrounds
+    let backgrondColorOne = Color("backgrondColorOne")
+    let backgrondColorTwo = Color("backgrondColorTwo")
+    let backgrondColorThree = Color("backgrondColorThree")
 }

@@ -13,6 +13,7 @@
 		520821972B3FEE6E00137D46 /* EditPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520821962B3FEE6E00137D46 /* EditPasswordView.swift */; };
 		520821992B3FEE7900137D46 /* DeleteAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520821982B3FEE7900137D46 /* DeleteAccountView.swift */; };
 		521563602B3B757600B701AD /* KeyChainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5215635F2B3B757600B701AD /* KeyChainManager.swift */; };
+		521D48682B46003600E8BDB3 /* LoadingIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521D48672B46003600E8BDB3 /* LoadingIconView.swift */; };
 		52222E182B40F3E500CE726B /* HelpTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52222E172B40F3E500CE726B /* HelpTabView.swift */; };
 		522B2C392B31387D00B1D62F /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522B2C382B31387D00B1D62F /* MainViewController.swift */; };
 		523B4BC32B3065680063C9FE /* gentaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523B4BC22B3065680063C9FE /* gentaApp.swift */; };
@@ -53,6 +54,7 @@
 		520821962B3FEE6E00137D46 /* EditPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPasswordView.swift; sourceTree = "<group>"; };
 		520821982B3FEE7900137D46 /* DeleteAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountView.swift; sourceTree = "<group>"; };
 		5215635F2B3B757600B701AD /* KeyChainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainManager.swift; sourceTree = "<group>"; };
+		521D48672B46003600E8BDB3 /* LoadingIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIconView.swift; sourceTree = "<group>"; };
 		52222E172B40F3E500CE726B /* HelpTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpTabView.swift; sourceTree = "<group>"; };
 		522B2C382B31387D00B1D62F /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		523B4BBF2B3065680063C9FE /* genta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = genta.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -227,6 +229,7 @@
 				523B4BF72B30D6840063C9FE /* HeaderOnBoardingView.swift */,
 				524EA7BC2B3DE19300C09664 /* EmptyImagesView.swift */,
 				5208218F2B3FE42900137D46 /* BtnSettingsView.swift */,
+				521D48672B46003600E8BDB3 /* LoadingIconView.swift */,
 			);
 			path = SupportViews;
 			sourceTree = "<group>";
@@ -336,6 +339,7 @@
 				5262756F2B428F520035A3E2 /* UI_utils.swift in Sources */,
 				52A177C02B39071E00F888E1 /* LoginRegController.swift in Sources */,
 				523B4BE72B307E270063C9FE /* SingleMessageView.swift in Sources */,
+				521D48682B46003600E8BDB3 /* LoadingIconView.swift in Sources */,
 				52DF20362B3CE7D4004C869F /* ImagePopUpView.swift in Sources */,
 				523B4BC32B3065680063C9FE /* gentaApp.swift in Sources */,
 				523B4BF22B30D02D0063C9FE /* User.swift in Sources */,
@@ -496,7 +500,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tonyavis.genta;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -534,7 +539,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tonyavis.genta;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

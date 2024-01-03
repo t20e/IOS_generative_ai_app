@@ -11,28 +11,29 @@ struct DashboardView: View {
     let colors : [Color] = [.red, .pink, .purple]
     
     init() {
-        UIPageControl.appearance().currentPageIndicatorTintColor = .blue
-        UIPageControl.appearance().pageIndicatorTintColor = .red
-        UIPageControl.appearance().tintColor = .red
+        UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(Color.theme.actionColor)
+        UIPageControl.appearance().pageIndicatorTintColor = UIColor.lightGray
+        
+        UIPageControl.appearance().tintColor = UIColor.lightGray
     }
     
     var body: some View {
-            TabView {
-                AllGeneratedImgsView()
-                    .background(colors[0])
-                GenerateImgView()
-                    .background(colors[1])
-                SettingsView()
-                    .background(colors[2])
-            }
-            .edgesIgnoringSafeArea(.all)
-            .padding(.bottom, 20)
-            .frame(
-                width: UIScreen.main.bounds.width ,
-                height: UIScreen.main.bounds.height
-            )
-            .tabViewStyle(.page)
-            .indexViewStyle(.page(backgroundDisplayMode: .interactive))
+        TabView {
+            AllGeneratedImgsView()
+                .background(Color.theme.baseColor)
+            GenerateImgView()
+                .background(Color.theme.baseColor)
+            SettingsView()
+                .background(Color.theme.baseColor)
+        }
+        .edgesIgnoringSafeArea(.all)
+        .padding(.bottom, 20)
+        .frame(
+            width: UIScreen.main.bounds.width ,
+            height: UIScreen.main.bounds.height
+        )
+        .tabViewStyle(.page)
+        .indexViewStyle(.page(backgroundDisplayMode: .interactive))
     }
 }
 

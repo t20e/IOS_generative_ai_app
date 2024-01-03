@@ -103,7 +103,7 @@ class UserServices : ObservableObject{
                 method: "POST",
                 expecting: resSimpleData.self)
             print("response data", res?.msg ?? "Error parsing return data")
-            return(false, "A code has been sent to your email, please enter it. It might be in the spam folder.")
+            return(false, "A code has been sent to your email, please enter it. It might be in spam.")
             
         } catch let err as NetworkError{
             switch err{
@@ -202,7 +202,7 @@ class UserServices : ObservableObject{
     func vertifyEmail(email:String, code:String) async -> (err: Bool, msg:String){
         let url = URL(string: "\(endPoint)/verifyCode")
         do{
-            let res = try await performAPICall(
+            _ = try await performAPICall(
                 url: url,
                 data: ["email": email, "code": code],
                 token: nil,
@@ -213,7 +213,7 @@ class UserServices : ObservableObject{
         }catch let err as NetworkError{
             switch err {
             case .badRequest:
-                return (true, "The code you entered was incorrect please try again.")
+                return (true, "The code you entered was incorrect, try again.")
             case .serverErr:
                 return (true, "Suffered an internal server error, please try later")
             case .timedOut:
@@ -229,7 +229,7 @@ class UserServices : ObservableObject{
     func getCode(email : String, token:String)async -> (err:Bool, msg:String){
         let url = URL(string: "\(endPoint)/getCodeToEmail")
         do{
-            let res = try await performAPICall(
+            _ = try await performAPICall(
                 url: url,
                 data: ["email" : email],
                 token: token,
@@ -254,7 +254,7 @@ class UserServices : ObservableObject{
     func changePassword(email: String, code: String, newPassword : String, token: String) async -> (err: Bool, msg:String){
         let url = URL(string: "\(endPoint)/changePassword")
         do{
-            let res = try await performAPICall(
+            _ = try await performAPICall(
                 url: url,
                 data: [
                     "email" : email,
@@ -269,7 +269,7 @@ class UserServices : ObservableObject{
         } catch let err as NetworkError{
             switch err {
             case .badRequest:
-                return (true, "The code you entered was incorrect please try again.")
+                return (true, "The code you entered was incorrect, please try again.")
             case .unAuthorized:
                 return(true, "Your credentials are wrong please log back in.")
             case .serverErr:
@@ -288,7 +288,7 @@ class UserServices : ObservableObject{
     func deleteAccount(email:String, password : String, token:String) async -> (err:Bool, msg:String){
         let url = URL(string: "\(endPoint)/deleteAccount")
         do{
-            let res = try await performAPICall(
+            _ = try await performAPICall(
                 url: url,
                 data: ["email":email, "password" : password],
                 token: token,

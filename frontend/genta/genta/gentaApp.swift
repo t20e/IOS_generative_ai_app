@@ -14,6 +14,8 @@ let baseURL: String = {
     return isDeployed ? "https://PAIENDPOINT" : "http://localhost:8080"
 }()
 
+let ALLOWED_FREE_NUM_OF_GENERATED_IMGS = 15
+
 
 @main
 struct gentaApp: App {

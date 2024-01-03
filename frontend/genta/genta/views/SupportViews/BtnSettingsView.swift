@@ -17,7 +17,8 @@ struct BtnSettingsView: View {
     @State var showPopUp = false
     var whichPopUp : WhichPopUp
     
-    
+        @Environment(\.colorScheme) var colorScheme
+
     var body: some View {
         ContentShape{
             HStack{
@@ -37,10 +38,10 @@ struct BtnSettingsView: View {
                         }
                     }
                 Spacer()
-                Image("rightArrow")
+                Image(colorScheme == .dark ? "rightArrowWhite" : "rightArrowDark")
                     .resizable()
-                //            TODO try a
                     .frame(width: 6, height: 12)
+                    
             }
             .padding(.bottom, 12)
         }

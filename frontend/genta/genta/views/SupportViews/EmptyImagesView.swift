@@ -18,7 +18,7 @@ struct EmptyImagesView: View {
     
     var body: some View {
         RoundedRectangle(cornerRadius: 5)
-            .stroke(Color.theme.primColor, lineWidth: 2)
+            .stroke(Color.theme.primColor, lineWidth: 1)
             .frame(
                 width: CGFloat(randomImgWidth.randomElement()!),
                 height: CGFloat(randomImgHeight.randomElement()!)

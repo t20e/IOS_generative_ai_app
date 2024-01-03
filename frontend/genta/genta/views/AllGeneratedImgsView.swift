@@ -14,6 +14,7 @@ struct AllGeneratedImgsView: View {
     @State var currUiImage : UIImage?
     @State var currPrompt = ""
     
+    @Environment(\.colorScheme) var colorScheme
     
     private var randomPaddingHorizontal : [Int] = [15, 20, 10]
     private var randomPaddingVertical : [Int] = [5, 25, 10]
@@ -28,12 +29,18 @@ struct AllGeneratedImgsView: View {
                     Text("Hey \(user.data.firstName.capitalized)")
                         .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
                         .font(.title3)
-                        .background(.white)
+                        .background(Color.theme.primColor)
                         .cornerRadius(20)
                         .padding(.trailing, 25)
+                        .foregroundColor(
+                            colorScheme == .dark ? .black : .white
+//                            Color.theme.textColor
+                        )
                 }
                 HStack{
                     Text("Generated images")
+                        .foregroundStyle(Color.theme.textColor)
+                        .underline()
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 35)
@@ -58,7 +65,7 @@ struct AllGeneratedImgsView: View {
                                                 width: CGFloat(randomImgWidth.randomElement()!),
                                                 height: CGFloat(randomImgHeight.randomElement()!)
                                             )
-                                            .foregroundColor(.blue)
+//                                            .foregroundColor(.red)
                                             .cornerRadius(5)
                                             .padding(EdgeInsets(
                                                 top: CGFloat(randomPaddingVertical.randomElement()!),

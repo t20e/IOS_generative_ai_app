@@ -44,9 +44,30 @@ class LoginRegController : ObservableObject{
     @Published var regData = RegData(email: "", password: "", firstName: "", lastName: "", age: 0)
     
     
+    var exampleGeneratedImages =  [
+        [
+            "prompt": "Design a captivating image of a city in the future, featuring towering skyscrapers made of gleaming glass and steel structures. The city should have flying cars and monorail systems zipping through the sky. There should be rooftop gardens on some buildings, demonstrating city dwellers' commitment to urban green spaces.",
+            "imageName": "Design_a_captivating_image_of_a_city_in_the_future,"
+        ],
+        [
+            "prompt": "Create an image comprising abstract geometric patterns. These patterns should take various forms such as squares, triangles, circles, and polygons, among others.",
+            "imageName": "abstractGeometricPattern"
+        ],
+        [
+            "prompt": "Imagine a scene in a cloudy sky, filled with intricately designed flying machines inspired by the steampunk aesthetic.",
+            "imageName": "steamPunk"
+        ],
+        [
+            "prompt": "Imagine a whimsical scene set in a well-maintained garden full of flowers and lush greenery. In this garden, there is an unusual, joyful gathering taking place. A troupe of quirky robots, all of different shapes, sizes and colors, are happily engaged in a tea party.",
+            "imageName": "robotsDiner"
+        ]
+    ]
+    
+    
     func switchTo(isOnLogin : Bool) -> Message{
 //        switches between login and registration
         if isOnLogin {
+            loginProcess = .validateEmail
             regProcess = .validateEmail
             return Message(text: "Signing up instead, Enter your email.", sentByUser: false)
         } else {
@@ -77,7 +98,7 @@ class LoginRegController : ObservableObject{
                 regData.password = text.trimmingCharacters(in: .whitespacesAndNewlines)
                 regProcess = .validateConfirmPassword
                 placeholder = "confirm password"
-                return (false, Message(text: "Please confirm your password.", sentByUser: false))
+                return (false, Message(text: "Confirm your password.", sentByUser: false))
             case .validateConfirmPassword:
                 if text != regData.password{
                     return (true, Message(text: "Confirm Password doesn't match password.", sentByUser: false, isError: true))

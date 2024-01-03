@@ -15,6 +15,7 @@ struct EditPasswordView: View {
     @State var code = ""
     @State var showAlert = false
     @State var alertMsg = ""
+    @State var  isMajorAlert = false
     
     var body: some View {
         ZStack{
@@ -68,14 +69,15 @@ struct EditPasswordView: View {
                             .foregroundStyle(.white)
                     }
                     .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
-                    .background(.red)
+                    .background(Color.theme.primColor)
                     .cornerRadius(20)
                 })
                 Spacer()
             }
             .padding()
+            .blur(radius: showAlert ? 5 : 0)
             if showAlert{
-                AlertView(msg: alertMsg, showAlert: $showAlert)
+                AlertView(msg: alertMsg, showAlert: $showAlert, isMajorAlert: $isMajorAlert)
             }
         }
     }
@@ -84,6 +86,7 @@ struct EditPasswordView: View {
             let res = await user.userService.getCode(email: user.data.email, token: user.getAccessToken())
             alertMsg = res.msg
             showAlert = true
+            isMajorAlert = false
         }
     }
     
@@ -95,6 +98,7 @@ struct EditPasswordView: View {
             showAlert = true
             if !res.err{
                 showPasswordField = false
+                isMajorAlert = true
             }
         }
     }

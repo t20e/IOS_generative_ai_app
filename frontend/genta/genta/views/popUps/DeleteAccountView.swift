@@ -13,7 +13,9 @@ struct DeleteAccountView: View {
     @State var password = ""
     @State var showAlert = false
     @State var alertMsg = ""
-    
+    @Environment(\.colorScheme) var colorScheme
+    @State var isMajorAlert = false
+
     var body: some View {
         ZStack{
             VStack{
@@ -29,11 +31,14 @@ struct DeleteAccountView: View {
                             .frame(width: UIScreen.main.bounds.width / 1.5)
                             .background(
                                 RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                                    .background(Color.white)
+                                    .stroke(Color.theme.textColor, lineWidth: 1)
+                                    .background(Color.clear)
                             )
                             .autocapitalization(.none)
                             .autocorrectionDisabled()
+                            .foregroundColor(Color.theme.textColor)
+
+                            
                     }
                     .padding(.bottom, 20)
                 }
@@ -58,8 +63,9 @@ struct DeleteAccountView: View {
                 })
             }
             .padding()
+            .blur(radius: showAlert ? 5 : 0)
             if showAlert{
-                AlertView(msg: alertMsg, showAlert: $showAlert)
+                AlertView(msg: alertMsg, showAlert: $showAlert, isMajorAlert: $isMajorAlert)
             }
         }
     }
@@ -70,7 +76,10 @@ struct DeleteAccountView: View {
             alertMsg = res.msg
             showAlert = true
             if !res.err{
+                isMajorAlert = false
                 user.logout()
+            }else{
+                isMajorAlert = true
             }
         }
     }

@@ -13,11 +13,9 @@ struct OnBoardingView: View {
     @ObservedObject var viewCont = LoginRegController()
     @State var isOnLogin = false
     @State var showRegLogin = false
-    @State var messages : [Message] = [
-        Message(text: "Prompt?", sentByUser: false),
-        Message(text: "A lion walking on water", sentByUser: true), //TODO ADD IMAGE AND PROMPT
-        Message(text: "", sentByUser: false, isImg: true, image: Image("test_img"))
-    ]
+    @State var messages : [Message] = []
+    
+//    @Environment(\.colorScheme) var colorScheme
     
     @State var textInput = ""
 
@@ -43,9 +41,8 @@ struct OnBoardingView: View {
                         messages.append(Message(text: "Enter your email.", sentByUser: false))
                     })
                     .frame(width: 250, height: 40)
-                    .background(Color.theme.backgroundColor)
-                    .foregroundColor(Color.white)
-                    .cornerRadius(20)
+                    .background(.clear)
+                    .foregroundColor(Color.theme.textColor)
                     
                 } else {
                     HStack{
@@ -53,10 +50,9 @@ struct OnBoardingView: View {
                             goBack()
                         }, label: {
                             Text("Go back")
-                            //                        TODO add in forground colors
-                            //                            .foregroundStyle(Color.theme.primColor)
+                                .foregroundStyle(Color.theme.primColor)
                             Image(systemName: "arrow.uturn.up.circle")
-                            //                            .foregroundStyle(Color.theme.primColor)
+                                .foregroundColor(Color.theme.primColor)
                         })
                         .padding(.horizontal, 15)
                         
@@ -67,10 +63,10 @@ struct OnBoardingView: View {
                             isOnLogin = !isOnLogin
                         }, label: {
                             Text(isOnLogin ? "Sign Up" : "Login")
-                            //                        TODO add in forground colors
-                            //                            .foregroundStyle(Color.theme.primColor)
+                                .foregroundStyle(Color.theme.primColor)
                             Image(systemName: "arrow.up.arrow.down")
-                            //                            .foregroundStyle(Color.theme.primColor)
+                                .foregroundColor(Color.theme.primColor)
+                            
                         })
                         .padding(.horizontal, 15)
                     }
@@ -79,12 +75,12 @@ struct OnBoardingView: View {
                             .padding(EdgeInsets(top: 10, leading: 15, bottom: 10, trailing: 15))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 14)
-                                    .stroke(Color.theme.primColor, lineWidth: 2)
+                                    .stroke(Color.theme.actionColor, lineWidth: 1)
                             )
                             .autocapitalization(.none) //stops the auto capitilize of words
                             .autocorrectionDisabled()
+                            .foregroundColor(Color.theme.textColor)
                         Button(action: {
-//                            TODO make buttons into a loading sign when it waiting
                             if textInput.count < 2 {
                                 messages.append(Message(text: "Please enter something.", sentByUser: false, isError: true))
                             } else {
@@ -94,12 +90,23 @@ struct OnBoardingView: View {
                             Image(systemName: "arrow.up.circle")
                                 .resizable()
                                 .frame(width: 25, height: 25)
+                                .foregroundColor(Color.theme.actionColor)
                         })
                         
                     }
                     .padding()
                 }
             }
+        }
+        .onAppear{
+            let selectImg = viewCont.exampleGeneratedImages.randomElement()
+            messages += [
+                Message(text: "Prompt?", sentByUser: false),
+                Message(
+                    text: selectImg!["prompt"]!,
+                sentByUser: true),
+                Message(text: "", sentByUser: false, isImg: true, image: Image(selectImg!["imageName"]!))
+            ]
         }
     }
     

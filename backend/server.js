@@ -19,7 +19,7 @@ class Server {
         this.IN_PROD = process.env.IN_PROD.toLowerCase() === "true"
         this.app = express();
         this.AWS = new AWS(process.env.BUCKET_NAME, process.env.BUCKET_REGION, process.env.ACCESS_KEY_AWS_USER, process.env.SECRET_ACCESS_KEY_AWS_USER)
-        this.userCon = new UserController(this.buildRequestReturnData, this.AWS, process.env.SECRET_KEY)
+        this.userCon = new UserController(this.buildRequestReturnData, this.AWS, process.env.SECRET_KEY, Number(process.env.ALLOWED_FREE_NUM_OF_GENERATED_IMGS ))
         this.openai_api = new OpenAI_Controller(process.env.OPENAI_API_SECRET_KEY, this.AWS)
 
         this.setUpMiddleware()

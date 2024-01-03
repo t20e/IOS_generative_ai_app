@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EditPreferencesView: View {
 //    @EnvironmentObject var user : User
+        @Environment(\.colorScheme) var colorScheme
 
     
     var body: some View {
@@ -45,7 +46,6 @@ struct EditPreferencesView: View {
                         .font(.footnote)
                     }
                 }
-//                TODO maybe font size, Icon size, 
             }
             Spacer()
         }

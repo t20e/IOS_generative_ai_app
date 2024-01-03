@@ -23,6 +23,7 @@ struct UserData: Codable , Identifiable{
     let firstName : String
     let lastName : String
     let age : Int
+    var numOfImgsGenerated : Int
     var generatedImgs : [GeneratedImgsStruct]
     
     
@@ -33,6 +34,7 @@ struct UserData: Codable , Identifiable{
         case lastName
         case age
         case generatedImgs
+        case numOfImgsGenerated
     }
 }
 
@@ -45,7 +47,7 @@ struct UserData: Codable , Identifiable{
     let userService = UserServices()
     let imageServices = ImageServices()
     
-    @Published var data = UserData(id:"", email: "", firstName: "", lastName: "", age: 0, generatedImgs: [])
+    @Published var data = UserData(id:"", email: "", firstName: "", lastName: "", age: 0, numOfImgsGenerated: 0, generatedImgs: [])
     
     private var tokenAccess = ""
     
@@ -145,7 +147,7 @@ struct UserData: Codable , Identifiable{
     func logout(){
         let isSuccess = KeyChainManager.delete()
         if isSuccess{
-            data = UserData(id: "", email: "", firstName: "", lastName: "", age: 0, generatedImgs: [])
+            data = UserData(id: "", email: "", firstName: "", lastName: "", age: 0, numOfImgsGenerated: 0, generatedImgs: [])
             isSingedIn = false
         }
 //        alert user something went wrong

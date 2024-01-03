@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum HelpPopUp {
-    case none, contactUs, whyPromptRevised
+    case none, contactUs, whyPromptRevised, howToChangeToDarkMode
 }
 
 struct HelpTabView: View {
@@ -23,16 +23,19 @@ struct HelpTabView: View {
                     Text("Help & Support")
                         .font(.title)
                         .bold()
+                        .foregroundStyle(Color.theme.textColor)
                     Spacer()
                 }
                 .padding()
                 ContentShape{
                     HStack{
                         Text("Contact us")
+                            .foregroundStyle(Color.theme.textColor)
                         Spacer()
                         Image(systemName: whichPopup == .contactUs ? "plus" : "minus")
                             .rotationEffect(Angle(degrees: whichPopup == .contactUs ? 0 : 360))
                             .animation(.easeInOut, value: whichPopup)
+                            .foregroundStyle(Color.theme.textColor)
                     }
                 }
                 .onTapGesture {
@@ -42,11 +45,13 @@ struct HelpTabView: View {
                 Divider()
                 ContentShape{
                     HStack{
-                        Text("Why are prompts revised")
+                        Text("Why are prompts revised?")
+                            .foregroundStyle(Color.theme.textColor)
                         Spacer()
                         Image(systemName: whichPopup == .whyPromptRevised ? "plus" : "minus")
                             .rotationEffect(Angle(degrees: whichPopup == .whyPromptRevised ? 0 : 360))
                             .animation(.easeInOut, value: whichPopup)
+                            .foregroundStyle(Color.theme.textColor)
 
                     }
                 }
@@ -55,6 +60,23 @@ struct HelpTabView: View {
                     whichPopup = .whyPromptRevised
                 }
                 Divider()
+                ContentShape{
+                    HStack{
+                        Text("How to change to dark mode?")
+                            .foregroundStyle(Color.theme.textColor)
+                        Spacer()
+                        Image(systemName: whichPopup == .howToChangeToDarkMode ? "plus" : "minus")
+                            .rotationEffect(Angle(degrees: whichPopup == .howToChangeToDarkMode ? 0 : 360))
+                            .animation(.easeInOut, value: whichPopup)
+                            .foregroundStyle(Color.theme.textColor)
+
+                    }
+                }
+                .onTapGesture {
+                    showPopup = true
+                    whichPopup = .howToChangeToDarkMode
+                }
+                
                 Spacer()
             }
             .padding()
