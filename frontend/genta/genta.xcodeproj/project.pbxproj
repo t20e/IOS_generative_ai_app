@@ -45,6 +45,8 @@
 		52E69F272B32CC34006CE6C6 /* utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E69F262B32CC34006CE6C6 /* utils.swift */; };
 		52E69F2D2B32E735006CE6C6 /* UserServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E69F2C2B32E735006CE6C6 /* UserServices.swift */; };
 		52E69F322B331D11006CE6C6 /* testview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E69F312B331D11006CE6C6 /* testview.swift */; };
+		52EF245D2B474BE000ECE6B5 /* MessageTextInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EF245C2B474BE000ECE6B5 /* MessageTextInput.swift */; };
+		52F500A22B4789090055429C /* TokenFoundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F500A12B4789090055429C /* TokenFoundView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -88,6 +90,8 @@
 		52E69F262B32CC34006CE6C6 /* utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = utils.swift; sourceTree = "<group>"; };
 		52E69F2C2B32E735006CE6C6 /* UserServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserServices.swift; sourceTree = "<group>"; };
 		52E69F312B331D11006CE6C6 /* testview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testview.swift; sourceTree = "<group>"; };
+		52EF245C2B474BE000ECE6B5 /* MessageTextInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextInput.swift; sourceTree = "<group>"; };
+		52F500A12B4789090055429C /* TokenFoundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenFoundView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -223,6 +227,7 @@
 		524EA7BB2B3DE17500C09664 /* SupportViews */ = {
 			isa = PBXGroup;
 			children = (
+				52F500A12B4789090055429C /* TokenFoundView.swift */,
 				523B4BE62B307E270063C9FE /* SingleMessageView.swift */,
 				52DF202F2B3CD2B0004C869F /* AlertView.swift */,
 				523B4BEC2B3087750063C9FE /* ChatView.swift */,
@@ -230,6 +235,7 @@
 				524EA7BC2B3DE19300C09664 /* EmptyImagesView.swift */,
 				5208218F2B3FE42900137D46 /* BtnSettingsView.swift */,
 				521D48672B46003600E8BDB3 /* LoadingIconView.swift */,
+				52EF245C2B474BE000ECE6B5 /* MessageTextInput.swift */,
 			);
 			path = SupportViews;
 			sourceTree = "<group>";
@@ -326,6 +332,7 @@
 				524EA7BA2B3DCBA800C09664 /* ImageGenerateViewController.swift in Sources */,
 				52E69F322B331D11006CE6C6 /* testview.swift in Sources */,
 				524EA7BD2B3DE19300C09664 /* EmptyImagesView.swift in Sources */,
+				52F500A22B4789090055429C /* TokenFoundView.swift in Sources */,
 				522B2C392B31387D00B1D62F /* MainViewController.swift in Sources */,
 				52DF20302B3CD2B0004C869F /* AlertView.swift in Sources */,
 				521563602B3B757600B701AD /* KeyChainManager.swift in Sources */,
@@ -336,6 +343,7 @@
 				529E36762B3CFD57008E75D8 /* GenerateImgView.swift in Sources */,
 				526275692B42245A0035A3E2 /* HelpTabPopUpsView.swift in Sources */,
 				523B4BDA2B306DE20063C9FE /* Color.swift in Sources */,
+				52EF245D2B474BE000ECE6B5 /* MessageTextInput.swift in Sources */,
 				5262756F2B428F520035A3E2 /* UI_utils.swift in Sources */,
 				52A177C02B39071E00F888E1 /* LoginRegController.swift in Sources */,
 				523B4BE72B307E270063C9FE /* SingleMessageView.swift in Sources */,

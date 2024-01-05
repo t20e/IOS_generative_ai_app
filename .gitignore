@@ -254,3 +254,5 @@ frontend/genta/genta.xcodeproj/project.pbxproj
 *.pbxproj
 *.png
 frontend/genta/genta/Assets.xcassets/UI_images/downloadArrow.imageset/downloadArrow.png
+*.pbxproj
+*.pbxproj

@@ -15,15 +15,16 @@ struct OnBoardingView: View {
     @State var showRegLogin = false
     @State var messages : [Message] = []
     
-//    @Environment(\.colorScheme) var colorScheme
+    //    @Environment(\.colorScheme) var colorScheme
     
     @State var textInput = ""
-
+    @State var canAnimateLoading  = false
+    
     var body: some View {
         
         ZStack{
             VStack{
-                ChatView(messages: messages)
+                ChatView(messages: $messages)
                 
                 if !showRegLogin{
                     Button("Sign Up", action: {
@@ -70,30 +71,15 @@ struct OnBoardingView: View {
                         })
                         .padding(.horizontal, 15)
                     }
-                    HStack (spacing: 10) {
-                        TextField(viewCont.placeholder, text: $textInput)
-                            .padding(EdgeInsets(top: 10, leading: 15, bottom: 10, trailing: 15))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .stroke(Color.theme.actionColor, lineWidth: 1)
-                            )
-                            .autocapitalization(.none) //stops the auto capitilize of words
-                            .autocorrectionDisabled()
-                            .foregroundColor(Color.theme.textColor)
-                        Button(action: {
-                            if textInput.count < 2 {
-                                messages.append(Message(text: "Please enter something.", sentByUser: false, isError: true))
-                            } else {
-                                forward_propagate()
-                            }
-                        }, label: {
-                            Image(systemName: "arrow.up.circle")
-                                .resizable()
-                                .frame(width: 25, height: 25)
-                                .foregroundColor(Color.theme.actionColor)
-                        })
-                        
-                    }
+                    
+                    
+                    MessageTextInput(
+                        canAnimate: $canAnimateLoading,
+                        textInput: $textInput,
+                        action: forward_propagate,
+                        messages: $messages,
+                        placeHolder: $viewCont.placeholder.wrappedValue
+                    )
                     .padding()
                 }
             }
@@ -104,13 +90,40 @@ struct OnBoardingView: View {
                 Message(text: "Prompt?", sentByUser: false),
                 Message(
                     text: selectImg!["prompt"]!,
-                sentByUser: true),
+                    sentByUser: true),
                 Message(text: "", sentByUser: false, isImg: true, image: Image(selectImg!["imageName"]!))
             ]
         }
     }
+    func startWaitingAnimation(){
+        canAnimateLoading = true
+    }
+    func stopAnimation() async {
+        do{
+            try await Task.sleep(nanoseconds: 2 * 1_000_000_000)  // Sleep for 2 seconds
+        }catch{
+            print("Setting task.sleep error, \(error)")
+        }
+        removeLoadingLastIndex()
+        canAnimateLoading = false
+
+    }
+    
+    func removeLoadingLastIndex(){
+        //        removes the loading sign of the last index of the messages array
+        if let lastIndex = messages.indices.last {
+            // Update the last item
+            messages[lastIndex].isLoadingSign = false
+        }
+    }
     
     func forward_propagate(){
+        if textInput.count < 2 {
+            return messages.append(Message(text: "Please enter something.", sentByUser: false, isError: true))
+        }
+        
+
+        
         if viewCont.regProcess == .validatePassword || viewCont.regProcess == .validateConfirmPassword || viewCont.loginProcess == .validatePassword || viewCont.regProcess == .validateCode {
             messages.append(Message(text: String(repeating: "*", count: textInput.count), sentByUser: true))
         }else{
@@ -120,6 +133,7 @@ struct OnBoardingView: View {
         if isOnLogin{
             if viewCont.loginProcess == .validatePassword{
                 messages.append(Message(text: "Logging in", sentByUser: false))
+                startWaitingAnimation()
                 viewCont.loginData.password = textInput
                 return login()
             }
@@ -127,11 +141,14 @@ struct OnBoardingView: View {
             messages.append(res.msg)
         } else {
             if viewCont.regProcess == .validateEmail {
+                startWaitingAnimation()
                 return checkIfEmailExists()
             } else if viewCont.regProcess == .validateCode{
+                startWaitingAnimation()
                 return validateCode()
             }
             else if viewCont.regProcess == .validateAge{
+                startWaitingAnimation()
                 return registerUser()
             } else{
                 let res = viewCont.validateReg(text: textInput)
@@ -140,7 +157,7 @@ struct OnBoardingView: View {
         }
         textInput = ""
     }
-        
+    
     func registerUser(){
         guard let age = Int(textInput) else {
             return messages.append(Message(text: "Please enter a validate age", sentByUser: false, isError: true))
@@ -152,6 +169,7 @@ struct OnBoardingView: View {
         viewCont.regData.age = age
         Task{ @MainActor in
             let res = await user.register(regData: viewCont.regData)
+            await stopAnimation()
             if res.err{
                 messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
             }else{
@@ -163,12 +181,13 @@ struct OnBoardingView: View {
     
     func validateCode(){
         //        enter the code that was sent to the users email for validation
-//        send email and code
+        //        send email and code
         
         messages.append(Message(text: "Checking code.", sentByUser: false, isLoadingSign: true))
         
         Task{ @MainActor in
             let res = await user.userService.vertifyEmail(email: viewCont.regData.email, code: textInput)
+            await stopAnimation()
             if res.err{
                 messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
                 return
@@ -179,12 +198,13 @@ struct OnBoardingView: View {
             textInput = ""
         }
     }
-
+    
     func checkIfEmailExists(){
         messages.append(Message(text: "Checking your email.", sentByUser: false, isLoadingSign: true))
-
+        
         Task{ @MainActor in
             let res = await user.userService.checkIfEmailInDbApiCall(email: textInput)
+            await stopAnimation()
             if res.err{
                 messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
                 return
@@ -197,10 +217,11 @@ struct OnBoardingView: View {
             }
         }
     }
-
+    
     func login(){
         Task{ @MainActor in
             let res = await user.login(loginData: viewCont.loginData)
+            await stopAnimation()
             if res.err{
                 messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
                 return

@@ -17,6 +17,12 @@ struct SingleMessageView: View {
     let image : Image
     var isLoadingSign : Bool
     var isRevisedPrompt : Bool
+    var canAnimateImg : Bool
+    var textAlreadyAnimated : Bool
+    
+//    varaibles to animate a text letter by letter
+    @State private var animatedText: String = ""
+    @State private var currentIndex: String.Index?
     
     var body: some View {
         VStack{
@@ -49,7 +55,9 @@ struct SingleMessageView: View {
                             .frame(width:  225, height: 225)
                             .cornerRadius(10)
                             .aspectRatio(contentMode: .fit)
-                        
+                            .scaleEffect( canAnimateImg ? 1 : 0.5)
+                            .animation(.spring(response: 0.8, dampingFraction: 0.3, blendDuration: 0),value: canAnimateImg)
+
                         
                         RightTriangle()
                             .stroke(Color.theme.primColor, lineWidth: 0.5)
@@ -64,7 +72,7 @@ struct SingleMessageView: View {
                         Spacer()
                     }
                     
-                    Text(filterMsg(prompt: message))
+                    Text(filterMsg(prompt: animatedText))
                         .foregroundStyle(
                             sentByUser ?
                             Color.theme.textColor
@@ -81,17 +89,25 @@ struct SingleMessageView: View {
                         .listRowSeparator(.hidden)
                         .overlay(alignment: sentByUser ? .bottomLeading : .bottomTrailing){
                             !sentByUser ?
-                            Image(systemName: "arrowtriangle.down.fill")
-                                .resizable()
-                                .frame(width: 30, height: 20)
-                                .font(.title)
-                                .offset(x: sentByUser ? 5 : -5, y: 15)
-                                .foregroundColor(isError ? Color.theme.errColor : Color.theme.primColor)
+                             animatedText == message ?
+//                            only show the down arrow if the message has been completely animated
+                                Image(systemName: "arrowtriangle.down.fill")
+                                    .resizable()
+                                    .frame(width: 30, height: 20)
+                                    .font(.title)
+                                    .offset(x: sentByUser ? 5 : -5, y: 15)
+                                    .foregroundColor(isError ? Color.theme.errColor : Color.theme.primColor)
+                                : nil
                             : nil
                         }
-                    
-                    
-                    
+                        .onAppear{
+//                            MARK - text animation: if the messages wasnt sent by the user animate it letter by letter
+                            if !sentByUser && !textAlreadyAnimated{
+                                startTypewriterAnimation()
+                            }else{
+                                animatedText = message
+                            }
+                        }
                     if !sentByUser{
                         Spacer()
                     }
@@ -126,11 +142,32 @@ struct SingleMessageView: View {
         }
     }
     
+    func startTypewriterAnimation() {
+        currentIndex = message.startIndex
+        animatedText = ""
+
+        Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { timer in
+            guard let index = currentIndex else {
+                timer.invalidate()
+                return
+            }
+
+            animatedText.append(message[index])
+
+            if index == message.index(before: message.endIndex) {
+                timer.invalidate()
+            } else {
+                currentIndex = message.index(after: index)
+            }
+        }
+    }
+    
     
 }
 
 
 #Preview {
-    SingleMessageView(message: "hello there are u the same user from before or a new user can can we sign you in", sentByUser: false, isError: true, isImg: true, image: Image(systemName: "arrowtriangle.down.fill"), isLoadingSign: false, isRevisedPrompt: false)
+    SingleMessageView(message: "hello there are u the same user from before or a new user can can we sign you in", sentByUser: false, isError: true, isImg: true, image: Image(systemName: "arrowtriangle.down.fill"), isLoadingSign: false, isRevisedPrompt: false, canAnimateImg: false, textAlreadyAnimated: false
+    )
 }
 

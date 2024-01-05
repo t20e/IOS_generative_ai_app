@@ -77,7 +77,7 @@ struct EditPasswordView: View {
             .padding()
             .blur(radius: showAlert ? 5 : 0)
             if showAlert{
-                AlertView(msg: alertMsg, showAlert: $showAlert, isMajorAlert: $isMajorAlert)
+                AlertView(msg: alertMsg, showAlert: $showAlert, isMajorAlert: $isMajorAlert, action: {})
             }
         }
     }

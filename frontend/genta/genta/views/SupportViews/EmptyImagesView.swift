@@ -15,10 +15,9 @@ struct EmptyImagesView: View {
     private var randomImgHeight : [Int] = [85, 75, 95]
 
     
-    
     var body: some View {
         RoundedRectangle(cornerRadius: 5)
-            .stroke(Color.theme.primColor, lineWidth: 1)
+            .stroke(Color.theme.primColor, lineWidth: 0.5)
             .frame(
                 width: CGFloat(randomImgWidth.randomElement()!),
                 height: CGFloat(randomImgHeight.randomElement()!)

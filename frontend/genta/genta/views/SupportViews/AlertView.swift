@@ -13,6 +13,7 @@ struct AlertView: View {
     @Binding var showAlert  : Bool
     @Binding var isMajorAlert : Bool
     @State var animate = false
+    @State var action : () -> Void
     
     var body: some View {
         if showAlert{
@@ -50,11 +51,12 @@ struct AlertView: View {
             }
                 .onTapGesture {
                     showAlert = false
+                    action()
                 }
         }
     }
 }
 
 #Preview {
-    AlertView(msg: "Your session has expired", showAlert: .constant(true), isMajorAlert: .constant(true))
+    AlertView(msg: "Your session has expired", showAlert: .constant(true), isMajorAlert: .constant(true), action: {})
 }

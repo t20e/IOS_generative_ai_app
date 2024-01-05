@@ -222,6 +222,7 @@ export default class UserController {
                 .catch(err => {
                     console.log("error getting logged in user", err)
                     req.body.returnData = this.buildRequestReturnData(500, "Internal server error please try again later", { 'err': "serverError" })
+                    next()
                 })
         } else {
             console.log("User token either expired or error occurred")

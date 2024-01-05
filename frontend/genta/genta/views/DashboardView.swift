@@ -16,7 +16,7 @@ struct DashboardView: View {
         
         UIPageControl.appearance().tintColor = UIColor.lightGray
     }
-    
+        
     var body: some View {
         TabView {
             AllGeneratedImgsView()

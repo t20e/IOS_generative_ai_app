@@ -15,6 +15,7 @@ struct DeleteAccountView: View {
     @State var alertMsg = ""
     @Environment(\.colorScheme) var colorScheme
     @State var isMajorAlert = false
+    @State var actionToPassToAlert = {}
 
     var body: some View {
         ZStack{
@@ -65,7 +66,7 @@ struct DeleteAccountView: View {
             .padding()
             .blur(radius: showAlert ? 5 : 0)
             if showAlert{
-                AlertView(msg: alertMsg, showAlert: $showAlert, isMajorAlert: $isMajorAlert)
+                AlertView(msg: alertMsg, showAlert: $showAlert, isMajorAlert: $isMajorAlert, action: actionToPassToAlert)
             }
         }
     }
@@ -77,7 +78,8 @@ struct DeleteAccountView: View {
             showAlert = true
             if !res.err{
                 isMajorAlert = false
-                user.logout()
+                actionToPassToAlert = user.logout
+//                user.logout()
             }else{
                 isMajorAlert = true
             }

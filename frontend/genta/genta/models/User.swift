@@ -87,8 +87,9 @@ struct UserData: Codable , Identifiable{
     }
     
     
-    func checkToken() async {
-        //        when the user opens the app this will run
+    func checkToken() async -> Bool {
+        // when the user opens the app this will run
+        // return true if successful in loggin user in from token or not
         let foundToken = KeyChainManager.search()
         if foundToken{
             //            attempt to log in the user with the token
@@ -98,16 +99,23 @@ struct UserData: Codable , Identifiable{
             if res.err{
                 // if the token expired alert the user that their session expire and log back in
                 //                tokenExpired = true
-                return isSingedIn = false
+                let deleteRes = KeyChainManager.delete()
+                if deleteRes{
+                    isSingedIn = false
+                    return false
+                }else{
+                    print("Error deleting token when attempting to log user in from token")
+                }
             }
             tokenAccess = token!
             isSingedIn = true
             data = res.user!
 //            print(data)
             await addManyImages()
-            return
+            return true
         }
         isSingedIn = false
+        return false
     }
     
     func addManyImages() async{

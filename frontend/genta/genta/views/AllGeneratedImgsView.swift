@@ -29,13 +29,15 @@ struct AllGeneratedImgsView: View {
                     Text("Hey \(user.data.firstName.capitalized)")
                         .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
                         .font(.title3)
-                        .background(Color.theme.primColor)
+                        .background(Color.theme.textColor)
                         .cornerRadius(20)
                         .padding(.trailing, 25)
                         .foregroundColor(
                             colorScheme == .dark ? .black : .white
 //                            Color.theme.textColor
                         )
+                    
+                    
                 }
                 HStack{
                     Text("Generated images")
