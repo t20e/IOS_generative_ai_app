@@ -16,6 +16,8 @@ struct DeleteAccountView: View {
     @Environment(\.colorScheme) var colorScheme
     @State var isMajorAlert = false
     @State var actionToPassToAlert = {}
+    
+    
 
     var body: some View {
         ZStack{

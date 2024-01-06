@@ -17,7 +17,7 @@ struct HeaderOnBoardingView: View {
                 Image(uiImage: UIImage(named: "AppIcon") ?? UIImage())
                     .resizable()
                     .frame(width: 64,height: 64)
-                    .cornerRadius(15)
+                    .cornerRadius(30)
                 Text("genTa")
                     .font(.title)
                     .bold()

@@ -28,7 +28,7 @@ struct UserData: Codable , Identifiable{
     
     
     private enum CodingKeys: String, CodingKey {
-        case id = "_id" //turn the id from mongoDB into a id so struct can be identifiable everything else gets converted from first_name to firstName becuase of     decoder.keyDecodingStrategy = .convertFromSnakeCase just the _id wasnt working with that
+        case id = "_id" //turn the _id from mongoDB into a id so struct can be identifiable everything else gets converted from first_name to firstName becuase of     decoder.keyDecodingStrategy = .convertFromSnakeCase just the _id wasnt working with that
         case email
         case firstName
         case lastName

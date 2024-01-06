@@ -16,9 +16,10 @@ struct LoadingIconView: View {
        var body: some View {
            ZStack {
                ForEach(colors.indices, id: \.self) { index in
-                   Rectangle()
+                   RoundedRectangle(cornerRadius: 50)
                        .fill(colors[index])
-                       .frame(width: 2, height: 20)
+//                       .frame(width: 2, height: 20)
+                       .frame(width: 5, height: 30)
                        .rotationEffect(.degrees(Double(index) * (360 / Double(colors.count))))
                }
            }

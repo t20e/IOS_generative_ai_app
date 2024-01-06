@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+import SwiftData
 
 let isDeployed = false
 
@@ -20,14 +21,20 @@ let ALLOWED_FREE_NUM_OF_GENERATED_IMGS = 15
 @main
 struct gentaApp: App {
     
-    @StateObject var user = User()
-
+    @StateObject var user : User = User()
+   
+    
     var body: some Scene {
         WindowGroup {
             MainView()
                 .environmentObject(user)
                 .onAppear(perform: self.checkUserToken)
         }
+    }
+    
+    
+    init(){
+        print(URL.applicationSupportDirectory.path(percentEncoded: false))
     }
     
     func checkUserToken(){

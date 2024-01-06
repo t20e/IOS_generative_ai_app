@@ -32,7 +32,7 @@ enum RegisterValidateEnum{
 
 
 class LoginRegController : ObservableObject{
-    
+        
     let minPasswordLength = 6
     let maxPasswordLength = 32
     

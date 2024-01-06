@@ -7,18 +7,16 @@
 
 import SwiftUI
 
+//to view views that have enivoment objects passed in inside the preview on the view() add .environentObkect(the model here)
 
 struct OnBoardingView: View {
-    @EnvironmentObject var user : User
-    @ObservedObject var viewCont = LoginRegController()
+    @EnvironmentObject var user: User
+    @ObservedObject var viewModel = LoginRegController()
     @State var isOnLogin = false
     @State var showRegLogin = false
-    @State var messages : [Message] = []
-    
-    //    @Environment(\.colorScheme) var colorScheme
-    
+    @State var messages: [Message] = []
     @State var textInput = ""
-    @State var canAnimateLoading  = false
+    @State var canAnimateLoading = false
     
     var body: some View {
         
@@ -78,14 +76,14 @@ struct OnBoardingView: View {
                         textInput: $textInput,
                         action: forward_propagate,
                         messages: $messages,
-                        placeHolder: $viewCont.placeholder.wrappedValue
+                        placeHolder: $viewModel.placeholder.wrappedValue
                     )
                     .padding()
                 }
             }
         }
         .onAppear{
-            let selectImg = viewCont.exampleGeneratedImages.randomElement()
+            let selectImg = viewModel.exampleGeneratedImages.randomElement()
             messages += [
                 Message(text: "Prompt?", sentByUser: false),
                 Message(
@@ -124,34 +122,34 @@ struct OnBoardingView: View {
         
 
         
-        if viewCont.regProcess == .validatePassword || viewCont.regProcess == .validateConfirmPassword || viewCont.loginProcess == .validatePassword || viewCont.regProcess == .validateCode {
+        if viewModel.regProcess == .validatePassword || viewModel.regProcess == .validateConfirmPassword || viewModel.loginProcess == .validatePassword || viewModel.regProcess == .validateCode {
             messages.append(Message(text: String(repeating: "*", count: textInput.count), sentByUser: true))
         }else{
             messages.append(Message(text: textInput, sentByUser: true))
         }
         
         if isOnLogin{
-            if viewCont.loginProcess == .validatePassword{
+            if viewModel.loginProcess == .validatePassword{
                 messages.append(Message(text: "Logging in", sentByUser: false))
                 startWaitingAnimation()
-                viewCont.loginData.password = textInput
+                viewModel.loginData.password = textInput
                 return login()
             }
-            let res = viewCont.validateLogin(text: textInput)
+            let res = viewModel.validateLogin(text: textInput)
             messages.append(res.msg)
         } else {
-            if viewCont.regProcess == .validateEmail {
+            if viewModel.regProcess == .validateEmail {
                 startWaitingAnimation()
                 return checkIfEmailExists()
-            } else if viewCont.regProcess == .validateCode{
+            } else if viewModel.regProcess == .validateCode{
                 startWaitingAnimation()
                 return validateCode()
             }
-            else if viewCont.regProcess == .validateAge{
+            else if viewModel.regProcess == .validateAge{
                 startWaitingAnimation()
                 return registerUser()
             } else{
-                let res = viewCont.validateReg(text: textInput)
+                let res = viewModel.validateReg(text: textInput)
                 messages.append(res.msg)
             }
         }
@@ -166,9 +164,9 @@ struct OnBoardingView: View {
             return messages.append(Message(text: "Sorry you need to be 13 or older", sentByUser: false, isError: true))
         }
         messages.append(Message(text: "Registering...", sentByUser: false, isLoadingSign: true))
-        viewCont.regData.age = age
+        viewModel.regData.age = age
         Task{ @MainActor in
-            let res = await user.register(regData: viewCont.regData)
+            let res = await user.register(regData: viewModel.regData)
             await stopAnimation()
             if res.err{
                 messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
@@ -186,15 +184,15 @@ struct OnBoardingView: View {
         messages.append(Message(text: "Checking code.", sentByUser: false, isLoadingSign: true))
         
         Task{ @MainActor in
-            let res = await user.userService.vertifyEmail(email: viewCont.regData.email, code: textInput)
+            let res = await user.userService.vertifyEmail(email: viewModel.regData.email, code: textInput)
             await stopAnimation()
             if res.err{
                 messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
                 return
             }
             messages.append(Message(text: "Email vertified. Please enter a password.", sentByUser: false))
-            viewCont.regProcess = .validatePassword
-            viewCont.placeholder = "password"
+            viewModel.regProcess = .validatePassword
+            viewModel.placeholder = "password"
             textInput = ""
         }
     }
@@ -209,9 +207,9 @@ struct OnBoardingView: View {
                 messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
                 return
             }else{
-                viewCont.regData.email = textInput.trimmingCharacters(in: .whitespacesAndNewlines)
-                viewCont.regProcess = .validateCode
-                viewCont.placeholder = "enter code"
+                viewModel.regData.email = textInput.trimmingCharacters(in: .whitespacesAndNewlines)
+                viewModel.regProcess = .validateCode
+                viewModel.placeholder = "enter code"
                 textInput = ""
                 messages.append(Message(text: res.msg, sentByUser: false))
             }
@@ -220,7 +218,7 @@ struct OnBoardingView: View {
     
     func login(){
         Task{ @MainActor in
-            let res = await user.login(loginData: viewCont.loginData)
+            let res = await user.login(loginData: viewModel.loginData)
             await stopAnimation()
             if res.err{
                 messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
@@ -233,20 +231,20 @@ struct OnBoardingView: View {
     
     func goBack(){
         if isOnLogin{
-            if viewCont.loginProcess == .validatePassword  {
-                viewCont.loginProcess = .validateEmail
-                viewCont.placeholder = "email"
+            if viewModel.loginProcess == .validatePassword  {
+                viewModel.loginProcess = .validateEmail
+                viewModel.placeholder = "email"
                 messages.append(Message(text: "Enter your email.", sentByUser: false))
             }else{return} //so it doesnt erase the textInput when still on email
         }else{
-            let resMsg = viewCont.regGoBackward()
+            let resMsg = viewModel.regGoBackward()
             messages.append(resMsg)
         }
         textInput = ""
     }
     
     func switchProcess(){
-        let resMsg = viewCont.switchTo(isOnLogin: isOnLogin)
+        let resMsg = viewModel.switchTo(isOnLogin: isOnLogin)
         messages.append(resMsg)
         textInput = ""
     }
