@@ -9,7 +9,7 @@ import SwiftUI
 
 
 struct SettingsView: View {
-    @EnvironmentObject var user : User
+    @Environment(\.modelContext) private var context
 
     
     var body: some View {
@@ -45,7 +45,7 @@ struct SettingsView: View {
                 Spacer()
                 Button(action: {
                     print("loggin user out")
-                    user.logout()
+                    PersistenceManager.shared.deleteAll(context: context)
                 }, label: {
                     Text("Log Out")
                 })

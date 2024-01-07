@@ -24,27 +24,23 @@ export default class UserController {
     }
 
     signJwtToken = (user) => {
-        return {
-            "name": "userToken",
-            "cookie":
-                jwt.sign(
-                    {
-                        _id: user._id,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                    },
-                    this.SECRET_KEY,
-                    { expiresIn: '5d' }
-                )
-        }
+        return jwt.sign(
+            {
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+            },
+            this.SECRET_KEY,
+            { expiresIn: '5d' }
+        )
     }
 
     authenticateUser = (req, res, next) => {
         jwt.verify(req.headers.authorization, this.SECRET_KEY, (err, payload) => {
-            // err ? (res.status(401).json({ authenticatedUser: false }), console.log("Unauthorized cookie", err)) : next();
+            // err ? (res.status(401).json({ authenticatedUser: false }), console.log("Unauthorized token", err)) : next();
             if (err) {
                 res.status(401).json({ authenticatedUser: false })
-                console.log("Unauthorized cookie", err)
+                console.log("Unauthorized token", err)
             }
             const decodedJWT = jwt.decode(req.headers.authorization, { complete: true })
             req.body.userId = decodedJWT.payload._id
@@ -57,11 +53,10 @@ export default class UserController {
         /*
             when user if attempting to register this will validate and check if the email address is already in user
         */
-
         const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]+)?$/
         const isValidEmail = await emailRegex.test(req.body.email)
-        console.log("IS it a valid EMAIL?==>", isValidEmail)
-        if (isValidEmail === false) {
+        console.log("Is users email valid? ==>", isValidEmail)
+        if (isValidEmail === false || req.body.email.length < 5) {
             console.log("User entered invalid email!")
             res.status(422).json("Please enter a valid email address"); return
         }
@@ -100,8 +95,8 @@ export default class UserController {
             // turn the newUser document into a plain js object
             let user = newUser.toObject()
             delete user.password
+            user.accessToken = this.signJwtToken(user)
             req.body.returnData = this.buildRequestReturnData(201, "Successfully registered user", user)
-            req.hasCookie = this.signJwtToken(user)
             next()
         } catch (error) {
             console.log("err registering user, err:", error)
@@ -127,8 +122,8 @@ export default class UserController {
                     if (user.generatedImgs.length > 0) {
                         user.generatedImgs = await this.AWS.getManyObjectsPresignedUrl(user.generatedImgs)
                     }
+                    user.accessToken = this.signJwtToken(user)
                     req.body.returnData = this.buildRequestReturnData(200, "Successfully login user", user)
-                    req.hasCookie = this.signJwtToken(user)
                 } else {
                     req.body.returnData = this.buildRequestReturnData(401, "Unauthorized login attempt", "")
                 }
@@ -153,15 +148,6 @@ export default class UserController {
                 }
         */
         try {
-            if (req.hasCookie) {
-                return res
-                    .cookie(req.hasCookie.name, req.hasCookie.cookie, { httpOnly: true })
-                    .status(req.body.returnData.statusCode)
-                    .json({
-                        "msg": req.body.returnData.msg,
-                        "data": req.body.returnData.data
-                    })
-            }
             res
                 .status(req.body.returnData.statusCode)
                 .json({
@@ -192,7 +178,7 @@ export default class UserController {
                 {
                     $push: { generatedImgs: obj },
                     $inc: { numOfImgsGenerated: 1 } //increment the field by 1
-                }, 
+                },
             )
             obj.presigned_url = await this.AWS.getPreSignedUrl(req.body.img_id)
             req.body.returnData = this.buildRequestReturnData(201, "Successfully generated image", obj)

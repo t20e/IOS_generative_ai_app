@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct EditProfileView: View {
-    @EnvironmentObject var user : User
+//    @EnvironmentObject var user : User
 
     @State var firstname = ""
     @State var lastname = ""
@@ -28,7 +28,7 @@ struct EditProfileView: View {
                     Text("First Name")
                         .foregroundStyle(.gray)
                         .font(.footnote)
-                    TextField(user.data.firstName.capitalized, text: $firstname)
+//                    TextField(user.data.firstName.capitalized, text: $firstname)
 //                    TextField("Firstname", text: $firstname)
                         .padding(10)
                         .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 1))
@@ -38,7 +38,7 @@ struct EditProfileView: View {
                     Text("Last Name")
                         .foregroundStyle(.gray)
                         .font(.footnote)
-                    TextField(user.data.lastName.capitalized, text: $lastname)
+//                    TextField(user.data.lastName.capitalized, text: $lastname)
 //                    TextField("Firstname", text: $firstname)
                         .padding(10)
                         .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 1))
@@ -49,7 +49,7 @@ struct EditProfileView: View {
                     Text("Age")
                         .foregroundStyle(.gray)
                         .font(.footnote)
-                    TextField(String(user.data.age), text: $age)
+//                    TextField(String(user.data.age), text: $age)
 //                    TextField("Firstname", text: $firstname)
                         .padding(10)
                         .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 1))

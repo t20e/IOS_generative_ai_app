@@ -14,7 +14,7 @@ struct SingleMessageView: View {
     let sentByUser : Bool
     let isError: Bool
     let isImg : Bool
-    let image : Image
+    let imageData : Data?
     var isLoadingSign : Bool
     var isRevisedPrompt : Bool
     var canAnimateImg : Bool
@@ -50,7 +50,7 @@ struct SingleMessageView: View {
             HStack(spacing : 75){
                 if isImg {
                     HStack(alignment: .top){
-                        image
+                        Image(uiImage: UIImage(data: imageData!)!)
                             .resizable()
                             .frame(width:  225, height: 225)
                             .cornerRadius(10)
@@ -167,7 +167,7 @@ struct SingleMessageView: View {
 
 
 #Preview {
-    SingleMessageView(message: "hello there are u the same user from before or a new user can can we sign you in", sentByUser: false, isError: true, isImg: true, image: Image(systemName: "arrowtriangle.down.fill"), isLoadingSign: false, isRevisedPrompt: false, canAnimateImg: false, textAlreadyAnimated: false
+    SingleMessageView(message: "hello there are u the same user from before or a new user can can we sign you in", sentByUser: false, isError: true, isImg: true, imageData: UIImage(systemName: "arrowtriangle.down.fill")?.pngData(), isLoadingSign: false, isRevisedPrompt: false, canAnimateImg: false, textAlreadyAnimated: false
     )
 }
 

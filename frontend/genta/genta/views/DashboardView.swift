@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DashboardView: View {
-    let colors : [Color] = [.red, .pink, .purple]
+//    let colors : [Color] = [.red, .pink, .purple]
     
     init() {
         UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(Color.theme.actionColor)
@@ -16,7 +16,7 @@ struct DashboardView: View {
         
         UIPageControl.appearance().tintColor = UIColor.lightGray
     }
-        
+ 
     var body: some View {
         TabView {
             AllGeneratedImgsView()

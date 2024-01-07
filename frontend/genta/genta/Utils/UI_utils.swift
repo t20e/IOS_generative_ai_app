@@ -59,3 +59,11 @@ struct RightTriangle: Shape {
         return path
     }
 }
+
+func delay(seconds: Float) async {
+    do {
+        try await Task.sleep(nanoseconds: UInt64(seconds) * 1_000_000_000)
+    } catch {
+        print("Error during delay: \(error)")
+    }
+}

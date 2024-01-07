@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DeleteAccountView: View {
-    @EnvironmentObject var user : User
+//    @EnvironmentObject var user : User
     @State var showTextField = false
     @State var password = ""
     @State var showAlert = false
@@ -50,7 +50,7 @@ struct DeleteAccountView: View {
                         showTextField = true
                     } else if !password.isEmpty{
                         print("deleting account")
-                        deleteAccount()
+//                        deleteAccount()
                     }
                     
                 }, label: {
@@ -73,20 +73,20 @@ struct DeleteAccountView: View {
         }
     }
     
-    func deleteAccount(){
-        Task{@MainActor in
-            let res = await user.userService.deleteAccount(email: user.data.email, password: password, token: user.getAccessToken())
-            alertMsg = res.msg
-            showAlert = true
-            if !res.err{
-                isMajorAlert = false
-                actionToPassToAlert = user.logout
-//                user.logout()
-            }else{
-                isMajorAlert = true
-            }
-        }
-    }
+//    func deleteAccount(){
+//        Task{@MainActor in
+//            let res = await user.userService.deleteAccount(email: user.data.email, password: password, token: user.getAccessToken())
+//            alertMsg = res.msg
+//            showAlert = true
+//            if !res.err{
+//                isMajorAlert = false
+//                actionToPassToAlert = user.logout
+////                user.logout()
+//            }else{
+//                isMajorAlert = true
+//            }
+//        }
+//    }
     
 }
 

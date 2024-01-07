@@ -6,28 +6,28 @@
 //
 
 import SwiftUI
+import SwiftData
 
-//to view views that have enivoment objects passed in inside the preview on the view() add .environentObkect(the model here)
 
 struct OnBoardingView: View {
-    @EnvironmentObject var user: User
-    @ObservedObject var viewModel = LoginRegController()
-    @State var isOnLogin = false
-    @State var showRegLogin = false
-    @State var messages: [Message] = []
-    @State var textInput = ""
-    @State var canAnimateLoading = false
+
+    @ObservedObject private var viewModel = OnBoardingViewModel()
+    
+    @Environment(\.modelContext) private var context
+//    @Query private var users : [User] //can just read first name for the user
+    
+    
     
     var body: some View {
-        
         ZStack{
             VStack{
-                ChatView(messages: $messages)
+                ChatView(messages: $viewModel.messages)
                 
-                if !showRegLogin{
+                if !viewModel.showRegLogin{
                     Button("Sign Up", action: {
-                        showRegLogin = true
-                        messages.append(Message(text: "Enter your email.", sentByUser: false))
+                        viewModel.showRegLogin = true
+                        viewModel.isOnLogin = false
+                        viewModel.messages.append(Message(text: "Enter your email.", sentByUser: false, imageData: nil))
                     })
                     .frame(width: 250, height: 40)
                     .background(Color.theme.primColor)
@@ -35,9 +35,9 @@ struct OnBoardingView: View {
                     .cornerRadius(20)
                     
                     Button("Login", action: {
-                        showRegLogin = true
-                        isOnLogin = true
-                        messages.append(Message(text: "Enter your email.", sentByUser: false))
+                        viewModel.showRegLogin = true
+                        viewModel.isOnLogin = true
+                        viewModel.messages.append(Message(text: "Enter your email.", sentByUser: false, imageData: nil))
                     })
                     .frame(width: 250, height: 40)
                     .background(.clear)
@@ -46,7 +46,19 @@ struct OnBoardingView: View {
                 } else {
                     HStack{
                         Button(action: {
-                            goBack()
+                            viewModel.switchTo()
+                        }, label: {
+                            Text(viewModel.isOnLogin ? "Sign Up" : "Login")
+                                .foregroundStyle(Color.theme.primColor)
+                            Image(systemName: "arrow.up.arrow.down")
+                                .foregroundColor(Color.theme.primColor)
+                            
+                        })
+                        .padding(.horizontal, 15)
+                        
+                        Spacer()
+                        Button(action: {
+                            viewModel.goBack()
                         }, label: {
                             Text("Go back")
                                 .foregroundStyle(Color.theme.primColor)
@@ -54,203 +66,84 @@ struct OnBoardingView: View {
                                 .foregroundColor(Color.theme.primColor)
                         })
                         .padding(.horizontal, 15)
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            switchProcess()
-                            isOnLogin = !isOnLogin
-                        }, label: {
-                            Text(isOnLogin ? "Sign Up" : "Login")
-                                .foregroundStyle(Color.theme.primColor)
-                            Image(systemName: "arrow.up.arrow.down")
-                                .foregroundColor(Color.theme.primColor)
-                            
-                        })
-                        .padding(.horizontal, 15)
                     }
                     
                     
                     MessageTextInput(
-                        canAnimate: $canAnimateLoading,
-                        textInput: $textInput,
-                        action: forward_propagate,
-                        messages: $messages,
-                        placeHolder: $viewModel.placeholder.wrappedValue
+                        canAnimate: $viewModel.canAnimateLoading,
+                        textInput: $viewModel.textInput,
+                        action: process,
+                        messages: $viewModel.messages,
+                        placeHolder: $viewModel.placeholder
                     )
                     .padding()
                 }
             }
         }
-        .onAppear{
-            let selectImg = viewModel.exampleGeneratedImages.randomElement()
-            messages += [
-                Message(text: "Prompt?", sentByUser: false),
-                Message(
-                    text: selectImg!["prompt"]!,
-                    sentByUser: true),
-                Message(text: "", sentByUser: false, isImg: true, image: Image(selectImg!["imageName"]!))
-            ]
-        }
-    }
-    func startWaitingAnimation(){
-        canAnimateLoading = true
-    }
-    func stopAnimation() async {
-        do{
-            try await Task.sleep(nanoseconds: 2 * 1_000_000_000)  // Sleep for 2 seconds
-        }catch{
-            print("Setting task.sleep error, \(error)")
-        }
-        removeLoadingLastIndex()
-        canAnimateLoading = false
-
+        .onChange(of: viewModel.executeProcess, finalProcess)
     }
     
-    func removeLoadingLastIndex(){
-        //        removes the loading sign of the last index of the messages array
-        if let lastIndex = messages.indices.last {
-            // Update the last item
-            messages[lastIndex].isLoadingSign = false
-        }
-    }
-    
-    func forward_propagate(){
-        if textInput.count < 2 {
-            return messages.append(Message(text: "Please enter something.", sentByUser: false, isError: true))
-        }
+    /*
+        IMPORTANT: I could not figure out how to use swiftData outside of views, and I'm pretty sure you cant;
+        so to register/login and save the users data, I put the reg/login in the view rather than in the viewModel
+        so that swiftData could be used. The viewModel control's the view's UI except for final login/reg
+     */
         
-
-        
-        if viewModel.regProcess == .validatePassword || viewModel.regProcess == .validateConfirmPassword || viewModel.loginProcess == .validatePassword || viewModel.regProcess == .validateCode {
-            messages.append(Message(text: String(repeating: "*", count: textInput.count), sentByUser: true))
-        }else{
-            messages.append(Message(text: textInput, sentByUser: true))
-        }
-        
-        if isOnLogin{
-            if viewModel.loginProcess == .validatePassword{
-                messages.append(Message(text: "Logging in", sentByUser: false))
-                startWaitingAnimation()
-                viewModel.loginData.password = textInput
-                return login()
-            }
-            let res = viewModel.validateLogin(text: textInput)
-            messages.append(res.msg)
-        } else {
-            if viewModel.regProcess == .validateEmail {
-                startWaitingAnimation()
-                return checkIfEmailExists()
-            } else if viewModel.regProcess == .validateCode{
-                startWaitingAnimation()
-                return validateCode()
-            }
-            else if viewModel.regProcess == .validateAge{
-                startWaitingAnimation()
-                return registerUser()
-            } else{
-                let res = viewModel.validateReg(text: textInput)
-                messages.append(res.msg)
-            }
-        }
-        textInput = ""
-    }
-    
-    func registerUser(){
-        guard let age = Int(textInput) else {
-            return messages.append(Message(text: "Please enter a validate age", sentByUser: false, isError: true))
-        }
-        if age <= 13{
-            return messages.append(Message(text: "Sorry you need to be 13 or older", sentByUser: false, isError: true))
-        }
-        messages.append(Message(text: "Registering...", sentByUser: false, isLoadingSign: true))
-        viewModel.regData.age = age
+    func register(){
+        viewModel.messages.append(Message(text: "Registering...", sentByUser: false, isLoadingSign: true, imageData: nil))
         Task{ @MainActor in
-            let res = await user.register(regData: viewModel.regData)
-            await stopAnimation()
+            let res = await AuthServices.register(regData: viewModel.regData)
+            await viewModel.stopAnimation()
+            viewModel.executeProcess = .none
             if res.err{
-                messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
-            }else{
-                messages.append(Message(text: res.msg, sentByUser: false))
-                textInput = ""
-            }
-        }
-    }
-    
-    func validateCode(){
-        //        enter the code that was sent to the users email for validation
-        //        send email and code
-        
-        messages.append(Message(text: "Checking code.", sentByUser: false, isLoadingSign: true))
-        
-        Task{ @MainActor in
-            let res = await user.userService.vertifyEmail(email: viewModel.regData.email, code: textInput)
-            await stopAnimation()
-            if res.err{
-                messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
+                viewModel.messages.append(Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
+                viewModel.regProcess = .validateEmail
                 return
             }
-            messages.append(Message(text: "Email vertified. Please enter a password.", sentByUser: false))
-            viewModel.regProcess = .validatePassword
-            viewModel.placeholder = "password"
-            textInput = ""
+            viewModel.messages.append(Message(text: res.msg, sentByUser: false, imageData: nil))
+            viewModel.textInput = ""
+            print("returned user to view", res)
+            await delay(seconds: 0.5)
+            PersistenceManager.shared.saveUser(user: res.user!, context: context)
         }
     }
-    
-    func checkIfEmailExists(){
-        messages.append(Message(text: "Checking your email.", sentByUser: false, isLoadingSign: true))
-        
-        Task{ @MainActor in
-            let res = await user.userService.checkIfEmailInDbApiCall(email: textInput)
-            await stopAnimation()
-            if res.err{
-                messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
-                return
-            }else{
-                viewModel.regData.email = textInput.trimmingCharacters(in: .whitespacesAndNewlines)
-                viewModel.regProcess = .validateCode
-                viewModel.placeholder = "enter code"
-                textInput = ""
-                messages.append(Message(text: res.msg, sentByUser: false))
-            }
-        }
-    }
-    
+ 
     func login(){
         Task{ @MainActor in
-            let res = await user.login(loginData: viewModel.loginData)
-            await stopAnimation()
+            let res = await AuthServices.login(loginData: viewModel.loginData)
+            await viewModel.stopAnimation()
+            viewModel.executeProcess = .none
             if res.err{
-                messages.append(Message(text: res.msg, sentByUser: false, isError: res.err))
-                return
-            }
-            messages.append(Message(text: res.msg, sentByUser: false))
-        }
-    }
-    
-    
-    func goBack(){
-        if isOnLogin{
-            if viewModel.loginProcess == .validatePassword  {
                 viewModel.loginProcess = .validateEmail
-                viewModel.placeholder = "email"
-                messages.append(Message(text: "Enter your email.", sentByUser: false))
-            }else{return} //so it doesnt erase the textInput when still on email
-        }else{
-            let resMsg = viewModel.regGoBackward()
-            messages.append(resMsg)
+                return viewModel.messages.append(Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
+            }
+            viewModel.messages.append(Message(text: res.msg, sentByUser: false, imageData: nil))
+            viewModel.textInput = ""
+            await delay(seconds: 0.5)
+            PersistenceManager.shared.saveUser(user: res.user!, context: context)
+            PersistenceManager.shared.deleteAll(context: context)
         }
-        textInput = ""
     }
     
-    func switchProcess(){
-        let resMsg = viewModel.switchTo(isOnLogin: isOnLogin)
-        messages.append(resMsg)
-        textInput = ""
+    func process(){
+        /* 
+             I was getting a warning that since OnboardingViewModel had a @MainActor it
+             will be removed when passing the viewModel.forward_propagate to the MessageTextInput()
+         */
+            viewModel.forward_propagate()
     }
+
+    func finalProcess(){
+        if viewModel.executeProcess == .none{
+            return // becuase of the .onChange this will run even if the executeProcess == .none so we exit out
+        }
+        viewModel.executeProcess == .register ? register() : login()
+    }
+      
     
 }
 
 #Preview {
     OnBoardingView()
+//        .modelContainer(for: User.self)
 }

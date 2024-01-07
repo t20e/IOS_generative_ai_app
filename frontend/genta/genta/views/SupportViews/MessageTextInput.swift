@@ -16,7 +16,7 @@ struct MessageTextInput: View {
     @Binding var textInput : String
     @State var action : () -> Void
     @Binding var messages : [Message]
-    @State var placeHolder : String
+    @Binding var placeHolder : String
     var style = Animation.easeInOut(duration: 1.5).repeatForever()
     var stopStyle = Animation.easeInOut(duration: 0.5)
     
@@ -33,6 +33,7 @@ struct MessageTextInput: View {
                     .autocorrectionDisabled()
                     .foregroundColor(Color.theme.textColor)
             }
+            
             Image(systemName: canAnimate ? "circle.dotted" : "arrow.up.circle")
             
                 .resizable()
@@ -42,6 +43,7 @@ struct MessageTextInput: View {
                 .rotationEffect(.degrees( animateRotation ? -90 : 0) )
 
                 .onTapGesture {
+//                    TODO maake sure that user cant press this if its already active
                     action()
                     
                     if canAnimate{
@@ -75,5 +77,5 @@ struct MessageTextInput: View {
 }
 
 #Preview {
-    MessageTextInput( canAnimate: .constant(false), hideTextField: false, animateRotation: false, animateScale: false, textInput: .constant("TEST"), action: {}, messages: .constant([]), placeHolder: "TEST placeholder")
+    MessageTextInput( canAnimate: .constant(false), hideTextField: false, animateRotation: false, animateScale: false, textInput: .constant("TEST"), action: {}, messages: .constant([]), placeHolder: .constant("TEST placeholder"))
 }

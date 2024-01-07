@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HelpTabPopUpsView: View {
-    @EnvironmentObject var user : User
+//    @EnvironmentObject var user : User
 
     @Binding var whichPopup : HelpPopUp
     @State var header = ""
@@ -41,7 +41,7 @@ struct HelpTabPopUpsView: View {
                                     }
                                 }
                             Button(action: {
-                                getSupport()
+//                                getSupport()
                             }, label: {
                                 Text("Send")
                                     .foregroundColor(.white)
@@ -81,20 +81,20 @@ struct HelpTabPopUpsView: View {
         }
     }
     
-    func getSupport(){
-        Task{ @MainActor in
-            let res = await user.userService.getSupport(token: user.getAccessToken(), issue: supportTextInput)
-            print("support msg",res)
-            showAlert = true
-            if res.err{
-                isMajorAlert = true
-                alertMsg = "Sorry ran into a problem sending your issure, please try again later."
-                return
-            }
-            isMajorAlert = false
-            alertMsg = "Issue recieved, we will get back to you shortly."
-        }
-    }
+//    func getSupport(){
+//        Task{ @MainActor in
+//            let res = await user.userService.getSupport(token: user.getAccessToken(), issue: supportTextInput)
+//            print("support msg",res)
+//            showAlert = true
+//            if res.err{
+//                isMajorAlert = true
+//                alertMsg = "Sorry ran into a problem sending your issure, please try again later."
+//                return
+//            }
+//            isMajorAlert = false
+//            alertMsg = "Issue recieved, we will get back to you shortly."
+//        }
+//    }
     
 }
 

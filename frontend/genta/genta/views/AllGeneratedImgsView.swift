@@ -6,9 +6,21 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct AllGeneratedImgsView: View {
-    @EnvironmentObject var user : User
+    
+    @Environment(\.modelContext) private var context
+    @Query private var users: [User]
+//    var user : User? {users.first}
+    
+    var user: User {
+        if let firstUser = users.first {
+            return firstUser
+        } else {
+            return User(id: "", email: "", firstName: "", lastName: "", age: 0, numOfImgsGenerated: 0, generatedImgs: [], accessToken: "")
+        }
+    }
     
     @State var showPopUp = false
     @State var currUiImage : UIImage?
@@ -26,7 +38,7 @@ struct AllGeneratedImgsView: View {
             VStack {
                 HStack{
                     Spacer()
-                    Text("Hey \(user.data.firstName.capitalized)")
+                    Text("Hey \(user.firstName)")
                         .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
                         .font(.title3)
                         .background(Color.theme.textColor)
@@ -36,8 +48,6 @@ struct AllGeneratedImgsView: View {
                             colorScheme == .dark ? .black : .white
 //                            Color.theme.textColor
                         )
-                    
-                    
                 }
                 HStack{
                     Text("Generated images")
@@ -49,14 +59,14 @@ struct AllGeneratedImgsView: View {
                 }
                 
                 ScrollView{
-                    if !user.data.generatedImgs.isEmpty{
+                    if !user.generatedImgs.isEmpty{
                         //                    if !true{
-                        ForEach(Array(stride(from: 0, to: user.data.generatedImgs.count, by: 3)), id: \.self) { idx in
+                        ForEach(Array(stride(from: 0, to: user.generatedImgs.count, by: 3)), id: \.self) { idx in
                             HStack{
                                 ForEach(0 ..< 3) { innerIdx in
-                                    if idx + innerIdx < user.data.generatedImgs.count {
-                                        let prompt = user.data.generatedImgs[idx + innerIdx].prompt
-                                        let data = user.data.generatedImgs[idx + innerIdx].data
+                                    if idx + innerIdx < user.generatedImgs.count {
+                                        let prompt = user.generatedImgs[idx + innerIdx].prompt
+                                        let data = user.generatedImgs[idx + innerIdx].data
                                         
                                         if data != nil{
                                             Image(uiImage:

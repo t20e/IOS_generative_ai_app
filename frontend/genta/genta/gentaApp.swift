@@ -6,41 +6,40 @@
 //
 
 import SwiftUI
-
 import SwiftData
 
-let isDeployed = false
 
+// GLOBAL VARIABLES
+let isDeployed = false
 let baseURL: String = {
     return isDeployed ? "https://PAIENDPOINT" : "http://localhost:8080"
 }()
-
 let ALLOWED_FREE_NUM_OF_GENERATED_IMGS = 15
 
 
 @main
 struct gentaApp: App {
     
-    @StateObject var user : User = User()
-   
+//    @Environment(\.modelContext) private var context
+
     
     var body: some Scene {
         WindowGroup {
             MainView()
-                .environmentObject(user)
-                .onAppear(perform: self.checkUserToken)
+//                .environmentObject(user)
+            //                .onAppear(perform: self.checkUserToken)
         }
+        .modelContainer(for: User.self)
+        //        .modelContainer(for: Message.self)
     }
     
-    
-    init(){
-        print(URL.applicationSupportDirectory.path(percentEncoded: false))
-    }
-    
-    func checkUserToken(){
-        Task{ @MainActor in
-            await user.checkToken()
-        }
-    }
-    
+//    
+//    func checkUserToken(){
+//        Task{ @MainActor in
+//            await user.checkToken()
+//        }
+//    }
+//    
 }
+
+

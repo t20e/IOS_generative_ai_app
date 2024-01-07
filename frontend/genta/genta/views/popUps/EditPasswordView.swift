@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct EditPasswordView: View {
-    @EnvironmentObject var user : User
+//    @EnvironmentObject var user : User
     @State var newPassword = ""
     @State var showPasswordField = false
     @State var btnText = "Get code"
@@ -57,11 +57,11 @@ struct EditPasswordView: View {
                     if !showPasswordField{
                         showPasswordField = true
                         btnText = "Update Password"
-                        getCode()
+//                        getCode()
                     } else if showPasswordField {
                         showAlert = false
                         print("Changing password")
-                        changePassword()
+//                        changePassword()
                     }
                 }, label: {
                     HStack{
@@ -81,27 +81,27 @@ struct EditPasswordView: View {
             }
         }
     }
-    func getCode(){
-        Task{@MainActor in
-            let res = await user.userService.getCode(email: user.data.email, token: user.getAccessToken())
-            alertMsg = res.msg
-            showAlert = true
-            isMajorAlert = false
-        }
-    }
-    
-    func changePassword(){
-//        needs the users email witht the old password and new password
-        Task{@MainActor in
-            let res = await user.userService.changePassword(email: user.data.email, code: code, newPassword: newPassword, token: user.getAccessToken())
-            alertMsg = res.msg
-            showAlert = true
-            if !res.err{
-                showPasswordField = false
-                isMajorAlert = true
-            }
-        }
-    }
+//    func getCode(){
+//        Task{@MainActor in
+//            let res = await user.userService.getCode(email: user.data.email, token: user.getAccessToken())
+//            alertMsg = res.msg
+//            showAlert = true
+//            isMajorAlert = false
+//        }
+//    }
+//    
+//    func changePassword(){
+////        needs the users email witht the old password and new password
+//        Task{@MainActor in
+//            let res = await user.userService.changePassword(email: user.data.email, code: code, newPassword: newPassword, token: user.getAccessToken())
+//            alertMsg = res.msg
+//            showAlert = true
+//            if !res.err{
+//                showPasswordField = false
+//                isMajorAlert = true
+//            }
+//        }
+//    }
     
 }
 

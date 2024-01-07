@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 func filterMsg(prompt : String) -> String{
     if prompt.hasPrefix("REVISED###") {
         return "Revised Prompt: \(String(prompt.dropFirst(10)))"

@@ -65,14 +65,14 @@ func performAPICall<T: Codable>(
             throw NetworkError(statusCode!)
         }
         //             If theres any tokens recieved parse it and override any existing tokens in keychains
-        let foundCookie = parseCookie(httpRes: httpRes)
-        if !foundCookie.err{
-            print("Found cookie from request")
-            // print("cookie here", foundCookie.token, type(of: foundCookie.token))
-            guard  saveToken(token: foundCookie.token) else{
-                throw NetworkError.errorParsingCookie
-            }
-        }
+//        let foundToken = parseCookie(httpRes: httpRes)
+//        if !foundToken.err{
+//            print("Found cookie from request")
+//            // print("token here", foundToken.token, type(of: foundCookie.token))
+//            guard  saveToken(token: foundToken.token) else{
+//                throw NetworkError.errorParsingCookie
+//            }
+//        }
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         let result = try decoder.decode(expecting, from: responseData)
