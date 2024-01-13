@@ -6,16 +6,16 @@
 //
 
 import SwiftUI
-
+import SwiftData
 
 struct ChatView: View {
-    @Binding var messages : [Message]
-    
+    var messages : [Message]
+        
     var body: some View {
         ScrollView{
             ScrollViewReader { proxy in
                 VStack{
-                    ForEach(Array(messages.enumerated()), id: \.element.id) { idx, msg in
+                    ForEach(Array(messages.enumerated()), id: \.element.id){ idx, msg in
                         SingleMessageView(
                             message: msg.text,
                             sentByUser: msg.sentByUser,
@@ -24,42 +24,43 @@ struct ChatView: View {
                             imageData: msg.imageData,
                             isLoadingSign: msg.isLoadingSign,
                             isRevisedPrompt: msg.isRevisedPrompt,
-                            canAnimateImg: msg.canAnimateImg,
-                            textAlreadyAnimated : msg.textAlreadyAnimated
+                            textAlreadyAnimated : msg.textAlreadyAnimated,
+                            imgAlreadyAnimated : msg.imgAlreadyAnimated
                         )
                         .padding([.top, .bottom, .horizontal], 15)
                         .onAppear {
-                            if  msg.isImg {
-                                withAnimation {
-                                    messages[idx].canAnimateImg = true
-                                }
-                            }
-                            if !msg.sentByUser{
-                                messages[idx].textAlreadyAnimated = true
-                            }
+                            scrollToBottom(proxy: proxy)
+
+//                            if  msg.isImg {
+//                                withAnimation {
+//                                    user.messages[idx].canAnimateImg = true
+//                                }
+//                            }
+//                            if !msg.sentByUser{
+//                                user.messages[idx].textAlreadyAnimated = true
+//                            }
+                        }
+                        .onChange(of: messages){
+                            scrollToBottom(proxy: proxy)
+//                            if let lastIndex = messages.indices.last {
+//                                // remove the loading sign from the last message
+//                                    if messages[lastIndex - 1].isLoadingSign == true{
+//                                        messages[lastIndex - 1].isLoadingSign = false
+//                                    }
+//                            }
                         }
                     }
                 }
                 .padding(.bottom, 10)
-                .onChange(of: messages) {
-                    DispatchQueue.main.async{
-                        withAnimation {
-                            proxy.scrollTo(messages[messages.endIndex - 1].id, anchor: .bottom)
-                        }
-                    }
-                }
             }
         }
         .cornerRadius(20)
-    }
+    }    
     
-    func waitingPeriod(){
-        //        wait for sometime before do the next thing
-        Task{@MainActor in
-            do{
-                try await Task.sleep(nanoseconds: 2 * 1_000_000_000)  // Sleep for 2 seconds
-            }catch{
-                print("Setting task.sleep error, \(error)")
+    func scrollToBottom(proxy: ScrollViewProxy){
+        DispatchQueue.main.async{
+            withAnimation {
+                proxy.scrollTo(messages[messages.endIndex - 1].id, anchor: .bottom)
             }
         }
     }
@@ -67,10 +68,7 @@ struct ChatView: View {
 }
 
 #Preview {
-    ChatView( messages: .constant([
-        Message( text: "s2", sentByUser: false, imageData:  nil),
-        Message(text: "end", sentByUser: false, imageData: nil),
-        Message(text: "their", sentByUser: false, imageData: nil)
-        
-    ]))
+    
+    let messages : [Message] = []
+    return ChatView(messages: messages)
 }

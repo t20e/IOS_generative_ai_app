@@ -67,3 +67,11 @@ func delay(seconds: Float) async {
         print("Error during delay: \(error)")
     }
 }
+
+
+func filterMsg(prompt : String) -> String{
+    if prompt.hasPrefix("REVISED###") {
+        return "Revised Prompt: \(String(prompt.dropFirst(10)))"
+    }
+    return "\(prompt)"
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="23C71" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="CDGeneratedImage" representedClassName="CDGeneratedImage" syncable="YES">
+        <attribute name="data_" optional="YES" attributeType="Binary"/>
+        <attribute name="imgId" attributeType="String"/>
+        <attribute name="presignedUrl" attributeType="String"/>
+        <attribute name="prompt" attributeType="String"/>
+        <relationship name="cduser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDUser" inverseName="generatedImages_" inverseEntity="CDUser"/>
+    </entity>
+    <entity name="CDMessage" representedClassName="CDMessage" syncable="YES">
+        <attribute name="alreadyAnimated" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="imageData_" optional="YES" attributeType="Binary"/>
+        <attribute name="isError" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isImg" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isLoadingSign" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isRevisedPrompt" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="sentByUser" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="text_" optional="YES" attributeType="String"/>
+        <relationship name="cduser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDUser" inverseName="messages_" inverseEntity="CDUser"/>
+    </entity>
+    <entity name="CDUser" representedClassName="CDUser" syncable="YES">
+        <attribute name="accessToken_" optional="YES" attributeType="String"/>
+        <attribute name="age_" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="email_" optional="YES" attributeType="String"/>
+        <attribute name="firstName_" optional="YES" attributeType="String"/>
+        <attribute name="id_" optional="YES" attributeType="String"/>
+        <attribute name="isCurrUser_" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="lastName_" optional="YES" attributeType="String"/>
+        <attribute name="numImgsGenerated_" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="generatedImages_" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="CDGeneratedImage" inverseName="cduser" inverseEntity="CDGeneratedImage"/>
+        <relationship name="messages_" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="CDMessage" inverseName="cduser" inverseEntity="CDMessage"/>
+    </entity>
+</model>

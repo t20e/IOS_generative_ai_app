@@ -20,15 +20,25 @@ struct resSimpleData : Codable{
 
 
 final class AuthServices{
-    static let endPoint = baseURL + "/api/v1/users"
+    let endPoint = baseURL + "/api/v1/users"
     
-    static func register(regData: RegData) async  -> (err: Bool, msg: String, user : User?){
+    static let shared = AuthServices()
+
+    
+    func register(regData: RegData) async  -> (err: Bool, msg: String, user : User?){
         print("Attempting to register user")
         
         let url = URL(string: "\(self.endPoint)/reg")!
         
         do{
-            let res = try await performAPICall(url: url, data: regData, token: nil, expectedStatusCode: .created, method: "POST", expecting: resReturnUserData.self)
+            let res = try await performAPICall(
+                url: url,
+                data: regData,
+                token: nil,
+                expectedStatusCode: .created,
+                method: "POST",
+                expecting: resReturnUserData.self
+            )
             let user = res?.data
             print("heer", user!)
             return (false, "Successfully registered", user)
@@ -45,12 +55,12 @@ final class AuthServices{
             }
         }
         catch {
-            print("An unkown error occured when registering")
+            print("An unkown error occured when registering, error: \(error)")
             return (true, "An unkown error occured, please try again", nil)
         }
     }
     //    //    MARK - login
-    static func login(loginData: LoginData) async -> (err : Bool, msg : String, user: User?) {
+    func login(loginData: LoginData) async -> (err : Bool, msg : String, user: User?) {
         print("Attempting to login in user")
         
         let url = URL(string: "\(endPoint)/login")!
@@ -80,13 +90,14 @@ final class AuthServices{
                 return (true, "Uncaught error, please try again", nil)
             }
         }catch{
+            print("An unkown error occured when loggin in, error: \(error)")
             return (true, "An unkown error occured, please try again", nil)
         }
     }
     
     
     
-    static func checkIfEmailExists(email : String) async -> (err : Bool, msg : String){
+    func checkIfEmailExists(email : String) async -> (err : Bool, msg : String){
         /*
          when user attempts to register we need to make sure that the email isnt in db
          */
@@ -117,12 +128,13 @@ final class AuthServices{
             }
         }
         catch {
+            print("An unkown error occured when checking if email exists, error: \(error)")
             return (true, "An unkown error occured, please try again later")
         }
     }
     
     
-    static func vertifyEmail(email:String, code:String) async -> (err: Bool, msg:String){
+    func vertifyEmail(email:String, code:String) async -> (err: Bool, msg:String){
         /*
          when user attempts to register they will get a code sent to their email which will need to be vertified here
          */
@@ -149,6 +161,7 @@ final class AuthServices{
                 return (true, "Uncaught error, please try again")
             }
         } catch {
+            print("An unkown error occured when vertifying email, error: \(error)")
             return (true, "An unkown error occured, please try again later")
         }
     }

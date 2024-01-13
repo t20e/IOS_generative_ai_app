@@ -7,12 +7,9 @@
 
 import Foundation
 import UIKit
+import CoreData
 
-//add UIVIEWCONTROLLER
-class MainViewController: ObservableObject{
-    
-    init(){}
-    
-    
+
+class MainViewController: UIViewController{  
     
 }

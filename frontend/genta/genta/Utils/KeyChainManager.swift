@@ -16,11 +16,13 @@ class KeyChainManager{
     
     
     //    static let server = "www.example.com"
-    static let account = "genta-app.com"
-    static let service = "token"
+    let account = "genta-app.com"
+    let service = "token"
     
+    static let shared = KeyChainManager()
+
     
-    static func upsert(
+    func upsert(
         token : String
     ) -> Bool {
         //        returns bool true if successful false if not succesfull
@@ -61,7 +63,7 @@ class KeyChainManager{
     }
     
     
-    static func save(
+    func save(
         token : String
     )-> Bool{
         //returns bool true if successful false if not succesfull
@@ -94,7 +96,7 @@ class KeyChainManager{
         }
     }
     
-    static func get()  -> (err: Bool, result: Data?) {
+    func get()  -> (err: Bool, result: Data?) {
         /*
          unlike search this will retrieve the item
          */
@@ -120,7 +122,7 @@ class KeyChainManager{
         return (false, result as? Data)
     }
     
-    static func search()  -> Bool {
+    func search()  -> Bool {
         //        returns bool true if successful false if not succesfull
         print("Searching for token in keychains")
         let query : [String : AnyObject] = [
@@ -145,7 +147,7 @@ class KeyChainManager{
     }
     
     
-    static func update(token: String) -> Bool{
+    func update(token: String) -> Bool{
         //        returns bool true if successful false if not succesfull
         print("Attempting to update token")
         let query : [String : Any] = [
@@ -167,7 +169,7 @@ class KeyChainManager{
         return true
     }
     
-    static func delete() ->Bool{
+    func delete() ->Bool{
         //        returns bool if successful or not
         print("Attempting to delete token from keychains")
         let query: [String: Any] = [

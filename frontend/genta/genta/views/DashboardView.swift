@@ -7,13 +7,12 @@
 
 import SwiftUI
 
+
 struct DashboardView: View {
-//    let colors : [Color] = [.red, .pink, .purple]
-    
+   
     init() {
         UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(Color.theme.actionColor)
         UIPageControl.appearance().pageIndicatorTintColor = UIColor.lightGray
-        
         UIPageControl.appearance().tintColor = UIColor.lightGray
     }
  

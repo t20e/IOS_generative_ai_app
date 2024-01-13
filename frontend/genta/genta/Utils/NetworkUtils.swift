@@ -104,6 +104,6 @@ func parseCookie(httpRes : HTTPURLResponse) -> (err: Bool, token : String){
 
 func saveToken(token : String) -> Bool{
     //        saves token to keychain
-    return KeyChainManager.upsert(token: token)
+    return KeyChainManager.shared.upsert(token: token)
 }
 

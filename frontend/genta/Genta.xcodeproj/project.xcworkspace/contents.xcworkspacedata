@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:">
+      location = "self:/Users/tonyavis/Documents/AI/IOS_generative_ai_app/frontend/genta/Genta.xcodeproj">
    </FileRef>
 </Workspace>

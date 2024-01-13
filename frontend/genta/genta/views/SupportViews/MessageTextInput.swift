@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct MessageTextInput: View {
+    
     @Binding var canAnimate : Bool
     @State var hideTextField = false
     @State var animateRotation = false
@@ -17,8 +19,7 @@ struct MessageTextInput: View {
     @State var action : () -> Void
     @Binding var messages : [Message]
     @Binding var placeHolder : String
-    var style = Animation.easeInOut(duration: 1.5).repeatForever()
-    var stopStyle = Animation.easeInOut(duration: 0.5)
+    @Binding var btnAlreadyClicked : Bool
     
     var body: some View {
         HStack(spacing: 25){
@@ -41,11 +42,11 @@ struct MessageTextInput: View {
                 .frame(width: 25, height: 25)
                 .foregroundColor(Color.theme.actionColor)
                 .rotationEffect(.degrees( animateRotation ? -90 : 0) )
-
+            
                 .onTapGesture {
-//                    TODO maake sure that user cant press this if its already active
-                    action()
-                    
+                    if !btnAlreadyClicked{
+                        action()
+                    }
                     if canAnimate{
                         animateRotation = true
                         withAnimation(.spring(response: 0.8, dampingFraction: 0.3, blendDuration: 0)){
@@ -54,10 +55,10 @@ struct MessageTextInput: View {
                         withAnimation(.easeInOut(duration: 0.5)){
                             animateScale = true
                         }
-//                        TODO not working
-//                        withAnimation(.easeInOut(duration: 1.5).repeatForever()) {
-//                            animateRotation = true
-//                        }
+                        //                        TODO not working
+                        //                        withAnimation(.easeInOut(duration: 1.5).repeatForever()) {
+                        //                            animateRotation = true
+                        //                        }
                     }
                 }
                 .onChange(of: canAnimate){
@@ -77,5 +78,21 @@ struct MessageTextInput: View {
 }
 
 #Preview {
-    MessageTextInput( canAnimate: .constant(false), hideTextField: false, animateRotation: false, animateScale: false, textInput: .constant("TEST"), action: {}, messages: .constant([]), placeHolder: .constant("TEST placeholder"))
+    func exampleFunction() {
+        print("Action triggered!")
+    }
+    let messages : [Message] = []
+    return MessageTextInput(
+        canAnimate: .constant(
+            false
+        ),
+        textInput: .constant(
+            ""
+        ),
+        action: exampleFunction,
+        messages: .constant(messages),
+        placeHolder: .constant(""),
+        btnAlreadyClicked: .constant(false)
+    )
+    
 }

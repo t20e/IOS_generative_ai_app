@@ -1,9 +1,9 @@
-//
-//  OnBoardingViewModel.swift
-//  genta
-//
-//  Created by Tony Avis on 1/6/24.
-//
+////
+////  OnBoardingViewModel.swift
+////  genta
+////
+////  Created by Tony Avis on 1/6/24.
+////
 
 import Foundation
 import SwiftData
@@ -33,11 +33,11 @@ enum RegisterValidateEnum{
 enum ExecuteProcess{
     case none, register, login
 }
-
-
+//
+//
 @MainActor
 class OnBoardingViewModel : ObservableObject{
-    
+
     let minPasswordLength = 6
     let maxPasswordLength = 32
     
@@ -48,13 +48,36 @@ class OnBoardingViewModel : ObservableObject{
     
     @Published var loginData = LoginData(email: "", password: "")
     @Published var regData = RegData(email: "", password: "", firstName: "", lastName: "", age: 0)
-    @Published var messages : [Message] = []
+    
     @Published var isOnLogin = false
     @Published var showRegLogin = false
     @Published var textInput = ""
     @Published var canAnimateLoading = false
+    @Published var messages : [Message]
+    @Published var btnAlreadyClicked : Bool
     
-    init(loginProcess: LoginValidateEnum = LoginValidateEnum.validateEmail, regProcess: RegisterValidateEnum = RegisterValidateEnum.validateEmail, placeholder: String = "email", loginData: LoginData = LoginData(email: "", password: ""), regData: RegData = RegData(email: "", password: "", firstName: "", lastName: "", age: 0), isOnLogin: Bool = false, showRegLogin: Bool = false, messages: [Message] = [], textInput: String = "", canAnimateLoading: Bool = false) {
+    init(
+        loginProcess: LoginValidateEnum = LoginValidateEnum.validateEmail,
+        regProcess: RegisterValidateEnum = RegisterValidateEnum.validateEmail,
+        placeholder: String = "email",
+        loginData: LoginData = LoginData(
+            email: "",
+            password: ""
+        ),
+        regData: RegData = RegData(
+            email: "",
+            password: "",
+            firstName: "",
+            lastName: "",
+            age: 0
+        ),
+        isOnLogin: Bool = false,
+        showRegLogin: Bool = false,
+        textInput: String = "",
+        canAnimateLoading: Bool = false,
+        messages : [Message] = [],
+        btnAlreadyClicked : Bool = false
+    ) {
         self.loginProcess = loginProcess
         self.regProcess = regProcess
         self.placeholder = placeholder
@@ -62,12 +85,15 @@ class OnBoardingViewModel : ObservableObject{
         self.regData = regData
         self.isOnLogin = isOnLogin
         self.showRegLogin = showRegLogin
-        self.messages = messages
         self.textInput = textInput
         self.canAnimateLoading = canAnimateLoading
+        self.messages = messages
+        self.btnAlreadyClicked = btnAlreadyClicked
         self.setStartingMsg()
     }
+   
     
+//
     func forward_propagate(){
         if textInput.count < 2 {
             messages.append(Message(text: "Please enter something.", sentByUser: false, isError: true, imageData: nil))
@@ -87,20 +113,21 @@ class OnBoardingViewModel : ObservableObject{
             validateReg()
         }
     }
-    
+  
     func startLoadingAnimation(){
         //starts the loading animation on messages
+        btnAlreadyClicked = true
         canAnimateLoading = true
     }
- 
+
     func stopAnimation() async {
         //stops the loading animation on messages
         await delay(seconds: 2.0)
         removeLoadingLastIndex()
         canAnimateLoading = false
-        
+        btnAlreadyClicked = false
     }
-    
+
     func removeLoadingLastIndex(){
         //        removes the loading sign of the last index of the messages array
         if let lastIndex = messages.indices.last {
@@ -108,8 +135,7 @@ class OnBoardingViewModel : ObservableObject{
             messages[lastIndex].isLoadingSign = false
         }
     }
-    
-    
+
     //    TODO when err occurs remove the loading sign
     func validateLogin(){
         let text = textInput
@@ -123,11 +149,12 @@ class OnBoardingViewModel : ObservableObject{
             messages.append(Message(text: "Logging in", sentByUser: false, imageData: nil))
             loginData.password = textInput
             startLoadingAnimation()
-            executeProcess = .login
+            login()
+//            executeProcess = .login
         }
         textInput = ""
     }
-    
+   
     func validateReg() {
         switch regProcess {
         case .validateEmail:
@@ -184,18 +211,19 @@ class OnBoardingViewModel : ObservableObject{
             print("registering")
             regData.age = age
             startLoadingAnimation()
-            executeProcess = .register
+//            executeProcess = .register
+            register()
         }
         textInput = ""
     }
     
     func checkIfEmailExists() {
-        //        return bool if err occurs
+        // return bool if err occurs
         messages.append(Message(text: "Checking your email.", sentByUser: false, isLoadingSign: true, imageData: nil))
         let email = textInput
         Task{ @MainActor in
             print("here", email)
-            let res = await AuthServices.checkIfEmailExists(email: email)
+            let res = await AuthServices.shared.checkIfEmailExists(email: email)
             await stopAnimation()
             if res.err{
                 messages.append(Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
@@ -207,13 +235,13 @@ class OnBoardingViewModel : ObservableObject{
             }
         }
     }
-    
+
     func validateCode(){
         // validates the code that was send to users email
         messages.append(Message(text: "Checking code.", sentByUser: false, isLoadingSign: true, imageData: nil))
         let code = textInput
         Task{ @MainActor in
-            let res = await AuthServices.vertifyEmail(email: regData.email, code: code)
+            let res = await AuthServices.shared.vertifyEmail(email: regData.email, code: code)
             await stopAnimation()
             if res.err{
                 messages.append(Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
@@ -242,8 +270,9 @@ class OnBoardingViewModel : ObservableObject{
         textInput = ""
         isOnLogin = !isOnLogin
     }
+        
     func goBack(){
-        //go back to the previous input field
+        // go back to the previous input field
         if isOnLogin{
             if loginProcess == .validatePassword  {
                 loginProcess = .validateEmail
@@ -282,9 +311,48 @@ class OnBoardingViewModel : ObservableObject{
         }
         textInput = ""
     }
+    
+    func register(){
+        messages.append(Message(text: "Registering...", sentByUser: false, isLoadingSign: true, imageData: nil))
+        Task{ @MainActor in
+            let res = await AuthServices.shared.register(regData: regData)
+            await stopAnimation()
+            executeProcess = .none
+            if res.err{
+                messages.append(Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
+                placeholder = "email"
+                regProcess = .validateEmail
+                return
+            }
+            messages.append(Message(text: res.msg, sentByUser: false, imageData: nil))
+            textInput = ""
+            print("returned user to view", res)
+            await delay(seconds: 0.5)
+            PersistenceController.shared.addUser(userStruct: res.user!)
+        }
+    }
+ 
+    func login(){
+        Task{ @MainActor in
+            let res = await AuthServices.shared.login(loginData: loginData)
+            await stopAnimation()
+            executeProcess = .none
+            if res.err{
+                placeholder = "email"
+                loginProcess = .validateEmail
+                return messages.append(Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
+            }
+            messages.append(Message(text: res.msg, sentByUser: false, imageData: nil))
+            textInput = ""
+            await delay(seconds: 0.5)
+            PersistenceController.shared.addUser(userStruct: res.user!)
+        }
+    }
+    
+    
 
-    func setStartingMsg(){
-        let msgs = [
+    func setStartingMsg() {
+        let msgs :  [[String: String]] = [
             [
                 "prompt": "Design a captivating image of a city in the future, featuring towering skyscrapers made of gleaming glass and steel structures. The city should have flying cars and monorail systems zipping through the sky. There should be rooftop gardens on some buildings, demonstrating city dwellers' commitment to urban green spaces.",
                 "imageName": "Design_a_captivating_image_of_a_city_in_the_future,"
@@ -302,18 +370,33 @@ class OnBoardingViewModel : ObservableObject{
                 "imageName": "robotsDiner"
             ]
         ]
-        let selectImg = msgs.randomElement()
-        messages.append(contentsOf :
-                            [
-                                Message(text: "Prompt?", sentByUser: false, imageData: nil),
-                                Message(
-                                    text: selectImg!["prompt"]!,
-                                    sentByUser: true, imageData: nil),
-                                Message(text: "", sentByUser: false, isImg: true, imageData:
-                                            UIImage(named: selectImg!["imageName"]!)?.pngData() )
-                            ]
-        )
+        let selectedImg = msgs.randomElement() ?? ["prompt": "Default Prompt", "imageName": "defaultImage"]
+        let imageData : Data = (UIImage(named: selectedImg["imageName"]!)?.pngData())!
+        messages += [
+            Message(text: "Prompt?", sentByUser: false, imageData: nil),
+            Message(
+                text: selectedImg["prompt"]!,
+                sentByUser: true, imageData: nil),
+            Message(text: "", sentByUser: false, isImg: true, imageData: imageData)
+        ]
+        
     }
+    
+    
+    
+    func validateNames(text: String) ->  (err:Bool, msg:String) {
+        let regexPattern = "^[^0-9]+$"
+        do {
+            let regex = try NSRegularExpression(pattern: regexPattern, options: .caseInsensitive)
+            let numberOfMatches = regex.numberOfMatches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
+            if numberOfMatches > 0{
+                return (false, "")
+            }else{
+                return (true, "No numbers are allowed in names")
+            }
+        }catch{
+            return (true,  "Something went wrong, please check your name")
+        }
+    }
+
 }
-
-

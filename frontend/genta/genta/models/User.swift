@@ -7,47 +7,55 @@
 
 import Foundation
 import SwiftUI
-import UIKit
-import SwiftData
+import CoreData
 
-struct GeneratedImgsStruct: Codable, Hashable{
+
+struct GeneratedImage: Codable, Hashable{
     var imgId: String
     var prompt: String
     var presignedUrl: String
     var data : Data? // store image as string of base64 i coulnt just leave it a uiImage becuase uiimage doesnt conform to codable
 }
 
-@Model
+//@Model
+/*
+    I tried to put the user data in swiftData but I ran into alot of issues, swiftData seems to best
+    fit for an array of data
+ */
+//TODO figure out how to make it so i dont need this class just parse the JSON right into the coreData entity
+//@objc(CDUser)
 final class User : Codable, Identifiable, ObservableObject {
+    // this is for the in me
     let id : String
     let email : String
-    let firstName : String
+    var firstName : String
     let lastName : String
-    let age : Int
-    var numOfImgsGenerated : Int
-    var generatedImgs : [GeneratedImgsStruct]
-    // Relationship data
-    @Relationship(deleteRule: .cascade) var messages = [Message]() // To persist msgs for the GenerateImgView not for OnboardingView
+    var age : Int64
+    var numImgsGenerated : Int64
+    var generatedImgs : [GeneratedImage]
     var accessToken: String
+    var isCurrUser : Bool
         
     init(
         id: String,
         email: String,
         firstName: String,
         lastName: String,
-        age: Int,
-        numOfImgsGenerated: Int,
-        generatedImgs: [GeneratedImgsStruct],
-        accessToken : String
+        age: Int64,
+        numImgsGenerated: Int64,
+        generatedImgs: [GeneratedImage],
+        accessToken : String,
+        isCurrUser : Bool = false
     ) {
         self.id = id
         self.email = email
         self.firstName = firstName
         self.lastName = lastName
         self.age = age
-        self.numOfImgsGenerated = numOfImgsGenerated
+        self.numImgsGenerated = numImgsGenerated
         self.generatedImgs = generatedImgs
         self.accessToken = accessToken
+        self.isCurrUser = isCurrUser
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -56,7 +64,7 @@ final class User : Codable, Identifiable, ObservableObject {
         case firstName
         case lastName
         case age
-        case numOfImgsGenerated
+        case numImgsGenerated
         case generatedImgs
 //        case messages
         case accessToken
@@ -69,16 +77,49 @@ final class User : Codable, Identifiable, ObservableObject {
         email = try container.decode(String.self, forKey: .email)
         firstName = try container.decode(String.self, forKey: .firstName)
         lastName = try container.decode(String.self, forKey: .lastName)
-        age = try container.decode(Int.self, forKey: .age)
-        generatedImgs = try container.decode([GeneratedImgsStruct].self, forKey: .generatedImgs)
-        numOfImgsGenerated = try container.decode(Int.self, forKey: .numOfImgsGenerated)
+        age = Int64(try container.decode(Int.self, forKey: .age))
+        generatedImgs = try container.decode([GeneratedImage].self, forKey: .generatedImgs)
+        numImgsGenerated = Int64(try container.decode(Int.self, forKey: .numImgsGenerated))
         accessToken = try container.decode(String.self, forKey: .accessToken)
+        isCurrUser = false
     }
 
     func encode(to encoder: Encoder) throws {
         // Encoding logic...
     }
-}
+    
+//    func addManyImages() async {
+//        /*
+//         gets the image data from ImageServices and add that data to users generated images
+//
+//         gets all the user's images data from the generatedImages array and foreach image it will call downloadImage and set
+//         the data field to the downloaded image as a Data obj
+//         */
+////        for idx in .generatedImgs.indices {
+////            await addOneImage(idx: idx)
+////        }
+//    }
+//
+//
+//    func addOneImage(idx : Int) async{
+//        /*
+//         this will add the missing data field form generatedImgs and using the presignedUrl it will fill that data
+//         */
+////        let url = data.generatedImgs[idx].presignedUrl
+////        let res = await imageServices.downLoadImage(presignedUrl: url)
+////
+////        if res != nil{
+////            data.generatedImgs[idx].data = res
+////        }else{
+//////            TODO do something cuz error
+////            print("Issue with getting data object from ImageServices.downloadImage")
+////        }
+////
+////
+//    }
+    
+    
+//}
 
 
 //
@@ -161,35 +202,7 @@ final class User : Codable, Identifiable, ObservableObject {
 //        return false
 //    }
 //    
-//    func addManyImages() async{
-//        /*
-//         gets the image data from ImageServices and add that data to users generated images
-//         
-//         gets all the user's images data from the generatedImages array and foreach image it will call downloadImage and set
-//         the data field to the downloaded image as a Data obj
-//         */
-//        for idx in data.generatedImgs.indices {
-//            await addOneImage(idx: idx)
-//        }
-//    }
-//    
-//    
-//    func addOneImage(idx : Int) async{
-//        /*
-//         this will add the missing data field form generatedImgs and using the presignedUrl it will fill that data
-//         */
-//        let url = data.generatedImgs[idx].presignedUrl
-//        let res = await imageServices.downLoadImage(presignedUrl: url)
-//        
-//        if res != nil{
-//            data.generatedImgs[idx].data = res
-//        }else{
-////            TODO do something cuz error
-//            print("Issue with getting data object from ImageServices.downloadImage")
-//        }
-//        
-//        
-//    }
+
 //    
 //    func getAccessToken() -> String{
 //        return tokenAccess
@@ -203,5 +216,5 @@ final class User : Codable, Identifiable, ObservableObject {
 //        }
 ////        alert user something went wrong
 //    }
-//}
-//
+}
+

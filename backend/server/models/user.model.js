@@ -31,7 +31,7 @@ const UserSchema = new Mongoose.Schema({
         // min: [13, 'you need to be older than 12'],
         // max: [120, 'age cant be more than 120']
     },
-    numOfImgsGenerated:{
+    numImgsGenerated:{
         type: Number,
         default : 0
     },

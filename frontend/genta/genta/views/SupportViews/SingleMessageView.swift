@@ -17,8 +17,9 @@ struct SingleMessageView: View {
     let imageData : Data?
     var isLoadingSign : Bool
     var isRevisedPrompt : Bool
-    var canAnimateImg : Bool
+    @State var canAnimateImg  = false
     var textAlreadyAnimated : Bool
+    var imgAlreadyAnimated : Bool
     
 //    varaibles to animate a text letter by letter
     @State private var animatedText: String = ""
@@ -56,7 +57,11 @@ struct SingleMessageView: View {
                             .cornerRadius(10)
                             .aspectRatio(contentMode: .fit)
                             .scaleEffect( canAnimateImg ? 1 : 0.5)
+                        
                             .animation(.spring(response: 0.8, dampingFraction: 0.3, blendDuration: 0),value: canAnimateImg)
+                            .onAppear{
+                                canAnimateImg = true
+                            }
 
                         
                         RightTriangle()
@@ -167,7 +172,7 @@ struct SingleMessageView: View {
 
 
 #Preview {
-    SingleMessageView(message: "hello there are u the same user from before or a new user can can we sign you in", sentByUser: false, isError: true, isImg: true, imageData: UIImage(systemName: "arrowtriangle.down.fill")?.pngData(), isLoadingSign: false, isRevisedPrompt: false, canAnimateImg: false, textAlreadyAnimated: false
+    SingleMessageView(message: "hello there are u the same user from before or a new user can can we sign you in", sentByUser: false, isError: true, isImg: true, imageData: UIImage(systemName: "arrowtriangle.down.fill")?.pngData(), isLoadingSign: false, isRevisedPrompt: false, canAnimateImg: false, textAlreadyAnimated: false, imgAlreadyAnimated: false
     )
 }
 

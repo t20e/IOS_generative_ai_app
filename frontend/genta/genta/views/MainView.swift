@@ -6,32 +6,42 @@
 //
 
 import SwiftUI
-import SwiftData
-
+import CoreData
 
 struct MainView: View {
-    var mainCon = MainViewController()
-    @Environment(\.modelContext) private var context
-    @Query private var users: [User]
-
+    @Environment(\.managedObjectContext) var context
+    @FetchRequest(
+        entity: CDUser.entity(),
+        sortDescriptors: [],
+        predicate: NSPredicate(format: "isCurrUser_ == %@", NSNumber(value: true)),
+        animation: .default)
+    private var users: FetchedResults<CDUser>
+ 
     var body: some View {
-        
+
         VStack{
-            if users.count == 0{
-                //user is not signed in
+            if let user = users.first {
+                DashboardView()
+            }else{
+                // user is not signed in
                 HeaderOnBoardingView()
                 OnBoardingView()
-            }else{
-                DashboardView()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.theme.baseColor)
         .onAppear{
-//            PersistenceManager.shared.deleteAll(context: context)
+//            if let user = users.first{
+//                // PersistenceController.shared.editUser(user: user)
+//            }
+//            PersistenceController.shared.deleteAll()
         }
     }
-    
+ 
+//    func checkToken(){
+//        KeyChainManager.shared.search()
+//    }
+ 
 }
 
 

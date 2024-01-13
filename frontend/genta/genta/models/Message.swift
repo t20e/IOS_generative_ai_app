@@ -7,11 +7,10 @@
 //
 import Foundation
 import SwiftUI
-import SwiftData
 
 
-@Model
-class Message: Hashable, Identifiable {
+//@Model
+struct Message: Hashable, Identifiable {
     
     let id = UUID()
     let text: String
@@ -19,12 +18,12 @@ class Message: Hashable, Identifiable {
     let isError : Bool
     var isLoadingSign : Bool
     let isImg : Bool
-    @Attribute(.externalStorage) let imageData: Data?
-//    let imageData: Data?
+//    @Attribute(.externalStorage) let imageData: Data?
+    let imageData: Data?
     let isRevisedPrompt: Bool
-    var canAnimateImg : Bool
     var textAlreadyAnimated : Bool
     let timestamp : Date
+    var imgAlreadyAnimated : Bool
     
     init(
         text: String,
@@ -36,6 +35,7 @@ class Message: Hashable, Identifiable {
         isRevisedPrompt: Bool = false,
         canAnimateImg: Bool = false,
         textAlreadyAnimated: Bool = false,
+        imgAlreadyAnimated : Bool = false,
         timestamp: Date = Date.now
     ) {
         self.text = text
@@ -45,8 +45,8 @@ class Message: Hashable, Identifiable {
         self.isImg = isImg
         self.imageData = imageData
         self.isRevisedPrompt = isRevisedPrompt
-        self.canAnimateImg = canAnimateImg
         self.textAlreadyAnimated = textAlreadyAnimated
+        self.imgAlreadyAnimated = imgAlreadyAnimated
         self.timestamp = timestamp
     }
 

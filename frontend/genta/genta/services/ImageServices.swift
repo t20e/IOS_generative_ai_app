@@ -10,6 +10,8 @@ import Foundation
 class ImageServices : ObservableObject{
     let endPoint = baseURL + "/api/v1/imgs"
     
+    static let shared = ImageServices()
+
     
     struct GenerateImgReturn: Codable {
         var msg : String
@@ -20,10 +22,8 @@ class ImageServices : ObservableObject{
         var presignedUrl : String
         var prompt : String
     }
-
-    
-    
-    func generateImgApiCAll(prompt: String, token : String) async -> (err: Bool, msg: String?, data: GenerateImgReturnData?){
+ 
+    func generateImg(prompt: String, token : String) async -> (err: Bool, msg: String?, data: GenerateImgReturnData?){
         print("Attempting to generate image")
         let url = URL(string: "\(endPoint)/generate")!
 //        print(url)
