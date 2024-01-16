@@ -21,16 +21,8 @@ import Foundation
 
 class UserServices : ObservableObject{
     private let endPoint = baseURL + "/api/v1/users"
-    
-//    
-//    
-//    
-
-//    
-//    
-
-//    
-//    
+ 
+//
 //    func logInUserFromToken(token : String) async -> (err : Bool, msg : String, user: UserData?) {
 //        print("Attempting to log in user from token")
 //        let url = URL(string: "\(endPoint)/getLoggedUser")!

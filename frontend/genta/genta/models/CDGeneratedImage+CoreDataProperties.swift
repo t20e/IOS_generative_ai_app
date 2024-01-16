@@ -22,9 +22,9 @@ extension CDGeneratedImage {
     @NSManaged public var prompt: String
     @NSManaged public var cduser: CDUser?
     
-    public var data : Data{
-        data_ ?? Data()
-    }
+//    public var data : Data{
+//        data_ ?? Data()
+//    }
     
 }
 

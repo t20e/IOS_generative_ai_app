@@ -59,10 +59,9 @@ final class AuthServices{
             return (true, "An unkown error occured, please try again", nil)
         }
     }
-    //    //    MARK - login
+    //    MARK - login
     func login(loginData: LoginData) async -> (err : Bool, msg : String, user: User?) {
         print("Attempting to login in user")
-        
         let url = URL(string: "\(endPoint)/login")!
         do{
             let res = try await performAPICall(
@@ -73,7 +72,7 @@ final class AuthServices{
                 method: "POST",
                 expecting: resReturnUserData.self)
             let user = res?.data
-            print("login return data:",type(of: user))
+//            print("login return data:",type(of: user))
             return (false, "Successfully signed in", user)
         }catch let err as NetworkError{
             switch err{
@@ -165,5 +164,6 @@ final class AuthServices{
             return (true, "An unkown error occured, please try again later")
         }
     }
+
     
 }

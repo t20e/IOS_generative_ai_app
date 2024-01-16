@@ -37,7 +37,7 @@ enum ExecuteProcess{
 //
 @MainActor
 class OnBoardingViewModel : ObservableObject{
-
+    
     let minPasswordLength = 6
     let maxPasswordLength = 32
     
@@ -53,8 +53,9 @@ class OnBoardingViewModel : ObservableObject{
     @Published var showRegLogin = false
     @Published var textInput = ""
     @Published var canAnimateLoading = false
-    @Published var messages : [Message]
     @Published var btnAlreadyClicked : Bool
+    //    @Published var messages : [Message]
+    @Published var messages : [CDMessage]
     
     init(
         loginProcess: LoginValidateEnum = LoginValidateEnum.validateEmail,
@@ -75,7 +76,7 @@ class OnBoardingViewModel : ObservableObject{
         showRegLogin: Bool = false,
         textInput: String = "",
         canAnimateLoading: Bool = false,
-        messages : [Message] = [],
+        messages : [CDMessage] = [] ,
         btnAlreadyClicked : Bool = false
     ) {
         self.loginProcess = loginProcess
@@ -91,20 +92,23 @@ class OnBoardingViewModel : ObservableObject{
         self.btnAlreadyClicked = btnAlreadyClicked
         self.setStartingMsg()
     }
-   
     
-//
+    func addMsg(msg : Message){
+        let msg = PersistenceController.shared.createMessagesInMemory(msg: msg)
+        messages.append(msg)
+    }
+    
     func forward_propagate(){
         if textInput.count < 2 {
-            messages.append(Message(text: "Please enter something.", sentByUser: false, isError: true, imageData: nil))
+            addMsg(msg: Message(text: "Please enter something.", sentByUser: false, isError: true, imageData: nil))
             return
         }
         if regProcess == .validatePassword || regProcess == .validateConfirmPassword ||
             // append the passwords as **** to messages
             loginProcess == .validatePassword || regProcess == .validateCode {
-            messages.append(Message(text: String(repeating: "*", count: textInput.count), sentByUser: true, imageData: nil))
+            addMsg(msg: Message(text: String(repeating: "*", count: textInput.count), sentByUser: true, imageData: nil))
         }else{ //append whatever the user wrote as text not ***
-            messages.append(Message(text: textInput, sentByUser: true, imageData: nil))
+            addMsg(msg: Message(text: textInput, sentByUser: true, imageData: nil))
         }
         //validte login and registeration
         if isOnLogin{
@@ -113,13 +117,13 @@ class OnBoardingViewModel : ObservableObject{
             validateReg()
         }
     }
-  
+    
     func startLoadingAnimation(){
         //starts the loading animation on messages
         btnAlreadyClicked = true
         canAnimateLoading = true
     }
-
+    
     func stopAnimation() async {
         //stops the loading animation on messages
         await delay(seconds: 2.0)
@@ -127,7 +131,7 @@ class OnBoardingViewModel : ObservableObject{
         canAnimateLoading = false
         btnAlreadyClicked = false
     }
-
+    
     func removeLoadingLastIndex(){
         //        removes the loading sign of the last index of the messages array
         if let lastIndex = messages.indices.last {
@@ -135,8 +139,7 @@ class OnBoardingViewModel : ObservableObject{
             messages[lastIndex].isLoadingSign = false
         }
     }
-
-    //    TODO when err occurs remove the loading sign
+    
     func validateLogin(){
         let text = textInput
         switch loginProcess{
@@ -144,17 +147,16 @@ class OnBoardingViewModel : ObservableObject{
             loginData.email = text
             placeholder = "password"
             loginProcess = .validatePassword
-            messages.append(Message(text: "Please enter your password.", sentByUser: false, imageData: nil))
+            addMsg(msg: Message(text: "Please enter your password.", sentByUser: false, imageData: nil))
         case .validatePassword :
-            messages.append(Message(text: "Logging in", sentByUser: false, imageData: nil))
+            addMsg(msg: Message(text: "Logging in", sentByUser: false, imageData: nil))
             loginData.password = textInput
             startLoadingAnimation()
             login()
-//            executeProcess = .login
         }
         textInput = ""
     }
-   
+    
     func validateReg() {
         switch regProcess {
         case .validateEmail:
@@ -165,53 +167,52 @@ class OnBoardingViewModel : ObservableObject{
             validateCode()
         case .validatePassword:
             if textInput.count < minPasswordLength || textInput.count >= maxPasswordLength{
-                messages.append(Message(text: "Password has to be between 6 and 32 charaters long.", sentByUser: false, isError: true, imageData: nil))
+                addMsg(msg: Message(text: "Password has to be between 6 and 32 charaters long.", sentByUser: false, isError: true, imageData: nil))
                 return
             }
             regData.password = textInput.trimmingCharacters(in: .whitespacesAndNewlines)
             regProcess = .validateConfirmPassword
             placeholder = "confirm password"
-            messages.append(Message(text: "Please confirm your password.", sentByUser: false, imageData: nil))
+            addMsg(msg: Message(text: "Please confirm your password.", sentByUser: false, imageData: nil))
         case .validateConfirmPassword:
             if textInput != regData.password{
-                messages.append( Message(text: "Confirm Password doesn't match password.", sentByUser: false, isError: true, imageData: nil))
+                addMsg(msg:  Message(text: "Confirm Password doesn't match password.", sentByUser: false, isError: true, imageData: nil))
                 return
             }
             regProcess = .validateFirstName
             placeholder = "first name"
-            messages.append( Message(text: "What is your first name?", sentByUser: false, imageData: nil))
+            addMsg(msg: Message(text: "What is your first name?", sentByUser: false, imageData: nil))
         case .validateFirstName:
             let isValid = validateNames(text: textInput)
             if isValid.err {
-                messages.append( Message(text: isValid.msg, sentByUser: false, isError: true, imageData: nil))
+                addMsg(msg: Message(text: isValid.msg, sentByUser: false, isError: true, imageData: nil))
                 return
             }
             regData.firstName = textInput.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
             regProcess = .validateLastName
             placeholder = "last name"
-            messages.append( Message(text: "What is your last name?", sentByUser: false, imageData: nil))
-            
+            addMsg(msg: Message(text: "What is your last name?", sentByUser: false, imageData: nil))
         case .validateLastName:
             let isValid = validateNames(text: textInput)
             if isValid.err{
-                messages.append(Message(text: isValid.msg, sentByUser: false, isError: true, imageData: nil))
+                addMsg(msg: Message(text: isValid.msg, sentByUser: false, isError: true, imageData: nil))
                 return
             }
             regData.lastName = textInput.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
             regProcess = .validateAge
             placeholder = "age"
-            messages.append(Message(text: "What is your age?", sentByUser: false, imageData: nil))
+            addMsg(msg: Message(text: "What is your age?", sentByUser: false, imageData: nil))
         case .validateAge:
             guard let age = Int(textInput) else {
-                return messages.append(Message(text: "Please enter a validate age", sentByUser: false, isError: true, imageData: nil))
+                return addMsg(msg: Message(text: "Please enter a validate age", sentByUser: false, isError: true, imageData: nil))
             }
             if age <= 13{
-                return messages.append(Message(text: "Sorry you need to be 13 or older", sentByUser: false, isError: true, imageData: nil))
+                return addMsg(msg: Message(text: "Sorry you need to be 13 or older", sentByUser: false, isError: true, imageData: nil))
             }
             print("registering")
             regData.age = age
             startLoadingAnimation()
-//            executeProcess = .register
+            //            executeProcess = .register
             register()
         }
         textInput = ""
@@ -219,35 +220,34 @@ class OnBoardingViewModel : ObservableObject{
     
     func checkIfEmailExists() {
         // return bool if err occurs
-        messages.append(Message(text: "Checking your email.", sentByUser: false, isLoadingSign: true, imageData: nil))
+        addMsg(msg: Message(text: "Checking your email.", sentByUser: false, isLoadingSign: true, imageData: nil))
         let email = textInput
         Task{ @MainActor in
             print("here", email)
             let res = await AuthServices.shared.checkIfEmailExists(email: email)
             await stopAnimation()
             if res.err{
-                messages.append(Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
+                addMsg(msg: Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
             }else{
                 regData.email = email.trimmingCharacters(in: .whitespacesAndNewlines)
                 regProcess = .validateCode
                 placeholder = "enter code"
-                messages.append(Message(text: res.msg, sentByUser: false, imageData: nil))
+                addMsg(msg: Message(text: res.msg, sentByUser: false, imageData: nil))
             }
         }
     }
-
+    
     func validateCode(){
         // validates the code that was send to users email
-        messages.append(Message(text: "Checking code.", sentByUser: false, isLoadingSign: true, imageData: nil))
+        addMsg(msg: Message(text: "Checking code.", sentByUser: false, isLoadingSign: true, imageData: nil))
         let code = textInput
         Task{ @MainActor in
             let res = await AuthServices.shared.vertifyEmail(email: regData.email, code: code)
             await stopAnimation()
             if res.err{
-                messages.append(Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
-                return
+                return addMsg(msg: Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
             }
-            messages.append(Message(text: "Email vertified. Enter a password.", sentByUser: false, imageData: nil))
+            addMsg(msg: Message(text: "Email vertified. Enter a password.", sentByUser: false, imageData: nil))
             regProcess = .validatePassword
             placeholder = "password"
         }
@@ -259,79 +259,79 @@ class OnBoardingViewModel : ObservableObject{
             loginProcess = .validateEmail // this so so that when email is entered for login and than the user switches to register it wont print the email as ***** to messages
             regProcess = .validateEmail
             placeholder = "email"
-            messages.append(Message(text: "Signing up instead, Enter your email.", sentByUser: false, imageData: nil))
+            addMsg(msg: Message(text: "Signing up instead, Enter your email.", sentByUser: false, imageData: nil))
         } else {
             //            switch to login
             loginProcess = .validateEmail
             regProcess = .validateEmail
             placeholder = "email"
-            messages.append( Message(text: "Logging in instead, Enter your email.", sentByUser: false, imageData: nil))
+            addMsg(msg: Message(text: "Logging in instead, Enter your email.", sentByUser: false, imageData: nil))
         }
         textInput = ""
         isOnLogin = !isOnLogin
     }
-        
+    
     func goBack(){
         // go back to the previous input field
         if isOnLogin{
             if loginProcess == .validatePassword  {
                 loginProcess = .validateEmail
                 placeholder = "email"
-                messages.append(Message(text: "Enter your email.", sentByUser: false, imageData: nil))
-            }else{return} //so it doesnt erase the textInput when still on email
+                addMsg(msg: Message(text: "Enter your email.", sentByUser: false, imageData: nil))
+            }else{ return } //so it doesnt erase the textInput when still on email
         }else{
             switch regProcess{
             case .validateEmail:
-                messages.append(Message(text: "Cant go backward", sentByUser: false, isError: true, imageData: nil))
+                addMsg(msg: Message(text: "Cant go backward", sentByUser: false, isError: true, imageData: nil))
             case .validateCode:
                 regProcess = .validateEmail
                 placeholder = "email"
-                messages.append(Message(text: "Enter email.", sentByUser: false, imageData: nil))
+                addMsg(msg: Message(text: "Enter email.", sentByUser: false, imageData: nil))
             case .validatePassword:
                 regProcess = .validateEmail
                 placeholder = "email"
-                messages.append(Message(text: "Enter your email.", sentByUser: false, imageData: nil))
+                addMsg(msg: Message(text: "Enter your email.", sentByUser: false, imageData: nil))
             case .validateConfirmPassword:
                 regProcess = .validatePassword
                 placeholder = "passsword"
-                messages.append( Message(text: "Enter a password.", sentByUser: false, imageData: nil))
+                addMsg(msg: Message(text: "Enter a password.", sentByUser: false, imageData: nil))
             case .validateFirstName:
                 placeholder = "password"
                 regProcess = .validatePassword
-                messages.append( Message(text: "Enter a password.", sentByUser: false, imageData: nil))
+                addMsg(msg: Message(text: "Enter a password.", sentByUser: false, imageData: nil))
             case .validateLastName:
                 regProcess = .validateFirstName
                 placeholder = "first name"
-                messages.append(Message(text: "What is your first name?", sentByUser: false, imageData: nil))
+                addMsg(msg: Message(text: "What is your first name?", sentByUser: false, imageData: nil))
             case .validateAge:
                 regProcess = .validateLastName
                 placeholder = "last name"
-                messages.append(Message(text: "What is your last name?", sentByUser: false, imageData: nil))
+                addMsg(msg: Message(text: "What is your last name?", sentByUser: false, imageData: nil))
             }
         }
         textInput = ""
     }
     
     func register(){
-        messages.append(Message(text: "Registering...", sentByUser: false, isLoadingSign: true, imageData: nil))
+        addMsg(msg: Message(text: "Registering...", sentByUser: false, isLoadingSign: true, imageData: nil))
         Task{ @MainActor in
             let res = await AuthServices.shared.register(regData: regData)
             await stopAnimation()
             executeProcess = .none
             if res.err{
-                messages.append(Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
+                addMsg(msg: Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
                 placeholder = "email"
                 regProcess = .validateEmail
                 return
             }
-            messages.append(Message(text: res.msg, sentByUser: false, imageData: nil))
+            addMsg(msg: Message(text: res.msg, sentByUser: false, imageData: nil))
             textInput = ""
             print("returned user to view", res)
             await delay(seconds: 0.5)
-            PersistenceController.shared.addUser(userStruct: res.user!)
+            await PersistenceController.shared.addUser(userStruct: res.user!)
         }
     }
- 
+    
     func login(){
         Task{ @MainActor in
             let res = await AuthServices.shared.login(loginData: loginData)
@@ -340,17 +340,16 @@ class OnBoardingViewModel : ObservableObject{
             if res.err{
                 placeholder = "email"
                 loginProcess = .validateEmail
-                return messages.append(Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
+                return addMsg(msg: Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
             }
-            messages.append(Message(text: res.msg, sentByUser: false, imageData: nil))
+            addMsg(msg: Message(text: res.msg, sentByUser: false, imageData: nil))
             textInput = ""
             await delay(seconds: 0.5)
-            PersistenceController.shared.addUser(userStruct: res.user!)
+            await PersistenceController.shared.addUser(userStruct: res.user!)
         }
     }
     
     
-
     func setStartingMsg() {
         let msgs :  [[String: String]] = [
             [
@@ -372,16 +371,12 @@ class OnBoardingViewModel : ObservableObject{
         ]
         let selectedImg = msgs.randomElement() ?? ["prompt": "Default Prompt", "imageName": "defaultImage"]
         let imageData : Data = (UIImage(named: selectedImg["imageName"]!)?.pngData())!
-        messages += [
-            Message(text: "Prompt?", sentByUser: false, imageData: nil),
-            Message(
-                text: selectedImg["prompt"]!,
-                sentByUser: true, imageData: nil),
-            Message(text: "", sentByUser: false, isImg: true, imageData: imageData)
-        ]
-        
+        addMsg(msg:             Message(text: "Prompt?", sentByUser: false, imageData: nil))
+        addMsg(msg: Message(
+            text: selectedImg["prompt"]!,
+            sentByUser: true, imageData: nil))
+        addMsg(msg: Message(text: "", sentByUser: false, isImg: true, imageData: imageData))
     }
-    
     
     
     func validateNames(text: String) ->  (err:Bool, msg:String) {
@@ -398,5 +393,5 @@ class OnBoardingViewModel : ObservableObject{
             return (true,  "Something went wrong, please check your name")
         }
     }
-
+    
 }

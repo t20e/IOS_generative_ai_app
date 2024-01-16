@@ -29,19 +29,8 @@ struct MainView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.theme.baseColor)
-        .onAppear{
-//            if let user = users.first{
-//                // PersistenceController.shared.editUser(user: user)
-//            }
-//            PersistenceController.shared.deleteAll()
-        }
+        .background(Color.theme.baseColor) 
     }
- 
-//    func checkToken(){
-//        KeyChainManager.shared.search()
-//    }
- 
 }
 
 

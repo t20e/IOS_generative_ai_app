@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 
 
-extension CDMessage {
+extension CDMessage  {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<CDMessage> {
         return NSFetchRequest<CDMessage>(entityName: "CDMessage")

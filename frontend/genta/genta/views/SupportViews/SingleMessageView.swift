@@ -18,8 +18,7 @@ struct SingleMessageView: View {
     var isLoadingSign : Bool
     var isRevisedPrompt : Bool
     @State var canAnimateImg  = false
-    var textAlreadyAnimated : Bool
-    var imgAlreadyAnimated : Bool
+    var alreadyAnimated : Bool
     
 //    varaibles to animate a text letter by letter
     @State private var animatedText: String = ""
@@ -107,7 +106,7 @@ struct SingleMessageView: View {
                         }
                         .onAppear{
 //                            MARK - text animation: if the messages wasnt sent by the user animate it letter by letter
-                            if !sentByUser && !textAlreadyAnimated{
+                            if !sentByUser && !alreadyAnimated{
                                 startTypewriterAnimation()
                             }else{
                                 animatedText = message
@@ -172,7 +171,7 @@ struct SingleMessageView: View {
 
 
 #Preview {
-    SingleMessageView(message: "hello there are u the same user from before or a new user can can we sign you in", sentByUser: false, isError: true, isImg: true, imageData: UIImage(systemName: "arrowtriangle.down.fill")?.pngData(), isLoadingSign: false, isRevisedPrompt: false, canAnimateImg: false, textAlreadyAnimated: false, imgAlreadyAnimated: false
+    SingleMessageView(message: "hello there are u the same user from before or a new user can can we sign you in", sentByUser: false, isError: true, isImg: true, imageData: UIImage(systemName: "arrowtriangle.down.fill")?.pngData(), isLoadingSign: false, isRevisedPrompt: false, canAnimateImg: false, alreadyAnimated: false
     )
 }
 

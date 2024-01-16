@@ -21,10 +21,8 @@ struct Message: Hashable, Identifiable {
 //    @Attribute(.externalStorage) let imageData: Data?
     let imageData: Data?
     let isRevisedPrompt: Bool
-    var textAlreadyAnimated : Bool
     let timestamp : Date
-    var imgAlreadyAnimated : Bool
-    
+    var alreadyAnimated : Bool
     init(
         text: String,
         sentByUser: Bool,
@@ -34,8 +32,7 @@ struct Message: Hashable, Identifiable {
         imageData: Data?,
         isRevisedPrompt: Bool = false,
         canAnimateImg: Bool = false,
-        textAlreadyAnimated: Bool = false,
-        imgAlreadyAnimated : Bool = false,
+        alreadyAnimated: Bool = false,
         timestamp: Date = Date.now
     ) {
         self.text = text
@@ -45,8 +42,7 @@ struct Message: Hashable, Identifiable {
         self.isImg = isImg
         self.imageData = imageData
         self.isRevisedPrompt = isRevisedPrompt
-        self.textAlreadyAnimated = textAlreadyAnimated
-        self.imgAlreadyAnimated = imgAlreadyAnimated
+        self.alreadyAnimated = alreadyAnimated
         self.timestamp = timestamp
     }
 

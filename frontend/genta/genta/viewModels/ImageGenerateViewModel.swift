@@ -12,14 +12,37 @@ class ImageGenerateViewModel: ObservableObject{
     @Published var textInput = ""
     @Published var canAnimateLoading = false
     @Published var btnAlreadyClicked : Bool
-    
-    init(textInput: String = "", canAnimateLoading: Bool = false, btnAlreadyClicked: Bool = false) {
+
+    init(textInput: String = "", canAnimateLoading: Bool = false, btnAlreadyClicked: Bool = false ) {
         self.textInput = textInput
         self.canAnimateLoading = canAnimateLoading
         self.btnAlreadyClicked = btnAlreadyClicked
     }
     
-//    func generateImg(user: User){
+    
+    func startLoadingAnimation(){
+        //starts the loading animation on messages
+        btnAlreadyClicked = true
+        canAnimateLoading = true
+    }
+
+    func stopAnimation() async {
+        //stops the loading animation on messages
+        await delay(seconds: 2.0)
+//        removeLoadingLastIndex()
+        canAnimateLoading = false
+        btnAlreadyClicked = false
+    }
+
+//    func removeLoadingLastIndex(){
+//        //        removes the loading sign of the last index of the messages array
+//        if let lastIndex = messages.indices.last {
+//            // Update the last item
+//            messages[lastIndex].isLoadingSign = false
+//        }
+//    }
+    
+    func generateImg(user: User){
 //
 //        if textInput.count < 15 {
 //            let msg = Message(text: "Please enter a longer prompt!", sentByUser: false, isError: true, imageData: nil)
@@ -86,21 +109,24 @@ class ImageGenerateViewModel: ObservableObject{
 //    func stopAnimation() async {
 //        canAnimate = false
 //        alreadyGenerating = false
-//    }
-//
-//
-//    let generateQuestions : [String] = [
-//        //        TODO how can i set the first item in the msgs array to something like "What would you like to generate?"
-//        "What would you like to generate next?",
-//        "Tell me, what kind of content do you want to generate?",
-//        "Ready to create something new? What's your choice?",
-//        "Feeling creative? What should I generate for you?",
-//        "What type of content is on your mind?",
-//        "The possibilities are endless! What do you want to generate?",
-//        "Let's brainstorm! What should be the next thing I create?",
-//        "Eager to generate! What's your preference this time?",
-//        "Curious to know—what would you like me to generate for you?",
-//    ]
+    }
 
+    func addMsg(msg : Message, user : CDUser){
+        PersistenceController.shared.addMsg(msg: msg, user: user)
+    }
     
+    
+
+    let generateQuestions : [String] = [
+        //        TODO how can i set the first item in the msgs array to something like "What would you like to generate?"
+        "What would you like to generate next?",
+        "Tell me, what kind of content do you want to generate?",
+        "Ready to create something new? What's your choice?",
+        "Feeling creative? What should I generate for you?",
+        "What type of content is on your mind?",
+        "The possibilities are endless! What do you want to generate?",
+        "Let's brainstorm! What should be the next thing I create?",
+        "Eager to generate! What's your preference this time?",
+        "Curious to know—what would you like me to generate for you?",
+    ]
 }

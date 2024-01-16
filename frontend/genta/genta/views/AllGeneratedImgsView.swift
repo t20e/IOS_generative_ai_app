@@ -9,7 +9,7 @@ import SwiftUI
 import CoreData
 
 struct AllGeneratedImgsView: View {
-//    @Environment(\.modelContext) private var context
+    //    @Environment(\.modelContext) private var context
     
     @FetchRequest(
         entity: CDUser.entity(),
@@ -18,14 +18,12 @@ struct AllGeneratedImgsView: View {
         animation: .default)
     private var users: FetchedResults<CDUser>
     
-    // Create a fetch request for the messages associated with the user
-    
     @FetchRequest(
         entity: CDGeneratedImage.entity(),
         sortDescriptors: [],
-        predicate:  NSPredicate(format: "user == %@", users.first),
+        //        predicate: NSPredicate(format: "user == %@", NSNumber(value: true)),
         animation: .default)
-    private var messages: FetchedResults<CDGeneratedImage>
+    private var images: FetchedResults<CDGeneratedImage>
     
     
     @State var showPopUp = false
@@ -42,7 +40,6 @@ struct AllGeneratedImgsView: View {
     var body: some View {
         ZStack{
             if let user = users.first {
-                
                 VStack {
                     HStack{
                         Spacer()
@@ -52,10 +49,7 @@ struct AllGeneratedImgsView: View {
                             .background(Color.theme.textColor)
                             .cornerRadius(20)
                             .padding(.trailing, 25)
-                            .foregroundColor(
-                                colorScheme == .dark ? .black : .white
-                                //                            Color.theme.textColor
-                            )
+                            .foregroundColor(colorScheme == .dark ? .black : .white)
                     }
                     HStack{
                         Text("Generated images")
@@ -66,53 +60,48 @@ struct AllGeneratedImgsView: View {
                             .padding(.leading, 35)
                     }
                     ScrollView{
-                        if user.generatedImages.count > 0{
-//                            //                    if !true{
-
-                        
-//                            ForEach(Array(stride(from: 0, to: user.generatedImages.count, by: 3)), id: \.self) { idx in
-//                                HStack{
-//                                    ForEach(0 ..< 3) { innerIdx in
-//                                        if idx + innerIdx < user.generatedImages.count {
-//                                            let prompt = user.generatedImages[idx + innerIdx].prompt
-//                                            let data = user.generatedImages[idx + innerIdx].data
-//                                            
-//                                            if data != nil{
-//                                                Image(uiImage:
-//                                                        (UIImage(data: data!)!)
-//                                                )
-//                                                .resizable()
-//                                                .frame(
-//                                                    width: CGFloat(randomImgWidth.randomElement()!),
-//                                                    height: CGFloat(randomImgHeight.randomElement()!)
-//                                                )
-//                                                //                                            .foregroundColor(.red)
-//                                                .cornerRadius(5)
-//                                                .padding(EdgeInsets(
-//                                                    top: CGFloat(randomPaddingVertical.randomElement()!),
-//                                                    leading: CGFloat(randomPaddingHorizontal.randomElement()!),
-//                                                    bottom: CGFloat(randomPaddingVertical.randomElement()!),
-//                                                    trailing: CGFloat(randomPaddingHorizontal.randomElement()!)))
-//                                                .onTapGesture {
-//                                                    currPrompt = prompt
-//                                                    showPopUp = true
-//                                                    currUiImage = UIImage(data: data!)!
-//                                                }
-//                                            }
-//                                        }else{
-//                                            EmptyImagesView()
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }else{
-//                            ForEach(0..<3){idx in
-//                                HStack{
-//                                    ForEach(0..<3){innerIdx in
-//                                        EmptyImagesView()
-//                                    }
-//                                }
-//                            }
+                        if images.count > 0{
+                            ForEach(Array(stride(from: 0, to: images.count, by: 3)), id: \.self) { idx in
+                                HStack{
+                                    ForEach(0 ..< 3, id: \.self) { innerIdx in
+                                        if idx + innerIdx < images.count {
+                                            let prompt = images[idx + innerIdx].prompt
+                                            let data = images[idx + innerIdx].data_
+                                            if data != nil{
+                                                Image(uiImage:
+                                                        (UIImage(data: data!)!)
+                                                )
+                                                .resizable()
+                                                .frame(
+                                                    width: CGFloat(randomImgWidth.randomElement()!),
+                                                    height: CGFloat(randomImgHeight.randomElement()!)
+                                                )
+                                                .cornerRadius(5)
+                                                .padding(EdgeInsets(
+                                                    top: CGFloat(randomPaddingVertical.randomElement()!),
+                                                    leading: CGFloat(randomPaddingHorizontal.randomElement()!),
+                                                    bottom: CGFloat(randomPaddingVertical.randomElement()!),
+                                                    trailing: CGFloat(randomPaddingHorizontal.randomElement()!)))
+                                                .onTapGesture {
+                                                    currPrompt = prompt
+                                                    showPopUp = true
+                                                    currUiImage = UIImage(data: data!)!
+                                                }
+                                            }
+                                        }else{
+                                            EmptyImagesView()
+                                        }
+                                    }
+                                }
+                            }
+                        }else{
+                            ForEach(0..<3){idx in
+                                HStack{
+                                    ForEach(0..<3){innerIdx in
+                                        EmptyImagesView()
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -124,7 +113,7 @@ struct AllGeneratedImgsView: View {
                         .presentationDetents([.fraction(0.5), .large])
                 }
             }
-        }        
+        }
     }
 }
 

@@ -177,7 +177,7 @@ export default class UserController {
                 { _id: new ObjectId(req.body.userId) },
                 {
                     $push: { generatedImgs: obj },
-                    $inc: { numOfImgsGenerated: 1 } //increment the field by 1
+                    $inc: { numImgsGenerated: 1 } //increment the field by 1
                 },
             )
             obj.presigned_url = await this.AWS.getPreSignedUrl(req.body.img_id)
@@ -189,7 +189,6 @@ export default class UserController {
             return res.status(500).send("Error add image id to user")
         }
     }
-
 
     getLoggedUser = async (req, res, next) => {
         console.log("Attempting to log user in from token...")
@@ -314,7 +313,7 @@ export default class UserController {
         const decodedJWT = jwt.decode(req.headers.authorization, { complete: true })
         if (decodedJWT !== null) {
             const user = await this.userModel.findOne({ _id: decodedJWT.payload._id })
-            if (user.numOfImgsGenerated <= this.ALLOWED_FREE_NUM_OF_GENERATED_IMGS) {
+            if (user.numImgsGenerated <= this.ALLOWED_FREE_NUM_OF_GENERATED_IMGS) {
                 next()
                 return
             }

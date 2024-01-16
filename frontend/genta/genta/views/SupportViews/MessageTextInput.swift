@@ -17,7 +17,7 @@ struct MessageTextInput: View {
     
     @Binding var textInput : String
     @State var action : () -> Void
-    @Binding var messages : [Message]
+//    @Binding var messages : [Message]
     @Binding var placeHolder : String
     @Binding var btnAlreadyClicked : Bool
     
@@ -81,7 +81,7 @@ struct MessageTextInput: View {
     func exampleFunction() {
         print("Action triggered!")
     }
-    let messages : [Message] = []
+//    let messages : [Message] = []
     return MessageTextInput(
         canAnimate: .constant(
             false
@@ -90,7 +90,7 @@ struct MessageTextInput: View {
             ""
         ),
         action: exampleFunction,
-        messages: .constant(messages),
+//        messages: .constant(messages),
         placeHolder: .constant(""),
         btnAlreadyClicked: .constant(false)
     )

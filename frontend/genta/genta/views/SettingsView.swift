@@ -10,7 +10,13 @@ import SwiftUI
 
 struct SettingsView: View {
     
-
+    @Environment(\.managedObjectContext) var context
+    @FetchRequest(
+        entity: CDUser.entity(),
+        sortDescriptors: [],
+        predicate: NSPredicate(format: "isCurrUser_ == %@", NSNumber(value: true)),
+        animation: .default)
+    private var users: FetchedResults<CDUser>
     
     var body: some View {
         VStack(alignment: .leading){
@@ -45,7 +51,7 @@ struct SettingsView: View {
                 Spacer()
                 Button(action: {
                     print("loggin user out")
-//                    PersistenceManager.shared.deleteAll(context: context)
+                    PersistenceController.shared.deleteAll(user: users.first!)
                 }, label: {
                     Text("Log Out")
                 })

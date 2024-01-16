@@ -12,9 +12,11 @@ import SwiftData
 struct OnBoardingView: View {
 
     
-//    @Environment(\.managedObjectContext) var context
+    @Environment(\.managedObjectContext) var context
     @ObservedObject private var viewModel = OnBoardingViewModel()
 
+    
+    
     var body: some View {
         ZStack{
             VStack{
@@ -23,7 +25,7 @@ struct OnBoardingView: View {
                     Button("Sign Up", action: {
                         viewModel.showRegLogin = true
                         viewModel.isOnLogin = false
-                        viewModel.messages.append(Message(text: "Enter your email.", sentByUser: false, imageData: nil))
+                        viewModel.addMsg(msg: Message(text: "Enter your email.", sentByUser: false, imageData: nil))
                     })
                     .frame(width: 250, height: 40)
                     .background(Color.theme.primColor)
@@ -33,7 +35,7 @@ struct OnBoardingView: View {
                     Button("Login", action: {
                         viewModel.showRegLogin = true
                         viewModel.isOnLogin = true
-                        viewModel.messages.append(Message(text: "Enter your email.", sentByUser: false, imageData: nil))
+                        viewModel.addMsg(msg: Message(text: "Enter your email.", sentByUser: false, imageData: nil))
                     })
                     .frame(width: 250, height: 40)
                     .background(.clear)
@@ -68,7 +70,7 @@ struct OnBoardingView: View {
                         canAnimate: $viewModel.canAnimateLoading,
                         textInput: $viewModel.textInput,
                         action: process,
-                        messages: $viewModel.messages,
+//                        messages: $viewModel.messages,
                         placeHolder: $viewModel.placeholder,
                         btnAlreadyClicked: $viewModel.btnAlreadyClicked
                     )

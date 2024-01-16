@@ -70,9 +70,8 @@ class ImageServices : ObservableObject{
     
     func downLoadImage(presignedUrl : String) async -> Data? {
         /*
-         downloads the image from s3 bucket using the presigned-url, the data will be as data object becuase if i were to make it a UIImage object
-         than i woulndt be able to sabe it in a struct which needs to conform to codable, when user is saving it it will need to be a UIImage which we can do by
-         converting the data to UIImage and when displaying we convert from data -> UIImage() -> Image()
+         downloads the image from s3 bucket using the presigned-url, the data will be as data object
+         converting the data to UIImage() to download to users photo album and Image() to display
         */
         do{
             print("Attempting to downloading image from url s3")
