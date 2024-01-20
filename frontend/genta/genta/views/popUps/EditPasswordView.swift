@@ -8,14 +8,21 @@
 import SwiftUI
 
 struct EditPasswordView: View {
-//    @EnvironmentObject var user : User
+    @Environment(\.managedObjectContext) var context
+    @FetchRequest(
+        entity: CDUser.entity(),
+        sortDescriptors: [],
+        predicate: NSPredicate(format: "isCurrUser_ == %@", NSNumber(value: true)),
+        animation: .default)
+    private var users: FetchedResults<CDUser>
+    
     @State var newPassword = ""
     @State var showPasswordField = false
     @State var btnText = "Get code"
     @State var code = ""
     @State var showAlert = false
     @State var alertMsg = ""
-    @State var  isMajorAlert = false
+    @State var  isMajorAlert = false // this is to either show the alert with a red or orange message indicating how much the user should care for it
     
     var body: some View {
         ZStack{
@@ -45,7 +52,7 @@ struct EditPasswordView: View {
                         Text("New Password")
                             .foregroundStyle(.gray)
                             .font(.footnote)
-                        TextField("Password", text: $newPassword )
+                        TextField("new password", text: $newPassword )
                             .padding(10)
                             .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 1))
                             .autocapitalization(.none)
@@ -57,11 +64,11 @@ struct EditPasswordView: View {
                     if !showPasswordField{
                         showPasswordField = true
                         btnText = "Update Password"
-//                        getCode()
+                        getCode()
                     } else if showPasswordField {
                         showAlert = false
                         print("Changing password")
-//                        changePassword()
+                        changePassword()
                     }
                 }, label: {
                     HStack{
@@ -81,27 +88,32 @@ struct EditPasswordView: View {
             }
         }
     }
-//    func getCode(){
-//        Task{@MainActor in
-//            let res = await user.userService.getCode(email: user.data.email, token: user.getAccessToken())
-//            alertMsg = res.msg
-//            showAlert = true
-//            isMajorAlert = false
-//        }
-//    }
-//    
-//    func changePassword(){
-////        needs the users email witht the old password and new password
-//        Task{@MainActor in
-//            let res = await user.userService.changePassword(email: user.data.email, code: code, newPassword: newPassword, token: user.getAccessToken())
-//            alertMsg = res.msg
-//            showAlert = true
-//            if !res.err{
-//                showPasswordField = false
-//                isMajorAlert = true
-//            }
-//        }
-//    }
+
+    func getCode(){
+        if let user = users.first {
+            Task{@MainActor in
+                let res = await AuthServices.shared.getCode(user: user)
+                alertMsg = res.msg
+                showAlert = true
+                isMajorAlert = false
+            }
+        }
+    }
+
+    func changePassword(){
+        if let user = users.first {
+            Task{@MainActor in
+                let res = await AuthServices.shared.changePassword(email: user.email, code: code, newPassword: newPassword, token: user.accesToken)
+                alertMsg = res.msg
+                showAlert = true
+                isMajorAlert = false
+                if !res.err{
+                    showPasswordField = false
+                    isMajorAlert = true
+                }
+            }
+        }
+    }
     
 }
 

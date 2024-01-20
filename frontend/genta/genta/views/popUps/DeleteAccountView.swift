@@ -8,7 +8,14 @@
 import SwiftUI
 
 struct DeleteAccountView: View {
-//    @EnvironmentObject var user : User
+    @Environment(\.managedObjectContext) var context
+    @FetchRequest(
+        entity: CDUser.entity(),
+        sortDescriptors: [],
+        predicate: NSPredicate(format: "isCurrUser_ == %@", NSNumber(value: true)),
+        animation: .default)
+    private var users: FetchedResults<CDUser>
+    
     @State var showTextField = false
     @State var password = ""
     @State var showAlert = false
@@ -50,7 +57,7 @@ struct DeleteAccountView: View {
                         showTextField = true
                     } else if !password.isEmpty{
                         print("deleting account")
-//                        deleteAccount()
+                        deleteAccount()
                     }
                     
                 }, label: {
@@ -73,21 +80,21 @@ struct DeleteAccountView: View {
         }
     }
     
-//    func deleteAccount(){
-//        Task{@MainActor in
-//            let res = await user.userService.deleteAccount(email: user.data.email, password: password, token: user.getAccessToken())
-//            alertMsg = res.msg
-//            showAlert = true
-//            if !res.err{
-//                isMajorAlert = false
-//                actionToPassToAlert = user.logout
-////                user.logout()
-//            }else{
-//                isMajorAlert = true
-//            }
-//        }
-//    }
-    
+    func deleteAccount(){
+        if let user = users.first {
+            Task{@MainActor in
+                let res = await AuthServices.shared.deleteAccount(email: user.email, password: password, token: user.accesToken)
+                alertMsg = res.msg
+                showAlert = true
+                if !res.err{
+                    isMajorAlert = false
+                    actionToPassToAlert = {PersistenceController.shared.deleteAll(user: user)}
+                }else{
+                    isMajorAlert = true
+                }
+            }
+        }
+    }
 }
 
 #Preview {

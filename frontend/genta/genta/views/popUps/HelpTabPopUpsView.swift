@@ -8,8 +8,15 @@
 import SwiftUI
 
 struct HelpTabPopUpsView: View {
-//    @EnvironmentObject var user : User
-
+    
+    @Environment(\.managedObjectContext) var context
+    @FetchRequest(
+        entity: CDUser.entity(),
+        sortDescriptors: [],
+        predicate: NSPredicate(format: "isCurrUser_ == %@", NSNumber(value: true)),
+        animation: .default)
+    private var users: FetchedResults<CDUser>
+    
     @Binding var whichPopup : HelpPopUp
     @State var header = ""
     @State var textbody = ""
@@ -41,7 +48,7 @@ struct HelpTabPopUpsView: View {
                                     }
                                 }
                             Button(action: {
-//                                getSupport()
+                                getSupport()
                             }, label: {
                                 Text("Send")
                                     .foregroundColor(.white)
@@ -81,20 +88,22 @@ struct HelpTabPopUpsView: View {
         }
     }
     
-//    func getSupport(){
-//        Task{ @MainActor in
-//            let res = await user.userService.getSupport(token: user.getAccessToken(), issue: supportTextInput)
-//            print("support msg",res)
-//            showAlert = true
-//            if res.err{
-//                isMajorAlert = true
-//                alertMsg = "Sorry ran into a problem sending your issure, please try again later."
-//                return
-//            }
-//            isMajorAlert = false
-//            alertMsg = "Issue recieved, we will get back to you shortly."
-//        }
-//    }
+    func getSupport(){
+        if let user = users.first {
+            Task{ @MainActor in
+                let res = await UserServices.shared.getSupport(user: user, token: user.accesToken, issue: supportTextInput)
+                print("support msg",res)
+                showAlert = true
+                if res.err{
+                    isMajorAlert = true
+                    alertMsg = "Sorry ran into a problem sending your issure, please try again later."
+                    return
+                }
+                isMajorAlert = false
+                alertMsg = "Issue recieved, we will get back to you shortly."
+            }
+        }
+    }
     
 }
 

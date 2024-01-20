@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 
 struct ChatView: View {
-//    var messages : [Message]
     var messages : [CDMessage]
         
     var body: some View {
@@ -17,8 +16,6 @@ struct ChatView: View {
             ScrollViewReader { proxy in
                 VStack{
                     ForEach(messages, id: \.id) { msg in
-
-//                    ForEach(Array(messages.enumerated()), id: \.element.id){ idx, msg in
                         SingleMessageView(
                             message: msg.text,
                             sentByUser: msg.sentByUser,
@@ -27,19 +24,12 @@ struct ChatView: View {
                             imageData: msg.imageData,
                             isLoadingSign: msg.isLoadingSign,
                             isRevisedPrompt: msg.isRevisedPrompt,
-                            alreadyAnimated : msg.alreadyAnimated
+                            alreadyAnimated : msg.alreadyAnimated,
+                            id : msg.id
                         )
                         .padding([.top, .bottom, .horizontal], 15)
                         .onAppear {
                             scrollToBottom(proxy: proxy)
-//                            if  msg.isImg {
-//                                withAnimation {
-//                                    user.messages[idx].canAnimateImg = true
-//                                }
-//                            }
-//                            if !msg.sentByUser{
-//                                user.messages[idx].textAlreadyAnimated = true
-//                            }
                         }
                         .onChange(of: messages){
                             scrollToBottom(proxy: proxy)

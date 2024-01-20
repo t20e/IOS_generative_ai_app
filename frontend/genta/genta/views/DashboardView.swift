@@ -10,8 +10,9 @@ import SwiftUI
 
 struct DashboardView: View {
    
-        
-    init() {
+    let user : CDUser
+    init(user: CDUser) {
+        self.user = user
         UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(Color.theme.actionColor)
         UIPageControl.appearance().pageIndicatorTintColor = UIColor.lightGray
         UIPageControl.appearance().tintColor = UIColor.lightGray
@@ -19,11 +20,11 @@ struct DashboardView: View {
  
     var body: some View {
         TabView {
-            AllGeneratedImgsView()
+            AllGeneratedImgsView(user : user)
                 .background(Color.theme.baseColor)
-            GenerateImgView()
+            GenerateImgView(user: user)
                 .background(Color.theme.baseColor)
-            SettingsView()
+            SettingsView(user: user)
                 .background(Color.theme.baseColor)
         }
         .edgesIgnoringSafeArea(.all)
@@ -37,6 +38,6 @@ struct DashboardView: View {
     }
 }
 
-#Preview {
-    DashboardView()
-}
+//#Preview {
+//    DashboardView()
+//}

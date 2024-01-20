@@ -138,7 +138,7 @@ final class AuthServices{
          when user attempts to register they will get a code sent to their email which will need to be vertified here
          */
         print("Vertifying code: \(code), email: \(email)")
-        let url = URL(string: "\(endPoint)/verifyCode")
+        let url = URL(string: "\(endPoint)/verifyEmail")
         do{
             _ = try await performAPICall(
                 url: url,
@@ -164,6 +164,141 @@ final class AuthServices{
             return (true, "An unkown error occured, please try again later")
         }
     }
+    
+    func getCode(user: CDUser) async -> (err:Bool, msg:String){
+        let url = URL(string: "\(endPoint)/getCodeToEmail")
+        do{
+            _ = try await performAPICall(
+                url: url,
+                data: [
+                    "email" : user.email,
+                    "firstName" : user.firstName
+                ],
+                token: user.accesToken,
+                expectedStatusCode: .success,
+                method: "POST",
+                expecting: resSimpleData.self
+            )
+            return (false, "We sent a code to your email, please enter it. Be sure to check spam.")
+        } catch let err as NetworkError{
+            switch err {
+            case .serverErr:
+                return (true, "Suffered an internal server error, please try later")
+            case .timedOut:
+                return (true, "Your connection timed out, Please check your internet connection!" )
+            default:
+                return (true, "Uncaught error, please try again")
+            }
+        } catch {
+            return (true, "An unkown error occured, please try again later")
+        }
+    }
+    
+    
+    func changePassword(email: String, code: String, newPassword : String, token: String) async -> (err: Bool, msg:String){
+        let url = URL(string: "\(endPoint)/changePassword")
+        do{
+            _ = try await performAPICall(
+                url: url,
+                data: [
+                    "email" : email,
+                    "code" : code,
+                    "newPassword" : newPassword
+                ],
+                token: token,
+                expectedStatusCode: .success,
+                method: "POST",
+                expecting: resSimpleData.self)
+            return (false, "Your password was updated.")
+        } catch let err as NetworkError{
+            switch err {
+            case .badRequest:
+                return (true, "The code you entered was incorrect, please try again.")
+            case .unAuthorized:
+                return(true, "Your credentials are wrong please log back in.")
+            case .serverErr:
+                return (true, "Suffered an internal server error, please try later")
+            case .timedOut:
+                return (true, "Your connection timed out, Please check your internet connection!" )
+            default:
+                return (true, "Uncaught error, please try again")
+            }
+        } catch {
+            return (true, "An unkown error occured, please try again later")
+        }
+    }
+  
+    func deleteAccount(email:String, password : String, token:String) async -> (err:Bool, msg:String){
+        let url = URL(string: "\(endPoint)/deleteAccount")
+        do{
+            _ = try await performAPICall(
+                url: url,
+                data: [
+                    "email":email,
+                    "password" : password
+                ],
+                token: token,
+                expectedStatusCode: .success,
+                method: "POST",
+                expecting: resSimpleData.self
+            )
+            return (false, "Account has been deleted")
+        }catch let err as NetworkError{
+            switch err {
+            case .unAuthorized:
+                return(true, "Your credentials are wrong wrong.")
+            case .serverErr:
+                return (true, "Issue deleting account, please try later or contact us!")
+            case .timedOut:
+                return (true, "Your connection timed out, Please check your internet connection!" )
+            default:
+                return (true, "Uncaught error, please try again")
+            }
+        } catch {
+            return (true, "An unkown error occured, please try again later")
+        }
 
+    }
     
 }
+
+
+
+//
+//    func logInUserFromToken(token : String) async -> (err : Bool, msg : String, user: UserData?) {
+//        print("Attempting to log in user from token")
+//        let url = URL(string: "\(endPoint)/getLoggedUser")!
+//        do{
+//            let res = try await performAPICall(
+//                url: url,
+//                data: ["None": "None"],
+//                token: token,
+//                expectedStatusCode: .success,
+//                method: "POST",
+//                expecting: resReturnUserData.self)
+////            print("res data from loggin in user", res)
+//            let user = res?.data
+//            return (false, "Successfully logged in", user)
+//        } catch let err as NetworkError{
+//            switch err{
+//            case .unAuthorized:
+//                print("Users token has expired.")
+//                return (true, "Your session has expired please sign in again!", nil)
+//            case .timedOut:
+//                print("Your connection timed out, Please check your internet connection!")
+//                return (true, "Your connection timed out, Please check your internet connection!", nil )
+//            case .serverErr:
+//                print("Suffered an internal server error, please try later")
+//                return (true, "Suffered an internal server error, please try later", nil)
+//            default:
+//                print("Uncaught error, please try again")
+//                return (true, "Uncaught error, please try again", nil)
+//            }
+//        }
+//        catch {
+//            print("An unkown error occured when getting logged user ,\(error)")
+//            return (true, "An unkown error occured, please try again", nil)
+//        }
+//
+//    }
+//

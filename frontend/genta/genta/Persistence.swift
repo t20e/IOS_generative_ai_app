@@ -22,7 +22,8 @@ class PersistenceController: ObservableObject{
         }
     }
     
-    func save(){
+    func save(purpose : String){
+        print("Saving data for \(purpose)")
         do{
             try self.container.viewContext.save()
             print("Data saved")
@@ -37,7 +38,7 @@ class PersistenceController: ObservableObject{
         let user = CDUser(context : self.container.viewContext)
         user.id_ = userStruct.id
         user.age_ = userStruct.age
-        user.email_ = userStruct.lastName
+        user.email_ = userStruct.email
         user.firstName_  = userStruct.firstName
         user.lastName_ = userStruct.lastName
         user.accessToken_ = userStruct.accessToken
@@ -56,21 +57,32 @@ class PersistenceController: ObservableObject{
                 user.addToGeneratedImages_(newCDImg)
             }
         }
-        save()
+        save(purpose: "Adding user")
     }
     
-    func editUser(user : CDUser){
-        //pass in the user form parameters
-        // lets say that we want to update the firstName we pass it in then
-        // user.firstName = firstName
-        //        user.firstName_ = "jack"
-        //        save()
+    func editUser(user : CDUser, attribute: String, newValue: Any){
+        // - Parameters
+        //  attribute in the user to update, it has to be the setter option and not the getter option
+        user.setValue(newValue, forKey: attribute)
+        save(purpose: "Updating user, for attribute: \(attribute)")
+    }
+    
+    func deleteAllMsg(){
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "CDMessage")
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        do {
+            try self.container.viewContext.execute(deleteRequest)
+            save(purpose: "Deleting all messages")
+        }
+        catch{
+            print("error deleting messages, error: \(error)")
+        }
     }
     
     func deleteAll(user : CDUser){
         print("Attempting to delete all")
-        user.isCurrUser_ = false
-        save()
+        user.isCurrUser_ = false // this needed to done for the UI to show login/reg view
+        save(purpose: "Updaign the user to set isCurrUser_ to false before Deleting All Data")
         let entityNames = ["CDUser", "CDGeneratedImage", "CDMessage"]
         
         for entityName in entityNames {
@@ -79,7 +91,7 @@ class PersistenceController: ObservableObject{
             
             do {
                 try self.container.viewContext.execute(deleteRequest)
-                save()
+                save(purpose: "Deleting All Data")
             } catch let error as NSError {
                 // Handle the error
                 print("Error deleting entity \(entityName): \(error), \(error.userInfo)")
@@ -87,7 +99,19 @@ class PersistenceController: ObservableObject{
         }
     }
     
-    func addMsg(msg : Message, user : CDUser){
+    func addImage(generatedImg: GeneratedImage, user: CDUser){
+        //add image to user persistance
+        let image = CDGeneratedImage(context: self.container.viewContext)
+        image.imgId = generatedImg.imgId
+        image.presignedUrl = generatedImg.presignedUrl
+        image.prompt = generatedImg.prompt
+        image.cduser = user
+        image.data_ = generatedImg.data
+        save(purpose: "Adding an image")
+    }
+    
+    
+    func addMsg(msg : Message, user : CDUser) -> UUID{
         let CDMsg = CDMessage(context: self.container.viewContext)
         CDMsg.id = UUID()
         CDMsg.text_ = msg.text
@@ -97,10 +121,10 @@ class PersistenceController: ObservableObject{
         CDMsg.isImg = msg.isImg
         CDMsg.imageData_ = msg.imageData
         CDMsg.isRevisedPrompt = msg.isRevisedPrompt
-//        CDMsg.canAnimateImg = msg.canAnimateImg
         CDMsg.alreadyAnimated = msg.alreadyAnimated
-//        CDMsg.timestamp = msg.timestamp
-        save()
+        CDMsg.cduser = user
+        save(purpose: "Adding a message")
+        return CDMsg.id
     }
     
     func createMessagesInMemory(msg : Message) -> CDMessage{
@@ -114,10 +138,26 @@ class PersistenceController: ObservableObject{
         CDMsg.isImg = msg.isImg
         CDMsg.imageData_ = msg.imageData
         CDMsg.isRevisedPrompt = msg.isRevisedPrompt
-//        CDMsg.canAnimateImg = msg.canAnimateImg
         CDMsg.alreadyAnimated = msg.alreadyAnimated
-//        CDMsg.timestamp = msg.timestamp
         return CDMsg
+    }
+    
+    func editMsg(msgId : UUID, attribute: String, newValue: Any){
+        
+        let fetchRequest: NSFetchRequest<CDMessage> = CDMessage.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", msgId as CVarArg)
+
+        do {
+            let messages = try self.container.viewContext.fetch(fetchRequest)
+            if let messageToUpdate = messages.first {
+                messageToUpdate.setValue(newValue, forKey: attribute)
+                save(purpose: "Updating a msg")
+            } else {
+                print("Message with specified ID not found")
+            }
+        } catch {
+            print("Error fetching message: \(error)")
+        }
     }
     
 }

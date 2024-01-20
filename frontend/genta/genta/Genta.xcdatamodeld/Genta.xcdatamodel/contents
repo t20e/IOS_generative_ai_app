@@ -5,6 +5,7 @@
         <attribute name="imgId" attributeType="String"/>
         <attribute name="presignedUrl" attributeType="String"/>
         <attribute name="prompt" attributeType="String"/>
+        <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="cduser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDUser" inverseName="generatedImages_" inverseEntity="CDUser"/>
     </entity>
     <entity name="CDMessage" representedClassName="CDMessage" syncable="YES">
@@ -17,6 +18,7 @@
         <attribute name="isRevisedPrompt" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="sentByUser" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="text_" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="cduser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDUser" inverseName="messages_" inverseEntity="CDUser"/>
     </entity>
     <entity name="CDUser" representedClassName="CDUser" syncable="YES">

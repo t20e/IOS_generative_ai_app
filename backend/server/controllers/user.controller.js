@@ -49,7 +49,7 @@ export default class UserController {
     }
 
 
-    reg_check_if_email_exists = async (req, res, next) => {
+    checkIfEmailExists = async (req, res, next) => {
         /*
             when user if attempting to register this will validate and check if the email address is already in user
         */
@@ -67,14 +67,19 @@ export default class UserController {
                 const code = generateUnique6DigitNumber()
                 this.verificationCodes.set(req.body.email, code)
                 console.log("CODE: " + code)
-                // TODO send code to email from form aws
-
+                //TODO change email to req.body.email and add the user id 
+                const result = await this.AWS.sendEmail("ttavis1999@gmail.com", "", "", code, false, "")
+                if (result.err) {
+                    res.status(500).send(`Sorry there was an issue, please try later.`)
+                    return
+                }
                 req.body.returnData = this.buildRequestReturnData(202, "A code has been sent to your email please enter it.", { "doesEmailAlreadyExist": false })
+                next()
             } else {
                 console.log("Email already exists")
                 req.body.returnData = this.buildRequestReturnData(409, "Email is already in use", { "doesEmailAlreadyExist": true })
             }
-            next()
+            next() // move to the sendEmail
         } catch (err) {
             console.log("Error checking if email is registered", err)
             return res.status(500).json({ msg: "Error checking if email is registered" })
@@ -217,15 +222,36 @@ export default class UserController {
         }
     }
 
-    contactUs = async (req, res, next) => {
+    getCodeToEmail = async (req, res, next) => {
+        // this is for when the user attempts to change password or delete account not for checking email
         console.log(req.body)
-        // users id is already in the req.body
-        // TODO figure out what to do with the users issue use aws to send issue to myself
-        req.body.returnData = this.buildRequestReturnData(200, "Issue Received", { "success": true })
+        const code = generateUnique6DigitNumber()
+        this.verificationCodes.set(req.body.email, code)
+        console.log("CODE: " + code)
+        const result = await this.AWS.sendEmail(req.body.email, req.body.firstName, "", code, false, "")
+        if (result.err) {
+            res.status(500).send(`Sorry there was an issue sending a code to your email, please try later.`)
+            return
+        }
+        req.body.returnData = this.buildRequestReturnData(200, "A code has been sent to your email please enter it.", { "doesEmailAlreadyExist": false })
         next()
     }
 
-    verifyCode = async (req, res, next) => {
+    contactUs = async (req, res, next) => {
+        // console.log("contact us body",req.body)
+        // users id is already in the req.body
+        //TODO change email to req.body.email and add the user id and users name
+        const result = await this.AWS.sendEmail(req.body.email, req.body.firstName, req.body.userId, "", true, req.body.issue)
+
+        if (result.err) {
+            res.status(500).send(`Sorry was an issue contacting us, please try later.`)
+            return
+        }
+        req.body.returnData = this.buildRequestReturnData(200, "Issue received, we will get back to you shortly.", { "success": true })
+        next()
+    }
+
+    verifyEmail = async (req, res, next) => {
         console.log(req.body)
         const inputCode = Number(req.body.code.trimRight())
 
@@ -242,16 +268,6 @@ export default class UserController {
         } else {
             req.body.returnData = this.buildRequestReturnData(500, "Server error try again later.", { "success": false })
         }
-        next()
-    }
-
-    sendCodeToEmail = (req, res, next) => {
-        // used to send code to users email address 
-        const code = generateUnique6DigitNumber()
-        this.verificationCodes.set(req.body.email, code)
-        console.log("CODE:", code)
-        // TODO send code to email from aws
-        req.body.returnData = this.buildRequestReturnData(200, "Code sent to your email", { "success": true })
         next()
     }
 
@@ -285,7 +301,7 @@ export default class UserController {
     }
 
     deleteAccount = async (req, res, next) => {
-        const user = await this.userModel.findOne({ email: req.body.email }).lean()
+        const user = await this.userModel.findOne({ email: req.body.email })
         // console.log('user', user)
         if (user === null) {
             console.log("User not found")
@@ -293,17 +309,16 @@ export default class UserController {
         }
         let passwordCheck = await bcrypt.compare(req.body.password, user.password)
         if (passwordCheck) {
-            let resultDeleteAllImgs = await this.AWS.deleteManyImgs(user.generatedImgs)
-            if (resultDeleteAllImgs) {
-                console.log("Successfully deleted account")
-                req.body.returnData = this.buildRequestReturnData(200, "Successfully deleted account", { "success": true })
-                const deleteAccount = await this.userModel.deleteOne({ _id: user._id })
-                console.log(deleteAccount)
-            } else {
-                req.body.returnData = this.buildRequestReturnData(500, "Issue deleting images, please try later", { "success": false })
-            }
+                let resultDeleteAllImgs = await this.AWS.deleteManyImgs(user.generatedImgs)
+                if (resultDeleteAllImgs) {
+                    const deleteAccount = await this.userModel.deleteOne({ _id: user._id })
+                    console.log("Successfully deleted account")
+                    req.body.returnData = this.buildRequestReturnData(200, "Successfully deleted account", { "success": true })
+                } else{
+                    return res.status(500).json({ msg: "Issue deleting account, please try later or contact us!" })
+                }
         } else {
-            req.body.returnData = this.buildRequestReturnData(401, "Failed deleting account", { "success": false })
+            return res.status(401).json({ msg: "Wrong Credentials" })
         }
         next()
     }
@@ -320,4 +335,7 @@ export default class UserController {
         }
         res.status(402).send(`Sorry you can't generate more than ${this.ALLOWED_FREE_NUM_OF_GENERATED_IMGS} free images`)
     }
+
+
+
 }

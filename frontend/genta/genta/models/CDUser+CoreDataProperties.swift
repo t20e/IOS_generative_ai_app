@@ -49,6 +49,10 @@ extension CDUser {
     public var messages : NSOrderedSet {
         messages_ ?? []
     }
+    public var accessToken : String{
+        accessToken_ ?? ""
+    }
+    
 }
 
 // MARK: Generated accessors for messages_

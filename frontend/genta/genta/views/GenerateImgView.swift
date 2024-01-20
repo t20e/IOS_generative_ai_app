@@ -9,26 +9,23 @@ import SwiftUI
 import CoreData
 
 struct GenerateImgView: View {
-    
+    @Environment(\.managedObjectContext) var context
+
     @ObservedObject private var viewModel = ImageGenerateViewModel()
     
-    @FetchRequest(
-        entity: CDUser.entity(),
-        sortDescriptors: [],
-        predicate: NSPredicate(format: "isCurrUser_ == %@", NSNumber(value: true)),
-        animation: .default)
-    private var users: FetchedResults<CDUser>
+    let user : CDUser
+    @FetchRequest var messages: FetchedResults<CDMessage>
     
-        @FetchRequest(
+    init(user: CDUser) {
+        self.user = user
+        _messages = FetchRequest<CDMessage>(
             entity: CDMessage.entity(),
-            sortDescriptors: [],
-            //        predicate: NSPredicate(format: "user == %@", NSNumber(value: true)),
+            sortDescriptors: [NSSortDescriptor(keyPath: \CDMessage.timestamp, ascending: true)],
+            predicate: NSPredicate(format: "cduser == %@", user),
             animation: .default)
-        private var messages: FetchedResults<CDMessage>
-    
+    }
     
     var body: some View {
-        if let user = users.first {
             VStack{
                 //IMPORTANT I could not figure out how to just grab the users.messages it wouln't
                 //refresh when I add messages to the user
@@ -36,7 +33,7 @@ struct GenerateImgView: View {
                 MessageTextInput(
                     canAnimate: $viewModel.canAnimateLoading,
                     textInput: $viewModel.textInput,
-                    action: viewModel.startLoadingAnimation,
+                    action: process,
                     //                    messages: $viewModel.messages,
                     placeHolder: .constant("prompt"),
                     btnAlreadyClicked: $viewModel.btnAlreadyClicked
@@ -46,25 +43,19 @@ struct GenerateImgView: View {
                     print("reloading generate view")
                     if user.messages.count == 0{
                         // insert the first message
-                        viewModel.addMsg(msg: Message(text: "What would you like to generate?", sentByUser: false, imageData:  nil), user: user)
+                        PersistenceController.shared.addMsg(msg: Message(text: "What would you like to generate?", sentByUser: false, imageData:  nil), user: user)
                     }
                 }
-                //                .onDisappear{
-                //                    //TODO this wont run if the user exits out app from this view
-                //                    //when the user swipes the view make all images and texts no longer able to be animated
-                //                    for (index, msg) in user.messages.enumerated() {
-                //                        // Modify the value
-                //                        msg.textAlreadyAnimated = true
-                //                        msg.isLoadingSign = false
-                //                        // Update the value in the array
-                //                        user.messages[index] = msg
-                //                    }
-                //                }
             }
-        }
     }
+    
+    func process(){
+        // i needed to pass the user to the viewModel func
+        viewModel.generateImg(user: user)
+    }
+    
 }
 
-#Preview {
-    return GenerateImgView()
-}
+//#Preview {
+//    return GenerateImgView()
+//}

@@ -19,15 +19,16 @@ struct SingleMessageView: View {
     var isRevisedPrompt : Bool
     @State var canAnimateImg  = false
     var alreadyAnimated : Bool
+    var id : UUID
     
-//    varaibles to animate a text letter by letter
+    //    varaibles to animate a text letter by letter
     @State private var animatedText: String = ""
     @State private var currentIndex: String.Index?
     
     var body: some View {
         VStack{
             if isRevisedPrompt{
-//                if the prompt was revised than just add the striaght line above it
+                //                if the prompt was revised than just add the striaght line above it
                 HStack{
                     if sentByUser {
                         Spacer()
@@ -39,7 +40,7 @@ struct SingleMessageView: View {
                             .frame(width: 50, height: 100)
                             .rotationEffect(Angle(degrees: 90))
                             .padding(.horizontal, 20)
-
+                        
                     }
                     if !sentByUser {
                         Spacer()
@@ -55,13 +56,18 @@ struct SingleMessageView: View {
                             .frame(width:  225, height: 225)
                             .cornerRadius(10)
                             .aspectRatio(contentMode: .fit)
-                            .scaleEffect( canAnimateImg ? 1 : 0.5)
-                        
-                            .animation(.spring(response: 0.8, dampingFraction: 0.3, blendDuration: 0),value: canAnimateImg)
+                            .scaleEffect(
+                                alreadyAnimated ? 1 :
+                                    canAnimateImg ? 1 : 0.5
+                            )
+                        //                            .animation(.spring(response: 0.8, dampingFraction: 0.3, blendDuration: 0),value: canAnimateImg)
                             .onAppear{
-                                canAnimateImg = true
+                                if alreadyAnimated == false{
+                                    withAnimation(.spring(response: 0.8, dampingFraction: 0.3, blendDuration: 0)) {
+                                        canAnimateImg = true
+                                    }
+                                }
                             }
-
                         
                         RightTriangle()
                             .stroke(Color.theme.primColor, lineWidth: 0.5)
@@ -93,20 +99,20 @@ struct SingleMessageView: View {
                         .listRowSeparator(.hidden)
                         .overlay(alignment: sentByUser ? .bottomLeading : .bottomTrailing){
                             !sentByUser ?
-                             animatedText == message ?
-//                            only show the down arrow if the message has been completely animated
-                                Image(systemName: "arrowtriangle.down.fill")
-                                    .resizable()
-                                    .frame(width: 30, height: 20)
-                                    .font(.title)
-                                    .offset(x: sentByUser ? 5 : -5, y: 15)
-                                    .foregroundColor(isError ? Color.theme.errColor : Color.theme.primColor)
-                                : nil
+                            animatedText == message ?
+                            // only show the down arrow if the message has been completely animated
+                            Image(systemName: "arrowtriangle.down.fill")
+                                .resizable()
+                                .frame(width: 30, height: 20)
+                                .font(.title)
+                                .offset(x: sentByUser ? 5 : -5, y: 15)
+                                .foregroundColor(isError ? Color.theme.errColor : Color.theme.primColor)
+                            : nil
                             : nil
                         }
                         .onAppear{
-//                            MARK - text animation: if the messages wasnt sent by the user animate it letter by letter
-                            if !sentByUser && !alreadyAnimated{
+                            // MARK - text animation: if the messages wasnt sent by the user animate it letter by letter
+                            if !sentByUser{
                                 startTypewriterAnimation()
                             }else{
                                 animatedText = message
@@ -131,7 +137,7 @@ struct SingleMessageView: View {
                             .frame(width: 50, height: 100)
                             .rotationEffect(Angle(degrees: 90))
                             .padding(.horizontal, 20)
-
+                        
                         
                         LoadingIconView()
                             .offset(x: 0, y: -20)
@@ -147,17 +153,26 @@ struct SingleMessageView: View {
     }
     
     func startTypewriterAnimation() {
+        // set the alreadyAnimated to true, the image and text(if not sent by user) are animated, and the image is not sent by the user
+        if alreadyAnimated == false{
+            PersistenceController.shared.editMsg(msgId: id, attribute: "alreadyAnimated", newValue: true)
+            
+        }
         currentIndex = message.startIndex
         animatedText = ""
-
+        if alreadyAnimated {
+            animatedText = message
+            return
+        }
+        // loop thru time to start the letter by letter animation
         Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { timer in
             guard let index = currentIndex else {
                 timer.invalidate()
                 return
             }
-
+            
             animatedText.append(message[index])
-
+            
             if index == message.index(before: message.endIndex) {
                 timer.invalidate()
             } else {
@@ -165,13 +180,11 @@ struct SingleMessageView: View {
             }
         }
     }
-    
-    
 }
 
 
 #Preview {
-    SingleMessageView(message: "hello there are u the same user from before or a new user can can we sign you in", sentByUser: false, isError: true, isImg: true, imageData: UIImage(systemName: "arrowtriangle.down.fill")?.pngData(), isLoadingSign: false, isRevisedPrompt: false, canAnimateImg: false, alreadyAnimated: false
+    SingleMessageView(message: "hello there are u the same user from before or a new user can can we sign you in", sentByUser: false, isError: true, isImg: true, imageData: UIImage(systemName: "arrowtriangle.down.fill")?.pngData(), isLoadingSign: false, isRevisedPrompt: false, canAnimateImg: false, alreadyAnimated: false,id: UUID()
     )
 }
 

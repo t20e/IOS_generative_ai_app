@@ -25,7 +25,6 @@ struct gentaApp: App {
             MainView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environmentObject(PersistenceController.shared)
-
         }
     }
 

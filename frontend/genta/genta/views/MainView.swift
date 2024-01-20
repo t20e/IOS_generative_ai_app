@@ -21,7 +21,7 @@ struct MainView: View {
 
         VStack{
             if let user = users.first {
-                DashboardView()
+                DashboardView(user: user)
             }else{
                 // user is not signed in
                 HeaderOnBoardingView()
@@ -30,6 +30,9 @@ struct MainView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.theme.baseColor) 
+//        .onAppear{
+//            PersistenceController.shared.deleteAllMsg()
+//        }
     }
 }
 
