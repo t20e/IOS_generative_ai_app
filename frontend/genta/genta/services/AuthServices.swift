@@ -78,7 +78,7 @@ final class AuthServices{
             switch err{
             case .unAuthorized:
                 print("Unauthorized. User entered wrong field login.")
-                return (true, "Wrong email/password please try again!", nil)
+                return (true, "Wrong credentials, please try again!", nil)
             case .timedOut:
                 return (true, "Your connection timed out, Please check your internet connection!" , nil)
             case .serverErr:
@@ -93,8 +93,6 @@ final class AuthServices{
             return (true, "An unkown error occured, please try again", nil)
         }
     }
-    
-    
     
     func checkIfEmailExists(email : String) async -> (err : Bool, msg : String){
         /*
@@ -150,7 +148,7 @@ final class AuthServices{
             return (false, "")
         }catch let err as NetworkError{
             switch err {
-            case .badRequest:
+            case .unAuthorized:
                 return (true, "The code you entered was incorrect, try again.")
             case .serverErr:
                 return (true, "Suffered an internal server error, please try later")
@@ -165,16 +163,16 @@ final class AuthServices{
         }
     }
     
-    func getCode(user: CDUser) async -> (err:Bool, msg:String){
+    func getCode(email : String, firstName: String, accessToken : String) async -> (err:Bool, msg:String){
         let url = URL(string: "\(endPoint)/getCodeToEmail")
         do{
             _ = try await performAPICall(
                 url: url,
                 data: [
-                    "email" : user.email,
-                    "firstName" : user.firstName
+                    "email" : email,
+                    "firstName" : firstName
                 ],
-                token: user.accesToken,
+                token: accessToken,
                 expectedStatusCode: .success,
                 method: "POST",
                 expecting: resSimpleData.self
@@ -186,6 +184,8 @@ final class AuthServices{
                 return (true, "Suffered an internal server error, please try later")
             case .timedOut:
                 return (true, "Your connection timed out, Please check your internet connection!" )
+            case .unAuthorized:
+                return (true, "Something went wrong, check your email." )
             default:
                 return (true, "Uncaught error, please try again")
             }

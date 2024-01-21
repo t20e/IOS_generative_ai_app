@@ -71,7 +71,9 @@ class ImageGenerateViewModel: ObservableObject{
                 removeLoadingSign(loadingMsgId: loadingMsgId)
                 let downloadImgRes = await ImageServices.shared.downLoadImage(presignedUrl: res.data!.presignedUrl)
                 if downloadImgRes == nil {
-                    //                        TODO somethign went wrong let user know
+                    // somethign went wrong let user know
+                    _ = PersistenceController.shared.addMsg(msg: Message(text: "There was an issue downloading the image.", sentByUser: true, imageData: nil, isRevisedPrompt: true), user: user)
+                    return
                 }
                 let genImg = GeneratedImage(imgId: res.data!.imgId, prompt: res.data!.prompt, presignedUrl: res.data!.presignedUrl, data: downloadImgRes)
                 // add image to to disk
@@ -98,7 +100,6 @@ class ImageGenerateViewModel: ObservableObject{
 
  
     let generateQuestions : [String] = [
-        //        TODO how can i set the first item in the msgs array to something like "What would you like to generate?"
         "What would you like to generate next?",
         "Tell me, what kind of content do you want to generate?",
         "Ready to create something new? What's your choice?",

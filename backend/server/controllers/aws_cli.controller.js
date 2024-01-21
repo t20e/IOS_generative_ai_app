@@ -183,10 +183,10 @@ class AWS {
                         Charset: "UTF-8",
                         Data: template,
                     },
-                    // the is only if it has trouble sending the html it will default to the text
                     Text: {
+                        // the is only if it has trouble sending the html it will default to the text
                         Charset: "UTF-8",
-                        Data: `Hey ${usersName}, sorry their was an issue sending data to your email, enter this code in the app code: ${code}`,
+                        Data: `Hey, ${usersName}, sorry their was an issue sending data to your email, enter this code in the app code: ${code}`,
                     },
                 },
                 // subject sent to user
@@ -210,41 +210,55 @@ class AWS {
     getTemplate(recipientEmail, usersName, userId, code, sendToGenta, supportIssue) {
         if (sendToGenta){
             return `
-                <h1>UserId ${userId}</h1>
-                <h1>name ${usersName}</h1>
-                <h1>email ${recipientEmail}</h1>
-                <p>sent this issue, please review: ${supportIssue}</p>
+                <h1>Users support request</h1>
+                <h3>Users info</h3>
+                <p>
+                UserId: ${userId}
+                <br>
+                Name: ${usersName}
+                <br>
+                Email: ${recipientEmail}
+                <br>
+                </p>
+                <p>
+                Issue, please review: <br>
+                <br>
+                ${supportIssue}
+                </p>
             `
         } else {
             //send to the user
-            return  `<div style="
-                            margin: 0;
-                            padding: 0;  
-                        padding:5em ;
-                        background: linear-gradient(180deg,rgb(255,155,66) 0%, rgb(239,233,244) 35%, rgb(22,186,197) 100%);
-                    ">
-                    <div style="text-align: center;
-                        background-color: #EFE9F4; 
-                        border-radius: 10px;
-                        padding: 20px 40px; 
-                        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-                        height: 22em;
-                        width: 22em;
-                        margin: 0 auto;
-                    ">
-                        <h3 style="color: #333; font-family: Arial, sans-serif; font-size: 24px; text-align: center;">
-                            Hey ${usersName}
-                        </h3>
-                        <p style="color: #555;  text-align: center; font-size: 1.5em">Please enter this code in the app</p>
-                        <div
-                            style="background-color: #16BAC5; color: white; border-radius: 20px; 
-                            padding-left: 20px; padding-right: 20px; 
-                        ">
-                            <h1 style=" font-family: Arial, Helvetica, sans-serif; font-size: 4em; letter-spacing: 10px;  margin-right:-10px;
-                            ">${code}</h1>
-                        </div>
-                    </div>
-                </div>`
+            return  `
+            <Section style="
+            margin: 0;
+            padding: 0;  
+            padding:5em ;
+            background: linear-gradient(180deg,rgb(255,155,66) 0%, rgb(239,233,244) 35%, rgb(22,186,197) 100%);">
+            <section style="text-align: center;
+            background-color: #EFE9F4; 
+            border-radius: 10px;
+            padding: 20px 40px; 
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+            /* height: 22em; */
+            /* width: 22em; */
+            max-width: 25em;
+            max-height: 25em;
+            margin: 0 auto;
+            font-family: Arial, Helvetica, sans-serif;
+        ">
+            <header>
+                <img style="height: 80px; width: 80px; border-radius: 20px;" src="https://s3-bucket-public-for-all-project.s3.amazonaws.com/genta-app/appIcon.png" alt="app icon" srcset="">
+                <p style="font-weight: bold;color: #000;">genTa app</p>
+            </header>
+            <Section>
+                <h3 style="color: #333; font-family: Arial, sans-serif; font-size: 24px; text-align: center;">Hey, ${usersName}</h3>
+                <p style="color: #555;  text-align: center; font-size: 1.5em">Please enter this code in the app.</p>
+                <Section style=" background-color: #16BAC5; color: white; border-radius: 20px; padding-left: 20px; padding-right: 20px; ">                    
+                    <h1 style="margin: 0px; font-family: Arial, Helvetica, sans-serif; font-size: 4em; letter-spacing: 10px;  margin-right:-10px;">${code}</h1>
+                </Section>
+            </Section>
+        </Section>
+            `
         }
     }
 }

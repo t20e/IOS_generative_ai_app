@@ -9,32 +9,23 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+
 struct LoginData : Codable{
-    var email: String
-    var password: String
+    var email: String = ""
+    var password : String = ""
+    var code : String = ""
+    var newPassword : String = ""
 }
 
 struct RegData : Codable{
-    var email : String
-    var password: String
-    var firstName: String
-    var lastName : String
-    var age: Int
+    var email : String = ""
+    var password: String = ""
+    var firstName: String = ""
+    var lastName : String = ""
+    var age: Int = 0
 }
 
-enum LoginValidateEnum {
-    case validateEmail, validatePassword
-}
 
-enum RegisterValidateEnum{
-    case validateEmail, validateCode, validatePassword, validateConfirmPassword,  validateFirstName, validateLastName, validateAge
-}
-
-enum ExecuteProcess{
-    case none, register, login
-}
-//
-//
 @MainActor
 class OnBoardingViewModel : ObservableObject{
     
@@ -46,8 +37,8 @@ class OnBoardingViewModel : ObservableObject{
     @Published var regProcess = RegisterValidateEnum.validateEmail
     @Published var placeholder = "email"
     
-    @Published var loginData = LoginData(email: "", password: "")
-    @Published var regData = RegData(email: "", password: "", firstName: "", lastName: "", age: 0)
+    @Published var loginData = LoginData()
+    @Published var regData = RegData()
     
     @Published var isOnLogin = false
     @Published var showRegLogin = false
@@ -56,14 +47,29 @@ class OnBoardingViewModel : ObservableObject{
     @Published var btnAlreadyClicked : Bool
     //    @Published var messages : [Message]
     @Published var messages : [CDMessage]
-    
+    @Published var isResettingPassword = false
+    enum LoginValidateEnum {
+        case validateEmail, validatePassword,
+            validateCode, validateNewPassword // if the users wants to update their password from the login view
+    }
+
+    enum RegisterValidateEnum{
+        case validateEmail, validateCode, validatePassword, validateConfirmPassword,  validateFirstName, validateLastName, validateAge
+    }
+
+    enum ExecuteProcess{
+        case none, register, login
+    }
+
     init(
         loginProcess: LoginValidateEnum = LoginValidateEnum.validateEmail,
         regProcess: RegisterValidateEnum = RegisterValidateEnum.validateEmail,
         placeholder: String = "email",
         loginData: LoginData = LoginData(
             email: "",
-            password: ""
+            password: "",
+            code : "",
+            newPassword : ""
         ),
         regData: RegData = RegData(
             email: "",
@@ -145,12 +151,40 @@ class OnBoardingViewModel : ObservableObject{
         switch loginProcess{
         case .validateEmail:
             loginData.email = text
-            placeholder = "password"
-            loginProcess = .validatePassword
-            addMsg(msg: Message(text: "Please enter your password.", sentByUser: false, imageData: nil))
+            if isResettingPassword{
+                Task{ @MainActor in
+                    let res = await AuthServices.shared.getCode(email: loginData.email, firstName: "", accessToken: "")
+                    if res.err{
+                        addMsg(msg: Message(text: res.msg, sentByUser: false, isError: true, imageData: nil))
+                    }else{
+                        placeholder = "code"
+                        addMsg(msg: Message(text: "We've sent a code to your email. Please enter it so we can update your password.", sentByUser: false, imageData: nil))
+                        loginProcess = .validateCode
+                    }
+                }
+            }else{
+                // if not updating password
+                placeholder = "password"
+                loginProcess = .validatePassword
+                addMsg(msg: Message(text: "Please enter your password.", sentByUser: false, imageData: nil))
+            }
         case .validatePassword :
             addMsg(msg: Message(text: "Logging in", sentByUser: false, imageData: nil))
             loginData.password = textInput
+            startLoadingAnimation()
+            login()
+        case .validateCode:
+            loginData.code = text
+            placeholder = "new password"
+            loginProcess = .validateNewPassword
+            addMsg(msg: Message(text: "Please enter a new password.", sentByUser: false, imageData: nil))
+        case .validateNewPassword:
+            if text.count < minPasswordLength || text.count >= maxPasswordLength{
+                addMsg(msg: Message(text: "New password has to be between 6 and 32 charaters long.", sentByUser: false, isError: true, imageData: nil))
+                return
+            }
+            addMsg(msg: Message(text: "Updating password and loggin in...", sentByUser: false, imageData: nil))
+            loginData.newPassword = text.trimmingCharacters(in: .whitespacesAndNewlines)
             startLoadingAnimation()
             login()
         }
@@ -256,12 +290,15 @@ class OnBoardingViewModel : ObservableObject{
     func switchTo(){
         // switches between login and registration
         if isOnLogin {
+            // swift to reg
             loginProcess = .validateEmail // this so so that when email is entered for login and than the user switches to register it wont print the email as ***** to messages
             regProcess = .validateEmail
             placeholder = "email"
             addMsg(msg: Message(text: "Signing up instead, Enter your email.", sentByUser: false, imageData: nil))
         } else {
             //            switch to login
+            isResettingPassword = false
+            loginData = LoginData()
             loginProcess = .validateEmail
             regProcess = .validateEmail
             placeholder = "email"
@@ -326,7 +363,7 @@ class OnBoardingViewModel : ObservableObject{
             }
             addMsg(msg: Message(text: res.msg, sentByUser: false, imageData: nil))
             textInput = ""
-            print("returned user to view", res)
+//            print("returned user to view", res)
             await delay(seconds: 0.5)
             await PersistenceController.shared.addUser(userStruct: res.user!)
         }

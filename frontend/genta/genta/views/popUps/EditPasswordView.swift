@@ -59,7 +59,18 @@ struct EditPasswordView: View {
                             .autocorrectionDisabled()
                     }
                     .padding(10)
+                    
+                    // button to get new code
+                    Text("Get new code")
+                        .onTapGesture {
+                            getCode()
+                        }
+                        .underline()
+                        .padding(.top, 20)
+                        .padding(.bottom, 40)
                 }
+                
+                
                 Button(action: {
                     if !showPasswordField{
                         showPasswordField = true
@@ -92,7 +103,7 @@ struct EditPasswordView: View {
     func getCode(){
         if let user = users.first {
             Task{@MainActor in
-                let res = await AuthServices.shared.getCode(user: user)
+                let res = await AuthServices.shared.getCode(email: user.email, firstName: user.firstName, accessToken: user.accessToken)
                 alertMsg = res.msg
                 showAlert = true
                 isMajorAlert = false

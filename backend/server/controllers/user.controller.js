@@ -67,8 +67,7 @@ export default class UserController {
                 const code = generateUnique6DigitNumber()
                 this.verificationCodes.set(req.body.email, code)
                 console.log("CODE: " + code)
-                //TODO change email to req.body.email and add the user id 
-                const result = await this.AWS.sendEmail("ttavis1999@gmail.com", "", "", code, false, "")
+                const result = await this.AWS.sendEmail(req.body.email, "", "", code, false, "")
                 if (result.err) {
                     res.status(500).send(`Sorry there was an issue, please try later.`)
                     return
@@ -111,18 +110,23 @@ export default class UserController {
 
     login = async (req, res, next) => {
         console.log(req.body)
-        console.log(typeof (req.body))
-        // the .lean() allows me to be able to use the delete keyword to delete certain fields form the user like password before sending to frontend
-        const user = await this.userModel.findOne({ email: req.body.email }).lean()
-        // console.log('user', user)
-        if (user === null) {
-            console.log("User not found")
-            return res.status(401).json({ msg: "Wrong Credentials" })
-        }
-        bcrypt.compare(req.body.password, user.password)
-            .then(async passwordCheck => {
-                if (passwordCheck) {
-                    console.log("User found when logging in")
+
+        if (req.body.newPassword != ""){
+            console.log("resetting password")
+            // verify the code that was sent to the users email
+            const inputCode = Number(req.body.code.trimRight())
+            const storedCode = this.verificationCodes.get(req.body.email)
+            const verify = this.verifyCode(req.body, storedCode, inputCode)
+            if (verify.statusCode === 200){
+                const user = await this.userModel.findOne({ email: req.body.email }).lean()
+                // the code they entered is correct update the users password
+                const hashedPass = await bcrypt.hash(req.body.newPassword, 10)
+                const result = await this.userModel.updateOne(
+                    { email: req.body.email },
+                    { $set: { password: hashedPass } }
+                );
+                if (result.matchedCount === 1) {
+                    console.log(`Password changed successfully`);
                     delete user.password
                     if (user.generatedImgs.length > 0) {
                         user.generatedImgs = await this.AWS.getManyObjectsPresignedUrl(user.generatedImgs)
@@ -130,14 +134,44 @@ export default class UserController {
                     user.accessToken = this.signJwtToken(user)
                     req.body.returnData = this.buildRequestReturnData(200, "Successfully login user", user)
                 } else {
-                    req.body.returnData = this.buildRequestReturnData(401, "Unauthorized login attempt", "")
+                    console.log("Wrong credentials")
+                    req.body.returnData = this.buildRequestReturnData(401, "Please check your credentials", { "success": false })
                 }
                 next()
-            })
-            .catch(err => {
-                console.log("Error Logging in user", err)
-                res.status(500).json({ "msg": "error logging in user" })
-            });
+            }else{
+                // if the code is not right
+                req.body.returnData = verify
+                next()
+            }
+        }else{
+            // do normal login
+            // the .lean() allows me to be able to use the delete keyword to delete certain fields form the user like password before sending to frontend
+            const user = await this.userModel.findOne({ email: req.body.email }).lean()
+            console.log('user', user)
+            if (user === null) {
+                console.log("User not found")
+                return res.status(401).json({ msg: "Wrong Credentials" })
+            }
+            bcrypt.compare(req.body.password, user.password)
+                .then(async passwordCheck => {
+                    if (passwordCheck) {
+                        console.log("User found when logging in")
+                        delete user.password
+                        if (user.generatedImgs.length > 0) {
+                            user.generatedImgs = await this.AWS.getManyObjectsPresignedUrl(user.generatedImgs)
+                        }
+                        user.accessToken = this.signJwtToken(user)
+                        req.body.returnData = this.buildRequestReturnData(200, "Successfully login user", user)
+                    } else {
+                        req.body.returnData = this.buildRequestReturnData(401, "Unauthorized login attempt", "")
+                    }
+                    next()
+                })
+                .catch(err => {
+                    console.log("Error Logging in user", err)
+                    res.status(500).json({ "msg": "error logging in user" })
+                });
+        }
     }
 
     lastUserRequestMiddleware = (req, res) => {
@@ -195,6 +229,10 @@ export default class UserController {
         }
     }
 
+    capitalizeFirstLetter(word) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+
     getLoggedUser = async (req, res, next) => {
         console.log("Attempting to log user in from token...")
         const decodedJWT = jwt.decode(req.headers.authorization, { complete: true })
@@ -223,12 +261,20 @@ export default class UserController {
     }
 
     getCodeToEmail = async (req, res, next) => {
-        // this is for when the user attempts to change password or delete account not for checking email
+        // this is for when the user attempts to change password or delete account NOT for validating email
         console.log(req.body)
+
+        // find the user in mongodb
+        const user = await this.userModel.findOne({ email: req.body.email }).lean()
+        if (user === null) {
+            console.log("User not found")
+            return res.status(401).json({ msg: "Wrong Credentials" })
+        }
         const code = generateUnique6DigitNumber()
         this.verificationCodes.set(req.body.email, code)
         console.log("CODE: " + code)
-        const result = await this.AWS.sendEmail(req.body.email, req.body.firstName, "", code, false, "")
+        let firstNameCapitalized = this.capitalizeFirstLetter(req.body.firstName)
+        const result = await this.AWS.sendEmail(req.body.email, firstNameCapitalized, "", code, false, "")
         if (result.err) {
             res.status(500).send(`Sorry there was an issue sending a code to your email, please try later.`)
             return
@@ -240,8 +286,8 @@ export default class UserController {
     contactUs = async (req, res, next) => {
         // console.log("contact us body",req.body)
         // users id is already in the req.body
-        //TODO change email to req.body.email and add the user id and users name
-        const result = await this.AWS.sendEmail(req.body.email, req.body.firstName, req.body.userId, "", true, req.body.issue)
+        let firstNameCapitalized = this.capitalizeFirstLetter(req.body.firstName)
+        const result = await this.AWS.sendEmail(req.body.email, firstNameCapitalized, req.body.userId, "", true, req.body.issue)
 
         if (result.err) {
             res.status(500).send(`Sorry was an issue contacting us, please try later.`)
@@ -254,21 +300,23 @@ export default class UserController {
     verifyEmail = async (req, res, next) => {
         console.log(req.body)
         const inputCode = Number(req.body.code.trimRight())
-
         const storedCode = this.verificationCodes.get(req.body.email)
         console.log(this.verificationCodes)
+        req.body.returnData = this.verifyCode(req.body, storedCode, inputCode)
+        next()
+    }
 
+    verifyCode = (body, storedCode, inputCode) =>{
         if (storedCode === undefined || storedCode !== inputCode) {
-            console.log("Email not know please try again later.")
-            req.body.returnData = this.buildRequestReturnData(400, "Email not know please try again later.", { "success": false })
+            console.log("Wrong credentials, wrong code: ")
+            return this.buildRequestReturnData(401, "Credentials are wrong", { "success": false })
         } else if (storedCode === inputCode) {
             console.log("Entered correct code.")
-            this.verificationCodes.delete(req.body.email)
-            req.body.returnData = this.buildRequestReturnData(200, "Email verified", { "success": true })
+            this.verificationCodes.delete(body.email)
+            return this.buildRequestReturnData(200, "Email verified", { "success": true })
         } else {
-            req.body.returnData = this.buildRequestReturnData(500, "Server error try again later.", { "success": false })
+            return this.buildRequestReturnData(500, "Server error try again later.", { "success": false })
         }
-        next()
     }
 
     changePassword = async (req, res, next) => {

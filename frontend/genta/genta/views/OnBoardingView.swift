@@ -14,8 +14,6 @@ struct OnBoardingView: View {
     
     @Environment(\.managedObjectContext) var context
     @ObservedObject private var viewModel = OnBoardingViewModel()
-
-    
     
     var body: some View {
         ZStack{
@@ -36,12 +34,30 @@ struct OnBoardingView: View {
                         viewModel.showRegLogin = true
                         viewModel.isOnLogin = true
                         viewModel.addMsg(msg: Message(text: "Enter your email.", sentByUser: false, imageData: nil))
+                        
+                        // so the user can change from resetting password to just loggin in
+                        viewModel.loginData = LoginData()
+                        viewModel.isResettingPassword = false
                     })
                     .frame(width: 250, height: 40)
                     .background(.clear)
                     .foregroundColor(Color.theme.textColor)
                     
                 } else {
+                    if viewModel.isOnLogin{
+                        // To reset the password on the login view
+                        Button(action: {
+                            viewModel.isResettingPassword = true
+                            viewModel.addMsg(msg: Message(text: "To reset your password, please enter your email.", sentByUser: false, imageData: nil))
+                            viewModel.loginProcess = .validateEmail
+                            viewModel.loginData = LoginData()
+                        }, label: {
+                            Text("Reset password")
+                                .foregroundStyle(Color.theme.primColor)
+                                .underline()
+                        })
+                    }
+                    
                     HStack{
                         Button(action: {
                             viewModel.switchTo()

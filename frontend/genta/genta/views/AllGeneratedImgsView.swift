@@ -39,7 +39,7 @@ struct AllGeneratedImgsView: View {
             VStack {
                 HStack{
                     Spacer()
-                    Text("Hey \(user.firstName)")
+                    Text("Hey, \(user.firstName)")
                         .padding(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
                         .font(.title3)
                         .background(Color.theme.textColor)

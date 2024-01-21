@@ -31,10 +31,11 @@ class PersistenceController: ObservableObject{
             print("ERROR: Data not saved \(error)")
         }
     }
+
+
     
     func addUser(userStruct : User) async{
-        //TODO remove all from database
-        //        deleteAll()
+//        deleteAll() // remove all from database
         let user = CDUser(context : self.container.viewContext)
         user.id_ = userStruct.id
         user.age_ = userStruct.age

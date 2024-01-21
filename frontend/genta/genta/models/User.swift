@@ -22,8 +22,6 @@ struct GeneratedImage: Codable, Hashable{
     I tried to put the user data in swiftData but I ran into alot of issues, swiftData seems to best
     fit for an array of data
  */
-//TODO figure out how to make it so i dont need this class just parse the JSON right into the coreData entity
-//@objc(CDUser)
 final class User : Codable, Identifiable, ObservableObject {
     // this is for the in me
     let id : String

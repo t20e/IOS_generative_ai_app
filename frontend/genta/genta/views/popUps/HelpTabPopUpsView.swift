@@ -37,7 +37,6 @@ struct HelpTabPopUpsView: View {
                     if whichPopup == .contactUs{
                         VStack{
                             Text("What do you need support with?")
-                            //TODO fix this its not sending back to server
                             TextField("Enter text, 250 characters limit", text: $supportTextInput, axis: .vertical)
                                 .padding()
                                 .border(.gray, width: 1)
