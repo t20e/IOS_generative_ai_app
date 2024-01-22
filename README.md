@@ -10,25 +10,24 @@ Im using MVVM architecture for swift, and coreData to store objects, I tried the
 This app allows its users to generate 15 free images every week and after that they can pay per image with a third party provider. Users can register which will need to be authenticated their emails, login reset password by email MFA, generate images, delete account, and more. The images generated are saved on database, which users can access anytime.
 
 
-## App Images
-<div style="display: flex; justify-content: center; justify-content: space-evenly;">
-    <section style="text-align: center; padding-right: 10px;">
-        <h5>Register</h5>
-        <img src="app_design/app-show-images/for-app-store/gif/register.gif" alt="register" width="200">
-    </section>
-    <section style="text-align: center; padding-right: 10px;">
-        <h5>Generate image</h5>
-        <img src="app_design/app-show-images/for-app-store/gif/generate-image.gif" alt="Generate image" width="200">
-    </section>
-    <section style="text-align: center ; padding-right: 10px;">
-        <h5>All generated images</h5>
-        <img src="app_design/app-show-images/for-app-store/gif/all-generated-iamges.gif" alt="all-generated-images" width="200">
-    </section>
-    <section style="text-align: center;">
-        <h5>Contact Us</h5>
-        <img src="app_design/app-show-images/for-app-store/gif/contact-us.gif" alt="contact-us" width="200">
-    </section>
-</div>
+## App 
+<table>
+    <thead>
+        <tr>
+            <th><h5 style="text-align: center;">Register</h5></th>
+            <th><h5 style="text-align: center;">Generate image</h5></th>
+            <th><h5 style="text-align: center;">All generated images</h5></th>
+            <th><h5 style="text-align: center;">Contact Us</h5></th>
+        </tr>
+    </thead>
+    <tr>
+        <td><img src="app_design/app-show-images/for-app-store/gif/register.gif" alt="register" width="200">
+        </td>
+        <td><img src="app_design/app-show-images/for-app-store/gif/generate-image.gif" alt="Generate image" width="200"></td>
+        <td><img src="app_design/app-show-images/for-app-store/gif/all-generated-iamges.gif" alt="all-generated-images" width="200"></td>
+        <td><img src="app_design/app-show-images/for-app-store/gif/contact-us.gif" alt="contact-us" width="200"></td>
+    </tr>
+</table>
  
 
 Issues with app:
