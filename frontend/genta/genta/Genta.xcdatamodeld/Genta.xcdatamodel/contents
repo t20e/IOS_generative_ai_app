@@ -30,7 +30,7 @@
         <attribute name="isCurrUser_" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="lastName_" optional="YES" attributeType="String"/>
         <attribute name="numImgsGenerated_" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="generatedImages_" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="CDGeneratedImage" inverseName="cduser" inverseEntity="CDGeneratedImage"/>
-        <relationship name="messages_" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="CDMessage" inverseName="cduser" inverseEntity="CDMessage"/>
+        <relationship name="generatedImages_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDGeneratedImage" inverseName="cduser" inverseEntity="CDGeneratedImage"/>
+        <relationship name="messages_" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDMessage" inverseName="cduser" inverseEntity="CDMessage"/>
     </entity>
 </model>

@@ -13,13 +13,13 @@ class ImageGenerateViewModel: ObservableObject{
     @Published var textInput = ""
     @Published var canAnimateLoading = false
     @Published var btnAlreadyClicked : Bool
-
-    init(textInput: String = "", canAnimateLoading: Bool = false, btnAlreadyClicked: Bool = false ) {
+    @Published var allowUserToGenerate : Bool = true
+    init(textInput: String = "", canAnimateLoading: Bool = false, btnAlreadyClicked: Bool = false, allowUserToGenerate : Bool = true ) {
         self.textInput = textInput
         self.canAnimateLoading = canAnimateLoading
         self.btnAlreadyClicked = btnAlreadyClicked
+        self.allowUserToGenerate = allowUserToGenerate
     }
-    
     
     func startLoadingAnimation(){
         //starts the loading animation on messages
@@ -57,14 +57,13 @@ class ImageGenerateViewModel: ObservableObject{
             user: user)
 
         textInput = ""
-
-        if user.numImgsGenerated_ <= ALLOWED_FREE_NUM_OF_GENERATED_IMGS{
-            Task{ @MainActor in
+        Task{ @MainActor in
+            if user.numImgsGenerated_ < ALLOWED_FREE_NUM_OF_GENERATED_IMGS{
                 let res = await ImageServices.shared.generateImg(prompt: textCopy, token: user.accessToken)
                 await stopAnimation()
                 if res.err{
                     let msg = Message(text: res.msg ?? "Issue getting error messages, please try later.", sentByUser: false, isError: true, imageData: nil)
-                   _ = PersistenceController.shared.addMsg(msg: msg, user: user)
+                    _ = PersistenceController.shared.addMsg(msg: msg, user: user)
                     removeLoadingSign(loadingMsgId: loadingMsgId)
                     return
                 }
@@ -84,16 +83,24 @@ class ImageGenerateViewModel: ObservableObject{
                 }
                 // add the image to the CDMessage coredata
                 _ = PersistenceController.shared.addMsg(msg: Message(text: "", sentByUser: false, isImg: true, imageData: downloadImgRes), user: user)
-
+                
                 //add the next what would you like to generate msg for user
                 _ = PersistenceController.shared.addMsg(msg: Message(text: generateQuestions.randomElement()!, sentByUser: false, imageData: nil), user: user)
                 // update the user increment numImgsGenerated
                 PersistenceController.shared.editUser(user: user, attribute: "numImgsGenerated_", newValue: user.numImgsGenerated_ + 1)
+                // check if the users can generate any more images
+                if user.numImgsGenerated_ >= ALLOWED_FREE_NUM_OF_GENERATED_IMGS{
+                    allowUserToGenerate = false
+                    _ = PersistenceController.shared.addMsg(msg: Message(text: "You have exceeding the free limit for image generation.", sentByUser: false, isError: true, imageData: nil), user: user)
+                }
+            }else{
+                await stopAnimation()
+                allowUserToGenerate = false
+                removeLoadingSign(loadingMsgId: loadingMsgId)
+                print("User has generated more than the free amount")
+                _ = PersistenceController.shared.addMsg(msg: Message(text: "Sorry, you have exceeding the free limit for image generation.", sentByUser: false, isError: true, imageData: nil), user: user)
+                
             }
-        }else{
-            removeLoadingSign(loadingMsgId: loadingMsgId)
-            print("User has generated more than the free amount")
-            _ = PersistenceController.shared.addMsg(msg: Message(text: "Sorry, you have exceeding the free limit for image generation.", sentByUser: false, isError: true, imageData: nil), user: user)
         }
     }
   

@@ -20,8 +20,13 @@ struct MainView: View {
     var body: some View {
 
         VStack{
-            if let user = users.first {
-                DashboardView(user: user)
+            /*
+                IMPORTANT: in views that observed for CDUser changes I could not pass the user as object from parent to child,
+                I had to query the user again like in Dashboard etc...
+            */
+            if users.first != nil {
+//                DashboardView(user: user)
+                DashboardView()
             }else{
                 // user is not signed in
                 HeaderOnBoardingView()
@@ -29,10 +34,7 @@ struct MainView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.theme.baseColor) 
-//        .onAppear{
-//            PersistenceController.shared.deleteAllMsg()
-//        }
+        .background(Color.theme.baseColor)
     }
 }
 

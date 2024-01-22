@@ -7,22 +7,24 @@
 
 import SwiftUI
 
-struct TokenFoundView: View {
+struct LoadingView: View {
     @State private var rotation: Double = 0
     @State private var scale: CGFloat = 0.7
     @State private var screenWidth = UIScreen.main.bounds.width / 1.3
     @State private var gradientOffset: CGFloat = 0
     
+    @Binding var purpose : String
+    
     var body: some View {
         ZStack{
             LinearGradient(
-                gradient: Gradient(colors: [Color.red, Color.blue]),
+                gradient: Gradient(colors: [Color.theme.actionColor, Color.theme.primColor]),
                 startPoint: .leading,
                 endPoint: .trailing
             )
             .scaleEffect(scale)
             .mask(
-                Text("Attempting To Login")
+                Text(purpose)
                     .scaleEffect(scale)
                     .animation(.easeInOut(duration: 1.5).repeatForever(), value: scale)
                     .onAppear {
@@ -36,7 +38,7 @@ struct TokenFoundView: View {
                 .resizable()
                 .overlay(
                     LinearGradient(
-                        gradient: Gradient(colors: [Color.red, Color.blue]),
+                        gradient: Gradient(colors: [Color.theme.primColor, Color.theme.actionColor]),
                         startPoint: .leading,
                         endPoint: .trailing
                     )
@@ -63,6 +65,4 @@ struct TokenFoundView: View {
     }
 }
 
-#Preview {
-    TokenFoundView()
-}
+#Preview {LoadingView(purpose: .constant("Almost There"))}

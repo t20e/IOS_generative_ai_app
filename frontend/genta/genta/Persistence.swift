@@ -19,6 +19,14 @@ class PersistenceController: ObservableObject{
             if let error = error{
                 fatalError("Failed to load persistent stores \(error.localizedDescription)")
             }
+            /*
+             When attempting to save to CoreData from many places, there will be conflicts. Two places where data is being saved
+             simultaneously is when the user logs in; it will retrieve all images from S3. And if the user attempts to swipe to the
+             generate view from the allGeneratedImages view while it's getting the images, this will cause a conflict because the
+             generateView will also attempt to write to CoreData, to fix this we can use a mergePolicy, however I just made it so
+             that the user has to wait for all thier images to be loaded form s3
+             */
+//            self.container.viewContext.mergePolicy =  NSMergePolicy(merge: NSMergePolicyType.mergeByPropertyObjectTrumpMergePolicyType);
         }
     }
     
@@ -46,7 +54,7 @@ class PersistenceController: ObservableObject{
         user.numImgsGenerated_ = userStruct.numImgsGenerated
         user.isCurrUser_ = true
         
-        if userStruct.numImgsGenerated > 0{
+        if userStruct.numImgsGenerated > 0 {
             // add the user images to coreData if they have images
             for image in userStruct.generatedImgs {
                 let imgData = await ImageServices.shared.downLoadImage(presignedUrl: image.presignedUrl)

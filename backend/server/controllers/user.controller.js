@@ -110,7 +110,6 @@ export default class UserController {
 
     login = async (req, res, next) => {
         console.log(req.body)
-
         if (req.body.newPassword != ""){
             console.log("resetting password")
             // verify the code that was sent to the users email
@@ -147,7 +146,7 @@ export default class UserController {
             // do normal login
             // the .lean() allows me to be able to use the delete keyword to delete certain fields form the user like password before sending to frontend
             const user = await this.userModel.findOne({ email: req.body.email }).lean()
-            console.log('user', user)
+            // console.log('user', user)
             if (user === null) {
                 console.log("User not found")
                 return res.status(401).json({ msg: "Wrong Credentials" })
@@ -376,11 +375,12 @@ export default class UserController {
         const decodedJWT = jwt.decode(req.headers.authorization, { complete: true })
         if (decodedJWT !== null) {
             const user = await this.userModel.findOne({ _id: decodedJWT.payload._id })
-            if (user.numImgsGenerated <= this.ALLOWED_FREE_NUM_OF_GENERATED_IMGS) {
+            if (user.numImgsGenerated < this.ALLOWED_FREE_NUM_OF_GENERATED_IMGS) {
                 next()
                 return
             }
         }
+        console.log("User has generated the maximum amount of images")
         res.status(402).send(`Sorry you can't generate more than ${this.ALLOWED_FREE_NUM_OF_GENERATED_IMGS} free images`)
     }
 
