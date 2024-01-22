@@ -17,7 +17,6 @@ struct MessageTextInput: View {
     
     @Binding var textInput : String
     @State var action : () -> Void
-//    @Binding var messages : [Message]
     @Binding var placeHolder : String
     @Binding var btnAlreadyClicked : Bool
     
@@ -62,6 +61,7 @@ struct MessageTextInput: View {
                     }
                 }
                 .onChange(of: canAnimate){
+                    print("CanAnimated changed", canAnimate)
                     withAnimation(.default){
                         //stop all animations
                         if !canAnimate{

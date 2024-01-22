@@ -9,29 +9,31 @@ import SwiftUI
 import CoreData
 
 struct GenerateImgView: View {
+    
     @Environment(\.managedObjectContext) var context
-
-    @ObservedObject private var viewModel = ImageGenerateViewModel()
-    
-    let user : CDUser
+    /* 
+        I had the viewModel as a @ObservedObject like the class is but I got a weird bug where when I change the
+        canAnimateLoading in the viewModel it wouldnt change it in the MessageTextInput view nested in this view
+    */
+    @StateObject private var viewModel: ImageGenerateViewModel
+    let user: CDUser
     @FetchRequest var messages: FetchedResults<CDMessage>
-    
+
     init(user: CDUser) {
         self.user = user
-        _messages = FetchRequest<CDMessage>(
-            entity: CDMessage.entity(),
-            sortDescriptors: [NSSortDescriptor(keyPath: \CDMessage.timestamp, ascending: true)],
-            predicate: NSPredicate(format: "cduser == %@", user),
-            animation: .default)
-        if user.numImgsGenerated_ >= ALLOWED_FREE_NUM_OF_GENERATED_IMGS {
-            viewModel.allowUserToGenerate = false
-        }
+        // wrapped the ImageGenerateViewModel: ObservableObject into a StateObject im still not sure as to why changes
+        // weren't being published when it was just a @ObservedObject variable
+        self._viewModel = StateObject(wrappedValue: ImageGenerateViewModel())
+        
+        let fetchRequest: NSFetchRequest<CDMessage> = CDMessage.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \CDMessage.timestamp, ascending: true)]
+        fetchRequest.predicate = NSPredicate(format: "cduser == %@", user)
+        self._messages = FetchRequest(fetchRequest: fetchRequest)
     }
+ 
     
     var body: some View {
         VStack{
-            //IMPORTANT I could not figure out how to just grab the users.messages it wouln't
-            //refresh when I add messages to the user
             ChatView(messages: Array(messages))
                 .onAppear{
                     print("reloading generate view")
@@ -49,11 +51,15 @@ struct GenerateImgView: View {
                     canAnimate: $viewModel.canAnimateLoading,
                     textInput: $viewModel.textInput,
                     action: process,
-                    //                    messages: $viewModel.messages,
                     placeHolder: .constant("prompt"),
                     btnAlreadyClicked: $viewModel.btnAlreadyClicked
                 )
                 .padding()
+            }
+        }
+        .onAppear{
+            if user.numImgsGenerated_ >= ALLOWED_FREE_NUM_OF_GENERATED_IMGS {
+                self.viewModel.allowUserToGenerate = false
             }
         }
     }

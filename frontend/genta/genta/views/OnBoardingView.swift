@@ -86,7 +86,6 @@ struct OnBoardingView: View {
                         canAnimate: $viewModel.canAnimateLoading,
                         textInput: $viewModel.textInput,
                         action: process,
-//                        messages: $viewModel.messages,
                         placeHolder: $viewModel.placeholder,
                         btnAlreadyClicked: $viewModel.btnAlreadyClicked
                     )
@@ -103,15 +102,7 @@ struct OnBoardingView: View {
              will be removed when passing the viewModel.forward_propagate to the MessageTextInput()
          */
             viewModel.forward_propagate()
-    }
-//
-//    func finalProcess(){
-//        if viewModel.executeProcess == .none{
-//            return // becuase of the .onChange this will run even if the executeProcess == .none so we exit out
-//        }
-//        viewModel.executeProcess == .register ? viewModel.register(context: context) : viewModel.login(context: context)
-//    }
-//      
+    } 
     
 }
 

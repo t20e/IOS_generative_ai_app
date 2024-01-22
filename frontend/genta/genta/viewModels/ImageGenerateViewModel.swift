@@ -14,6 +14,7 @@ class ImageGenerateViewModel: ObservableObject{
     @Published var canAnimateLoading = false
     @Published var btnAlreadyClicked : Bool
     @Published var allowUserToGenerate : Bool = true
+    
     init(textInput: String = "", canAnimateLoading: Bool = false, btnAlreadyClicked: Bool = false, allowUserToGenerate : Bool = true ) {
         self.textInput = textInput
         self.canAnimateLoading = canAnimateLoading
@@ -30,7 +31,6 @@ class ImageGenerateViewModel: ObservableObject{
     func stopAnimation() async {
         //stops the loading animation on messages
         await delay(seconds: 2.0)
-//        removeLoadingLastIndex()
         canAnimateLoading = false
         btnAlreadyClicked = false
     }
@@ -40,16 +40,18 @@ class ImageGenerateViewModel: ObservableObject{
     }
     
     func generateImg(user: CDUser){
+        print(textInput)
 
         if textInput.count < 15 {
+            print("here")
             let msg = Message(text: "Please enter a longer prompt!", sentByUser: false, isError: true, imageData: nil)
             _ = PersistenceController.shared.addMsg(msg: msg, user: user)
             return
         }
-        if btnAlreadyClicked{
+        if btnAlreadyClicked {
             return
         }
-        startLoadingAnimation()
+        self.startLoadingAnimation()
         let textCopy = textInput
         // save the loading messages Id so that i can remove the loading sign
         let loadingMsgId = PersistenceController.shared.addMsg(

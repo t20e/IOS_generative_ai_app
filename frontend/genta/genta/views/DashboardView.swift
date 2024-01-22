@@ -51,13 +51,12 @@ struct DashboardView: View {
                     .onChange(of: user.generatedImages.count){
                         // show different text depending on how close the sys is to downloading all users images
                         let percentDownload = (Double(Int64( user.generatedImages.count)) / Double( user.numImgsGenerated_)) * 100
-                        print("percent downloaed images",percentDownload)
+//                        print("percent downloaed images",percentDownload)
                         if percentDownload > 50.0{
                             loadingScreenTxt = "Finalizing"
                         }else if percentDownload > 30.0{
                             loadingScreenTxt = "Getting your images"
-                        }
-                        
+                        } 
                     }
             }
         }

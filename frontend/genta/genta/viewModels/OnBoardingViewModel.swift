@@ -32,7 +32,6 @@ class OnBoardingViewModel : ObservableObject{
     let minPasswordLength = 6
     let maxPasswordLength = 32
     
-    @Published var executeProcess  = ExecuteProcess.none
     @Published var loginProcess = LoginValidateEnum.validateEmail
     @Published var regProcess = RegisterValidateEnum.validateEmail
     @Published var placeholder = "email"
@@ -48,6 +47,7 @@ class OnBoardingViewModel : ObservableObject{
     //    @Published var messages : [Message]
     @Published var messages : [CDMessage]
     @Published var isResettingPassword = false
+    
     enum LoginValidateEnum {
         case validateEmail, validatePassword,
             validateCode, validateNewPassword // if the users wants to update their password from the login view
@@ -55,10 +55,6 @@ class OnBoardingViewModel : ObservableObject{
 
     enum RegisterValidateEnum{
         case validateEmail, validateCode, validatePassword, validateConfirmPassword,  validateFirstName, validateLastName, validateAge
-    }
-
-    enum ExecuteProcess{
-        case none, register, login
     }
 
     init(
@@ -354,7 +350,6 @@ class OnBoardingViewModel : ObservableObject{
         Task{ @MainActor in
             let res = await AuthServices.shared.register(regData: regData)
             await stopAnimation()
-            executeProcess = .none
             if res.err{
                 addMsg(msg: Message(text: res.msg, sentByUser: false, isError: res.err, imageData: nil))
                 placeholder = "email"
@@ -373,7 +368,6 @@ class OnBoardingViewModel : ObservableObject{
         Task{ @MainActor in
             let res = await AuthServices.shared.login(loginData: loginData)
             await stopAnimation()
-            executeProcess = .none
             if res.err{
                 placeholder = "email"
                 loginProcess = .validateEmail

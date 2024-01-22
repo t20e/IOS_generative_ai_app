@@ -9,9 +9,9 @@ import SwiftUI
 import CoreData
 
 // GLOBAL VARIABLES
-let isDeployed = false
-let baseURL: String = {
-    return isDeployed ? "https://PAIENDPOINT" : "http://localhost:8080"
+let isDeployed = true
+let baseURL : String = {
+    return isDeployed ? "https://www.genta-ios.app" : "http://localhost:8080"
 }()
 let ALLOWED_FREE_NUM_OF_GENERATED_IMGS = 15
 
