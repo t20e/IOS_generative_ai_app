@@ -1,16 +1,24 @@
-# An IOS app that lets users generate their own images using the chatgpt API
+# A swift IOS app that lets users generate images using the chatgpt API
 
-> This is app is my portfolio for swifttUI
+> This is my portfolio app for Swift
 
-#### Languages used: Swift (frontend) | Javascript (backend) Mongoose ExpressJs nodeJs
-Im using MVVM architecture for swift, and coreData to store objects, I tried the new SwiftData but that seems only appropriate for an array of objects and doesnt work well for MVVM
-#### Tools used: AWS's S3-buckets and EC2, MongoDB
+This app allows its users to generate up to 15 images. Users can register, and during registration, their email addresses need to be authenticated. They can also perform actions such as logging in, resetting their passwords via email with multi-factor authentication (MFA), generating images, deleting accounts, and more. The images generated are saved in a database, which users can access at any time. Additionally, all data transit within the app is secured by TLS.
 
+#### Languages used:
 
-This app allows its users to generate 15 free images every week and after that they can pay per image with a third party provider. Users can register which will need to be authenticated their emails, login reset password by email MFA, generate images, delete account, and more. The images generated are saved on database, which users can access anytime.
+Swift (frontend) | Javascript (backend) with Mongoose, MongoDB, ExpressJs
+
+For swift Im using MVVM architecture, and coreData to store objects, I tried the new SwiftData but that seems only appropriate for an array of objects and doesn't work well for MVVM.
+
+#### Production Tools used:
+
+AWS's [S3-buckets | EC2 | Route53 | SES], MongoDB, GoDaddy to register domain
 
 
 ## App 
+<!-- TODO add link to Appstore when finished -->
+<center><a href="https://www.genta-ios.app" target="_blank">Website</a>&emsp;&emsp;&emsp;&emsp;<a href="" target="_blank">App on AppStore</a></center>
+
 <table>
     <thead>
         <tr>
@@ -20,13 +28,14 @@ This app allows its users to generate 15 free images every week and after that t
             <th><h5 style="text-align: center;">Contact Us</h5></th>
         </tr>
     </thead>
-    <tr>
-        <td><img src="app_design/app-show-images/for-app-store/gif/register.gif" alt="register" width="200">
-        </td>
-        <td><img src="app_design/app-show-images/for-app-store/gif/generate-image.gif" alt="Generate image" width="200"></td>
-        <td><img src="app_design/app-show-images/for-app-store/gif/all-generated-iamges.gif" alt="all-generated-images" width="200"></td>
-        <td><img src="app_design/app-show-images/for-app-store/gif/Contact-us.gif" alt="contact-us" width="200"></td>
-    </tr>
+    <tbody>
+        <tr>
+            <td><img src="app_design/app-show-images/for-app-store/gif/register.gif" alt="register" width="200"></td>
+            <td><img src="app_design/app-show-images/for-app-store/gif/generate-image.gif" alt="Generate image" width="200"></td>
+            <td><img src="app_design/app-show-images/for-app-store/gif/all-generated-iamges.gif" alt="all-generated-images" width="200"></td>
+            <td><img src="app_design/app-show-images/for-app-store/gif/Contact-us.gif" alt="contact us" width="200"></td>
+        </tr>
+    </tbody>
 </table>
  
 
