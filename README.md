@@ -25,7 +25,7 @@ This app allows its users to generate 15 free images every week and after that t
         </td>
         <td><img src="app_design/app-show-images/for-app-store/gif/generate-image.gif" alt="Generate image" width="200"></td>
         <td><img src="app_design/app-show-images/for-app-store/gif/all-generated-iamges.gif" alt="all-generated-images" width="200"></td>
-        <td><img src="app_design/app-show-images/for-app-store/gif/contact-us.gif" alt="contact-us" width="200"></td>
+        <td><img src="app_design/app-show-images/for-app-store/gif/Contact-us.gif" alt="contact-us" width="200"></td>
     </tr>
 </table>
  
