@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 
+
+
 struct MessageTextInput: View {
     
     @Binding var canAnimate : Bool
@@ -19,11 +21,25 @@ struct MessageTextInput: View {
     @State var action : () -> Void
     @Binding var placeHolder : String
     @Binding var btnAlreadyClicked : Bool
-    
+    var isExpandingTextField : Bool // this is to either make the textfield expand when the user types
+
     var body: some View {
         HStack(spacing: 25){
             if !hideTextField{
-                TextField(placeHolder, text: $textInput)
+                TextField(placeHolder, text: $textInput, axis: isExpandingTextField ? .vertical : .horizontal)
+                    .onChange(of: textInput) { _, newValue in
+                        /* 
+                            Since Im using the .vertical for textField it wont work like a regular .horizontal
+                            Textifeld, so when the user clicks the return key it will go to next line instead of closing
+                            keyboard this code stops that
+                         */
+                        guard let newValueLastChar = newValue.last else { return }
+                        if newValueLastChar == "\n" {
+                            textInput.removeLast()
+                            dismissKeyboard()
+                        }
+                    }
+
                     .padding(EdgeInsets(top: 10, leading: 15, bottom: 10, trailing: 15))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
@@ -35,7 +51,6 @@ struct MessageTextInput: View {
             }
             
             Image(systemName: canAnimate ? "circle.dotted" : "arrow.up.circle")
-            
                 .resizable()
                 .scaleEffect(animateScale ? 2 : 1)
                 .frame(width: 25, height: 25)
@@ -75,6 +90,8 @@ struct MessageTextInput: View {
                 .padding(.trailing, canAnimate ? 0 : 15)
         }
     }
+    
+    
 }
 
 #Preview {
@@ -92,7 +109,8 @@ struct MessageTextInput: View {
         action: exampleFunction,
 //        messages: .constant(messages),
         placeHolder: .constant(""),
-        btnAlreadyClicked: .constant(false)
+        btnAlreadyClicked: .constant(false),
+        isExpandingTextField: false
     )
     
 }

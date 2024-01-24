@@ -16,81 +16,79 @@ struct OnBoardingView: View {
     @ObservedObject private var viewModel = OnBoardingViewModel()
     
     var body: some View {
-        ZStack{
-            VStack{
-                ChatView(messages: viewModel.messages)
-                if !viewModel.showRegLogin{
-                    Button("Sign Up", action: {
-                        viewModel.showRegLogin = true
-                        viewModel.isOnLogin = false
-                        viewModel.addMsg(msg: Message(text: "Enter your email.", sentByUser: false, imageData: nil))
-                    })
-                    .frame(width: 250, height: 40)
-                    .background(Color.theme.primColor)
-                    .foregroundColor(Color.white)
-                    .cornerRadius(20)
+        VStack{
+            ChatView(messages: viewModel.messages)
+            if !viewModel.showRegLogin{
+                Button("Sign Up", action: {
+                    viewModel.showRegLogin = true
+                    viewModel.isOnLogin = false
+                    viewModel.addMsg(msg: Message(text: "Enter your email.", sentByUser: false, imageData: nil))
+                })
+                .frame(width: 250, height: 40)
+                .background(Color.theme.primColor)
+                .foregroundColor(Color.white)
+                .cornerRadius(20)
+                
+                Button("Login", action: {
+                    viewModel.showRegLogin = true
+                    viewModel.isOnLogin = true
+                    viewModel.addMsg(msg: Message(text: "Enter your email.", sentByUser: false, imageData: nil))
                     
-                    Button("Login", action: {
-                        viewModel.showRegLogin = true
-                        viewModel.isOnLogin = true
-                        viewModel.addMsg(msg: Message(text: "Enter your email.", sentByUser: false, imageData: nil))
-                        
-                        // so the user can change from resetting password to just loggin in
+                    // so the user can change from resetting password to just loggin in
+                    viewModel.loginData = LoginData()
+                    viewModel.isResettingPassword = false
+                })
+                .frame(width: 250, height: 40)
+                .background(.clear)
+                .foregroundColor(Color.theme.textColor)
+                
+            } else {
+                if viewModel.isOnLogin{
+                    // To reset the password on the login view
+                    Button(action: {
+                        viewModel.isResettingPassword = true
+                        viewModel.addMsg(msg: Message(text: "To reset your password, please enter your email.", sentByUser: false, imageData: nil))
+                        viewModel.loginProcess = .validateEmail
                         viewModel.loginData = LoginData()
-                        viewModel.isResettingPassword = false
+                    }, label: {
+                        Text("Reset password")
+                            .foregroundStyle(Color.theme.primColor)
+                            .underline()
                     })
-                    .frame(width: 250, height: 40)
-                    .background(.clear)
-                    .foregroundColor(Color.theme.textColor)
-                    
-                } else {
-                    if viewModel.isOnLogin{
-                        // To reset the password on the login view
-                        Button(action: {
-                            viewModel.isResettingPassword = true
-                            viewModel.addMsg(msg: Message(text: "To reset your password, please enter your email.", sentByUser: false, imageData: nil))
-                            viewModel.loginProcess = .validateEmail
-                            viewModel.loginData = LoginData()
-                        }, label: {
-                            Text("Reset password")
-                                .foregroundStyle(Color.theme.primColor)
-                                .underline()
-                        })
-                    }
-                    
-                    HStack{
-                        Button(action: {
-                            viewModel.switchTo()
-                        }, label: {
-                            Text(viewModel.isOnLogin ? "Sign Up" : "Login")
-                                .foregroundStyle(Color.theme.primColor)
-                            Image(systemName: "arrow.up.arrow.down")
-                                .foregroundColor(Color.theme.primColor)
-                            
-                        })
-                        .padding(.horizontal, 15)
-                        
-                        Spacer()
-                        Button(action: {
-                            viewModel.goBack()
-                        }, label: {
-                            Text("Go back")
-                                .foregroundStyle(Color.theme.primColor)
-                            Image(systemName: "arrow.uturn.up.circle")
-                                .foregroundColor(Color.theme.primColor)
-                        })
-                        .padding(.horizontal, 15)
-                    }
-                    
-                    MessageTextInput(
-                        canAnimate: $viewModel.canAnimateLoading,
-                        textInput: $viewModel.textInput,
-                        action: process,
-                        placeHolder: $viewModel.placeholder,
-                        btnAlreadyClicked: $viewModel.btnAlreadyClicked
-                    )
-                    .padding()
                 }
+                
+                HStack{
+                    Button(action: {
+                        viewModel.switchTo()
+                    }, label: {
+                        Text(viewModel.isOnLogin ? "Sign Up" : "Login")
+                            .foregroundStyle(Color.theme.primColor)
+                        Image(systemName: "arrow.up.arrow.down")
+                            .foregroundColor(Color.theme.primColor)
+                        
+                    })
+                    .padding(.horizontal, 15)
+                    
+                    Spacer()
+                    Button(action: {
+                        viewModel.goBack()
+                    }, label: {
+                        Text("Go back")
+                            .foregroundStyle(Color.theme.primColor)
+                        Image(systemName: "arrow.uturn.up.circle")
+                            .foregroundColor(Color.theme.primColor)
+                    })
+                    .padding(.horizontal, 15)
+                }
+                MessageTextInput(
+                    canAnimate: $viewModel.canAnimateLoading,
+                    textInput: $viewModel.textInput,
+                    action: process,
+                    placeHolder: $viewModel.placeholder,
+                    btnAlreadyClicked: $viewModel.btnAlreadyClicked,
+                    isExpandingTextField : false
+                )
+                .padding()
             }
         }
     }

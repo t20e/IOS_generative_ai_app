@@ -14,8 +14,9 @@ class ImageGenerateViewModel: ObservableObject{
     @Published var canAnimateLoading = false
     @Published var btnAlreadyClicked : Bool
     @Published var allowUserToGenerate : Bool = true
+    @Published var placeholder : String = "prompt"
     
-    init(textInput: String = "", canAnimateLoading: Bool = false, btnAlreadyClicked: Bool = false, allowUserToGenerate : Bool = true ) {
+    init(textInput: String = "", canAnimateLoading: Bool = false, btnAlreadyClicked: Bool = false, allowUserToGenerate : Bool = true, placeholder: String = "prompt" ) {
         self.textInput = textInput
         self.canAnimateLoading = canAnimateLoading
         self.btnAlreadyClicked = btnAlreadyClicked

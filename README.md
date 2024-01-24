@@ -16,8 +16,14 @@ AWS's [S3-buckets | EC2 | Route53 | SES], MongoDB, GoDaddy to register domain
 
 
 ## App 
-<!-- TODO add link to Appstore when finished -->
-<center><a href="https://www.genta-ios.app" target="_blank">Website</a>&emsp;&emsp;&emsp;&emsp;<a href="" target="_blank">App on AppStore</a></center>
+<center>
+    <a href="https://www.genta-ios.app" target="_blank">Website</a>
+    &emsp;&emsp;&emsp;&emsp;
+    <!-- TODO add link to Appstore when finished -->
+    <a href="" target="_blank">App on AppStore</a>
+</center>  
+<br>
+<br>
 
 <table>
     <thead>

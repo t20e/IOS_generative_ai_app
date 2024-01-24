@@ -33,12 +33,7 @@ struct ChatView: View {
                         }
                         .onChange(of: messages){
                             scrollToBottom(proxy: proxy)
-//                            if let lastIndex = messages.indices.last {
-//                                // remove the loading sign from the last message
-//                                    if messages[lastIndex - 1].isLoadingSign == true{
-//                                        messages[lastIndex - 1].isLoadingSign = false
-//                                    }
-//                            }
+ 
                         }
                     }
                 }
