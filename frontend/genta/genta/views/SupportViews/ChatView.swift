@@ -33,7 +33,6 @@ struct ChatView: View {
                         }
                         .onChange(of: messages){
                             scrollToBottom(proxy: proxy)
- 
                         }
                     }
                 }

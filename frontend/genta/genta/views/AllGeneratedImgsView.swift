@@ -45,6 +45,7 @@ struct AllGeneratedImgsView: View {
                         .background(Color.theme.textColor)
                         .cornerRadius(20)
                         .padding(.trailing, 25)
+                        .padding(.top, 15)
                         .foregroundColor(colorScheme == .dark ? .black : .white)
                 }
                 HStack{

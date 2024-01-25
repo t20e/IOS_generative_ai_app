@@ -47,16 +47,16 @@ struct KeyboardResponsiveModifier: ViewModifier {
             guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
             let screenHeight = UIScreen.main.bounds.height
             let keyboardHeight = keyboardFrame.height
-//            withAnimation(.linear(duration: 0.05)) {
-            // when the keyboard popups up moves the view up so that the TextField is visible above the keyboard
-            offset = calculateOffset(with: keyboardHeight, screenHeight: screenHeight)
-//            }
+            withAnimation() {
+                // when the keyboard popups up moves the view up so that the TextField is visible above the keyboard
+                offset = calculateOffset(with: keyboardHeight, screenHeight: screenHeight)
+            }
         }
         
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
-//            withAnimation(.linear(duration: 0.05)) {
+            withAnimation() {
                 offset = 0 // when the keyboard disappears it moves the view back down
-//            }
+            }
         }
     }
 }

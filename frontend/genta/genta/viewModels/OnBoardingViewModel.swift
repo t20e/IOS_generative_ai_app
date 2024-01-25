@@ -384,7 +384,7 @@ class OnBoardingViewModel : ObservableObject{
     func setStartingMsg() {
         let msgs :  [[String: String]] = [
             [
-                "prompt": "Design a captivating image of a city in the future, featuring towering skyscrapers made of gleaming glass and steel structures. The city should have flying cars and monorail systems zipping through the sky. There should be rooftop gardens on some buildings, demonstrating city dwellers' commitment to urban green spaces.",
+                "prompt": "Design a captivating image of a city in the future, featuring towering skyscrapers made of gleaming glass and steel structures. The city should have flying cars and monorail systems zipping through the sky.",
                 "imageName": "Design_a_captivating_image_of_a_city_in_the_future,"
             ],
             [

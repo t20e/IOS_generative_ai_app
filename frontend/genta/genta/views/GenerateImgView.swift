@@ -43,9 +43,10 @@ struct GenerateImgView: View {
          Important: I had an issue using TabView with a .page on it, the keyboard would block the TextField, the soultion
          was to move the view up above the keyboard. view the KeyboardResponsiveModifier file for more info!!
          */
-        ScrollViewReader { proxy in // used so that when the keyboard appears it will scroll to the bottom so that it doesnt appear as tho the keyboard is overlapping the TextField
-            GeometryReader { geometry in // same as ScrollViewReader
-                ScrollView { // same as ScrollViewReader
+        // App had a problem weird the GeometryReader, ScrollViewReader and ScrollView to caused a weird movement so I removed it, still works
+//        GeometryReader { geometry in // used so that when the keyboard appears it will scroll to the bottom so that it doesnt appear as tho the keyboard is overlapping the TextField
+//            ScrollViewReader { proxy in
+//                ScrollView { // same as ScrollViewReader
                     VStack {
                         ChatView(messages: Array(messages))
                             .onAppear{
@@ -60,7 +61,7 @@ struct GenerateImgView: View {
                                 }
                             }
                         if viewModel.allowUserToGenerate{
-//                            !isKeyboardVisible ? Spacer() : nil
+                            //                            !isKeyboardVisible ? Spacer() : nil
                             MessageTextInput(
                                 canAnimate: $viewModel.canAnimateLoading,
                                 textInput: $viewModel.textInput,
@@ -69,33 +70,33 @@ struct GenerateImgView: View {
                                 btnAlreadyClicked: $viewModel.btnAlreadyClicked,
                                 isExpandingTextField : true
                             )
-                                .id("scrollToId")
-                                .padding()
- 
+                            .padding()
+                            .id("scrollToId")
                         }
+                        
                     }
-                    .frame(width: geometry.size.width, height: geometry.size.height)
+//                    .frame(width: geometry.size.width, height: geometry.size.height)
                     
                     .onAppear{
                         if user.numImgsGenerated_ >= ALLOWED_FREE_NUM_OF_GENERATED_IMGS {
                             self.viewModel.allowUserToGenerate = false
                         }
                     }
-                }
+//                }
                 .keyboardResponsive() // Apply the custom modifier here
-                // listen for event that trigger if the keyboard is on screen
+//                // listen for event that trigger if the keyboard is on screen
                 .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
-                    isKeyboardVisible = true
-                    withAnimation {
-                        // scrolls to the bottom without this it will show the keyboard overlapping the textField
-                        proxy.scrollTo("scrollToId", anchor: .bottom)
-                    }
+//                    isKeyboardVisible = true
+//                    withAnimation {
+//                        // scrolls to the bottom without this it will show the keyboard overlapping the textField
+////                        proxy.scrollTo("scrollToId", anchor: .bottom)
+//                    }
                 }
                 .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
-                    isKeyboardVisible = false
+//                    isKeyboardVisible = false
                 }
-            }
-        }
+//            }
+//        }
     }
     
     func process(){
