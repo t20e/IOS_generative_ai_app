@@ -18,7 +18,7 @@ struct HeaderOnBoardingView: View {
                     .resizable()
                     .frame(width: 64,height: 64)
                     .cornerRadius(30)
-                Text("genTa")
+                Text("GenTa")
                     .font(.title)
                     .bold()
                 Text("powered by dall-e")

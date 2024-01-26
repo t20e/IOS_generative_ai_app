@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "523B4BBE2B3065680063C9FE"
-               BuildableName = "Genta.app"
-               BlueprintName = "Genta"
-               ReferencedContainer = "container:Genta.xcodeproj">
+               BuildableName = "GenTa.app"
+               BlueprintName = "GenTa"
+               ReferencedContainer = "container:GenTa.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -44,9 +44,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "523B4BBE2B3065680063C9FE"
-            BuildableName = "Genta.app"
-            BlueprintName = "Genta"
-            ReferencedContainer = "container:Genta.xcodeproj">
+            BuildableName = "GenTa.app"
+            BlueprintName = "GenTa"
+            ReferencedContainer = "container:GenTa.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -61,9 +61,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "523B4BBE2B3065680063C9FE"
-            BuildableName = "Genta.app"
-            BlueprintName = "Genta"
-            ReferencedContainer = "container:Genta.xcodeproj">
+            BuildableName = "GenTa.app"
+            BlueprintName = "GenTa"
+            ReferencedContainer = "container:GenTa.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

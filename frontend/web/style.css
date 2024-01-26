@@ -34,8 +34,10 @@ header h1 {
 .clickLinkPopUp {
     position: absolute;
     width: 20em;
-    left: 11em;
+    left: 19em;
     top: -3em;
+    pointer-events: none;
+
 }
 
 .clickLinkPopUp svg {
@@ -86,8 +88,7 @@ footer * {
     font-size: small;
 }
 
-@media (pointer:none),
-(pointer:coarse) {
+@media only screen and (max-width: 600px) {
     #mainDiv {
         position: absolute;
         top: 50%;
@@ -98,5 +99,13 @@ footer * {
         border-radius: 20px;
         padding: 1em;
         box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    }
+
+    .clickLinkPopUp {
+        position: absolute;
+        width: 20em;
+        left: 11em;
+        top: -3em;
+        pointer-events: none;
     }
 }

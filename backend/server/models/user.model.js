@@ -28,6 +28,7 @@ const UserSchema = new Mongoose.Schema({
     age: {
         type: Number,
         required: [true, 'age is required'],
+        min: [4, "You must be at least 4 years old."]
         // min: [13, 'you need to be older than 12'],
         // max: [120, 'age cant be more than 120']
     },

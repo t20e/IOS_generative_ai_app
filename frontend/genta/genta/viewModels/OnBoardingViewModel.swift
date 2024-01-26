@@ -236,8 +236,8 @@ class OnBoardingViewModel : ObservableObject{
             guard let age = Int(textInput) else {
                 return addMsg(msg: Message(text: "Please enter a validate age", sentByUser: false, isError: true, imageData: nil))
             }
-            if age <= 13{
-                return addMsg(msg: Message(text: "Sorry you need to be 13 or older", sentByUser: false, isError: true, imageData: nil))
+            if age < 4{
+                return addMsg(msg: Message(text: "Sorry you need to be 4 years or older", sentByUser: false, isError: true, imageData: nil))
             }
             print("registering")
             regData.age = age
